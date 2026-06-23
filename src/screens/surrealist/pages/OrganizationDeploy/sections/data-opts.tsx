@@ -1,7 +1,8 @@
 import { Alert, Box, Button, Group, Select, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowDownFat, iconHelp, iconInfo, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
+import { INSTANCE_CATEGORY_PLANS, isScalePlan } from "~/cloud/helpers";
+import { filterSurrealDB3Versions } from "~/util/versions";
 import { DeploySectionProps } from "../types";
 
 export function DataOptionsSection({
@@ -44,9 +45,12 @@ export function DataOptionsSection({
 		if (backup) {
 			setDetails((draft) => {
 				const versions = backup.valid_versions ?? [];
+				const allowedVersions = isScalePlan(details.plan)
+					? filterSurrealDB3Versions(versions)
+					: versions;
 
-				if (!versions.includes(details.version)) {
-					draft.version = versions[0];
+				if (allowedVersions.length > 0 && !allowedVersions.includes(details.version)) {
+					draft.version = allowedVersions[0];
 				}
 
 				draft.startingData.backupOptions = {

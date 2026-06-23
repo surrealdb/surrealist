@@ -1,12 +1,14 @@
 import { Badge, Group, Image, Select, Stack, TextInput } from "@mantine/core";
 import { Icon, iconCheck } from "@surrealdb/ui";
 import { ChangeEvent, useLayoutEffect } from "react";
+import { isScalePlan } from "~/cloud/helpers";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { filterSurrealDB3Versions } from "~/util/versions";
 import { DeploySectionProps } from "../types";
 
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
@@ -15,9 +17,21 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	const regionSet = new Set(organisation?.plan.regions ?? []);
 	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
 
+	const backupVersions = details.startingData.backupOptions?.backup?.valid_versions;
+	const rawVersionSource = backupVersions ?? versions;
+	const versionSource = isScalePlan(details.plan)
+		? filterSurrealDB3Versions(rawVersionSource)
+		: rawVersionSource;
+	const latestVersion = versionSource[0];
+
 	const regionList = supportedRegions.map((region) => ({
 		value: region.slug,
 		label: region.description,
+	}));
+
+	const versionList = versionSource.map((ver) => ({
+		value: ver,
+		label: `SurrealDB ${ver}`,
 	}));
 
 	const updateRegion = useStable((value: string | null) => {
@@ -26,12 +40,6 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 			draft.startingData.backupOptions = undefined;
 		});
 	});
-
-	const versionSource = details.startingData.backupOptions?.backup?.valid_versions ?? versions;
-	const versionList = versionSource.map((ver) => ({
-		value: ver,
-		label: `SurrealDB ${ver}`,
-	}));
 
 	const updateName = useStable((event: ChangeEvent<HTMLInputElement>) => {
 		setDetails((draft) => {
@@ -54,12 +62,19 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	}, [details.region, supportedRegions, setDetails]);
 
 	useLayoutEffect(() => {
-		if (!details.version) {
+		const source = backupVersions ?? versions;
+		const allowed = isScalePlan(details.plan) ? filterSurrealDB3Versions(source) : source;
+
+		if (!allowed.length) {
+			return;
+		}
+
+		if (!details.version || !allowed.includes(details.version)) {
 			setDetails((draft) => {
-				draft.version = versionSource[0];
+				draft.version = allowed[0];
 			});
 		}
-	}, [details.version, versionSource, setDetails]);
+	}, [details.version, details.plan, backupVersions, versions, setDetails]);
 
 	return (
 		<Stack gap="lg">
@@ -118,7 +133,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 				renderOption={(org) => (
 					<Group gap="sm">
 						{org.option.label}
-						{versionList[0].value === org.option.value && (
+						{latestVersion === org.option.value && (
 							<Badge
 								variant="light"
 								color="violet"
