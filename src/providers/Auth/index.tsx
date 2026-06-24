@@ -15,6 +15,7 @@ import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
 import { tagEvent } from "~/util/analytics";
 import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { showErrorNotification } from "~/util/helpers";
+import { identifyReoUser } from "~/util/reo";
 import { callback, computeReturnPath } from "./helpers";
 import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
 import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
@@ -145,6 +146,8 @@ function TokenBridge({ children }: PropsWithChildren) {
 			verified: user.email_verified,
 			email: user.email,
 		});
+
+		identifyReoUser(user);
 	});
 
 	const handleSignOut = useStable(() => {

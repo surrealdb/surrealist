@@ -1,8 +1,25 @@
 declare global {
+	type ReoIdentityType = "email" | "github" | "linkedin";
+
+	interface ReoIdentity {
+		username: string;
+		type: ReoIdentityType;
+		other_identities?: { username: string; type: ReoIdentityType }[];
+		firstname?: string;
+		lastname?: string;
+		company?: string;
+	}
+
+	interface ReoClient {
+		init: (options: { clientID: string; dnt?: string[] }) => void;
+		identify: (identity: ReoIdentity) => void;
+	}
+
 	interface Window {
 		dataLayer: object[];
 		gtag: (...args: any[]) => void;
 		tagEvent: (event: string, data?: object) => Promise<void>;
+		Reo?: ReoClient;
 	}
 }
 
