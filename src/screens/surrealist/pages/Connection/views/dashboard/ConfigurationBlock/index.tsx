@@ -11,7 +11,7 @@ import {
 	iconRelation,
 	iconTag,
 } from "@surrealdb/ui";
-import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { getPlanForInstanceType, hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { PropertyValue } from "~/components/PropertyValue";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -50,7 +50,9 @@ export function ConfigurationBlock({
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = instance?.distributed_storage_specs ? "Dedicated" : "Single-node";
+	const instancePlan = instance ? getPlanForInstanceType(instance.type) : undefined;
+	const nodeText =
+		instancePlan === "scale" ? `${instance?.compute_units ?? 0} Nodes` : "Single-node";
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);

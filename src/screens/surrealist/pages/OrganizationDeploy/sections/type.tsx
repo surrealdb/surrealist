@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Anchor,
 	Box,
 	Button,
@@ -15,7 +16,11 @@ import {
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconArrowLeft, iconArrowUpRight } from "@surrealdb/ui";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
-import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
+import {
+	getFeaturedInstanceTypes,
+	INSTANCE_PLAN_ARCHITECTURES,
+	isScalePlan,
+} from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { InstanceTypes } from "~/components/InstanceTypes";
@@ -23,7 +28,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
-import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
+import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import classes from "../style.module.scss";
 import { DeploySectionProps } from "../types";
 
@@ -32,12 +37,12 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
 
-	const recommendations = useMemo(() => {
-		return INSTANCE_PLAN_SUGGESTIONS[details.plan]
-			.slice(0, 3)
-			.reverse()
-			.flatMap((slug) => optional(instanceTypes.get(slug)));
-	}, [instanceTypes, details.plan]);
+	const recommendations = useMemo(
+		() => getFeaturedInstanceTypes(instanceTypes.values(), details.plan),
+		[instanceTypes, details.plan],
+	);
+
+	const hasAvailableTypes = recommendations.length > 0;
 
 	const handleUpdate = useStable((type: CloudInstanceType) => {
 		closeModal("instance-type");
@@ -84,28 +89,45 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const isRecommended = recommendations.some((type) => type.slug === details.computeType);
 	const selected = instanceTypes.get(details.computeType);
+	const featuredCount = Math.max(selected && !isRecommended ? 1 : recommendations.length, 1);
 
 	useEffect(() => {
 		if (selected) {
 			setDetails((draft) => {
 				draft.storageAmount = selected.default_storage_size;
+
+				if (isScalePlan(details.plan)) {
+					draft.computeUnits = selected.compute_units.min ?? 3;
+				}
 			});
 		}
-	}, [selected, setDetails]);
+	}, [selected, setDetails, details.plan]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Not necessary
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset default when plan changes
 	useLayoutEffect(() => {
 		setDetails((draft) => {
 			if (!draft.computeType) {
-				draft.computeType = recommendations[recommendations.length - 1]?.slug ?? "";
+				draft.computeType = recommendations.at(-1)?.slug ?? "";
 			}
 		});
-	}, [details.plan, setDetails]);
+	}, [details.plan, setDetails, recommendations]);
 
 	return (
 		<Box>
+			{!hasAvailableTypes && (
+				<Alert
+					color="orange"
+					title="No instance types available"
+					mb="xl"
+				>
+					<Text className="selectable">
+						No instance types are available for this plan on your organisation. Contact
+						support if you believe this is an error.
+					</Text>
+				</Alert>
+			)}
 			<SimpleGrid
-				cols={{ base: 1, xs: 2, md: 3 }}
+				cols={{ base: 1, xs: Math.min(2, featuredCount), md: featuredCount }}
 				spacing="xl"
 				className={classes.content}
 			>
@@ -160,6 +182,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						size="xs"
 						variant="gradient"
 						onClick={openComputeInstanceTypeSelector}
+						disabled={!hasAvailableTypes}
 						rightSection={
 							<Icon
 								path={iconArrowLeft}
@@ -204,7 +227,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	});
 
 	const features: ReactNode[] = [
-		<Fragment key="cluster">
+		<Fragment key="kind">
 			<Text
 				fw={500}
 				c="bright"
@@ -231,16 +254,21 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			</Text>
 			<Text c="obsidian.3">Memory</Text>
 		</Fragment>,
-		<Fragment key="cluster">
-			<Text
-				fw={500}
-				c="bright"
-			>
-				{type.default_storage_size} GB
-			</Text>
-			<Text c="obsidian.3">Storage</Text>
-		</Fragment>,
 	];
+
+	if (!isScalePlan(details.plan)) {
+		features.push(
+			<Fragment key="storage">
+				<Text
+					fw={500}
+					c="bright"
+				>
+					{type.default_storage_size} GB
+				</Text>
+				<Text c="obsidian.3">Storage</Text>
+			</Fragment>,
+		);
+	}
 
 	const isActive = details.computeType === type.slug;
 

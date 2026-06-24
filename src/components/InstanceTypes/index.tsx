@@ -1,7 +1,13 @@
 import { Badge, Box, Divider, Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
+import {
+	INSTANCE_PLAN_CATEGORIES,
+	isInstanceTypeEnabled,
+	isScaleInstanceType,
+	isScalePlan,
+	SCALE_INSTANCE_CATEGORIES,
+} from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
@@ -10,7 +16,14 @@ import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 
-const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
+const CATEGORIES = [
+	"free",
+	"development",
+	"production",
+	"production-compute",
+	"production-memory",
+	...SCALE_INSTANCE_CATEGORIES,
+];
 
 export interface InstanceTypesProps {
 	variant?: TypeVariant;
@@ -39,25 +52,54 @@ export function InstanceTypes({
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
 
-		return CATEGORIES.flatMap((category) => {
-			if (!available.includes(category)) {
+		if (isScalePlan(plan)) {
+			const scaleTypes = typeList
+				.filter(isScaleInstanceType)
+				.filter(isInstanceTypeEnabled)
+				.sort((a, b) => a.price_hour - b.price_hour);
+
+			if (scaleTypes.length === 0) {
 				return [];
+			}
+
+			return [{ category: scaleTypes[0].category, types: scaleTypes }];
+		}
+
+		const grouped = new Map<string, { labelCategory: string; types: CloudInstanceType[] }>();
+		const groupOrder: string[] = [];
+
+		for (const category of CATEGORIES) {
+			if (!available.includes(category)) {
+				continue;
 			}
 
 			const types = typeList
 				.filter((type) => type.category === category)
-				.filter((type) => type.restricted !== true)
-				.sort((a, b) => {
-					return a.price_hour - b.price_hour;
-				});
+				.filter(isInstanceTypeEnabled);
 
 			if (types.length === 0) {
-				return [];
+				continue;
 			}
 
-			return [{ category, types }];
+			if (!grouped.has(category)) {
+				grouped.set(category, { labelCategory: category, types: [] });
+				groupOrder.push(category);
+			}
+
+			grouped.get(category)?.types.push(...types);
+		}
+
+		return groupOrder.map((groupKey) => {
+			const group = grouped.get(groupKey);
+			if (!group) {
+				return { category: groupKey, types: [] };
+			}
+
+			group.types.sort((a, b) => a.price_hour - b.price_hour);
+
+			return { category: group.labelCategory, types: group.types };
 		});
-	}, [instanceTypes, available]);
+	}, [instanceTypes, available, plan]);
 
 	const categoryGroups = categories.map(({ category, types }) => (
 		<Box key={category}>

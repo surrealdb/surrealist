@@ -4,6 +4,7 @@ import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import {
 	CloudDeployConfig,
+	CloudInstanceType,
 	CloudOrganization,
 	CloudPlanCategories,
 	InstancePlan,
@@ -32,39 +33,42 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	},
 });
 
+export const SCALE_INSTANCE_CATEGORIES = [
+	"medium-scale",
+	"large-scale",
+	"xlarge-scale",
+	"2xlarge-scale",
+	"4xlarge-scale",
+	"8xlarge-scale",
+	"16xlarge-scale",
+] as const;
+
 export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, CloudPlanCategories> = {
 	free: { compute: ["free", "development", "production"], storage: [] },
 	start: { compute: ["development", "production"], storage: [] },
 	scale: {
-		compute: ["production-memory", "production-compute"],
+		compute: [...SCALE_INSTANCE_CATEGORIES],
 		storage: [],
-	},
-	enterprise: {
-		compute: ["production-memory"],
-		storage: ["production"],
 	},
 };
 
 export const INSTANCE_PLAN_ARCHITECTURES: Record<InstancePlan, [string, string]> = {
 	free: ["Single-node", "Instance"],
 	start: ["Single-node", "Instance"],
-	scale: ["Shared", "Cluster"],
-	enterprise: ["Dedicated", "Cluster"],
+	scale: ["Multi-node", "Cluster"],
 };
 
 export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
 	free: "start",
 	development: "start",
 	production: "start",
-	"production-memory": "enterprise",
-	"production-compute": "enterprise",
+	...Object.fromEntries(SCALE_INSTANCE_CATEGORIES.map((category) => [category, "scale"])),
 };
 
 export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
-	scale: ["medium-compute", "large-compute", "xlarge-memory"],
-	enterprise: ["medium-memory", "large-memory", "xlarge-memory"],
+	scale: ["large-scale", "xlarge-scale", "2xlarge-scale"],
 };
 
 export const BILLING_PROVIDER_ACTIONS: Record<OrganisationBillingProvider, string> = {
@@ -147,16 +151,6 @@ export function compileDeployConfig(
 		}
 	}
 
-	if (isDistributedPlan(config.plan)) {
-		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
-		configuration.distributed_storage_specs = {
-			slug: config.storageType,
-			units: config.storageUnits,
-			autoscaling: false,
-			max_compute_units: config.computeUnits,
-		};
-	}
-
 	return configuration;
 }
 
@@ -164,8 +158,78 @@ export function isInstancePlan(plan: string): plan is InstancePlan {
 	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
 }
 
-export function isDistributedPlan(plan: InstancePlan): boolean {
-	return plan === "scale" || plan === "enterprise";
+export function isScalePlan(plan: InstancePlan): boolean {
+	return plan === "scale";
+}
+
+export function isScaleInstanceCategory(category: string): boolean {
+	return (
+		category.endsWith("-scale") ||
+		(SCALE_INSTANCE_CATEGORIES as readonly string[]).includes(category)
+	);
+}
+
+export function isScaleInstanceType(type: Pick<CloudInstanceType, "slug" | "category">): boolean {
+	return type.slug.endsWith("-scale") || isScaleInstanceCategory(type.category);
+}
+
+export function getPlanForInstanceType(
+	type: Pick<CloudInstanceType, "slug" | "category">,
+): InstancePlan {
+	if (isScaleInstanceType(type)) {
+		return "scale";
+	}
+
+	return INSTANCE_CATEGORY_PLANS[type.category] ?? "start";
+}
+
+export function isInstanceTypeEnabled(type: CloudInstanceType): boolean {
+	if (type.restricted) {
+		return false;
+	}
+
+	if (type.enabled === false) {
+		return false;
+	}
+
+	return true;
+}
+
+export function getInstanceTypesForPlan(
+	registry: Iterable<CloudInstanceType>,
+	plan: InstancePlan,
+	variant: keyof CloudPlanCategories = "compute",
+): CloudInstanceType[] {
+	if (plan === "scale" && variant === "compute") {
+		return [...registry]
+			.filter(isScaleInstanceType)
+			.filter(isInstanceTypeEnabled)
+			.sort((a, b) => a.price_hour - b.price_hour);
+	}
+
+	const categories = INSTANCE_PLAN_CATEGORIES[plan][variant];
+
+	return [...registry]
+		.filter((type) => categories.includes(type.category))
+		.filter(isInstanceTypeEnabled)
+		.sort((a, b) => a.price_hour - b.price_hour);
+}
+
+export function getFeaturedInstanceTypes(
+	registry: Iterable<CloudInstanceType>,
+	plan: InstancePlan,
+): CloudInstanceType[] {
+	const typeBySlug = new Map([...registry].map((type) => [type.slug, type]));
+
+	const fromSuggestions = INSTANCE_PLAN_SUGGESTIONS[plan]
+		.map((slug) => typeBySlug.get(slug))
+		.filter((type): type is CloudInstanceType => !!type && isInstanceTypeEnabled(type));
+
+	if (fromSuggestions.length > 0) {
+		return fromSuggestions.slice(0, 3).toReversed();
+	}
+
+	return getInstanceTypesForPlan(registry, plan).slice(0, 3).toReversed();
 }
 
 export function normalizeRole(role: string): string {

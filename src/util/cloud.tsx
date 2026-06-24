@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { isScaleInstanceCategory } from "~/cloud/helpers";
 import { CloudBackupPolicySummary, CloudMeasurement } from "~/types";
 import { plural } from "./helpers";
 
@@ -79,6 +80,10 @@ export function openSurrealChangelog(version: string) {
  * Returns the display name for the given instance type category
  */
 export function getTypeCategoryName(category: string) {
+	if (isScaleInstanceCategory(category)) {
+		return "Scale";
+	}
+
 	switch (category) {
 		case "free":
 			return "Free";
@@ -96,6 +101,10 @@ export function getTypeCategoryName(category: string) {
 }
 
 export function getTypeCategoryDescription(category: string) {
+	if (isScaleInstanceCategory(category)) {
+		return "Distributed instances for scalable production workloads";
+	}
+
 	switch (category) {
 		case "free":
 			return "Explore SurrealDB with a free instance";

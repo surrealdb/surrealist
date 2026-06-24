@@ -56,7 +56,7 @@ import {
 } from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
 import { fuzzyMatch, ON_STOP_PROPAGATION } from "~/util/helpers";
-import { SDB_DEFINE_CONFIG_DEFAULT } from "~/util/versions";
+import { SDB_3_0_0 } from "~/util/versions";
 import type { ConnectionSettingsTabProps } from "../types";
 
 function stopPropagation(event: MouseEvent) {
@@ -122,7 +122,7 @@ function DatabaseHierarchySection({
 	authentication,
 }: DatabaseHierarchySectionProps) {
 	const queryClient = useQueryClient();
-	const [supportsDefaultConfig] = useMinimumVersion(SDB_DEFINE_CONFIG_DEFAULT);
+	const [supportsDefaultConfig] = useMinimumVersion(SDB_3_0_0);
 	const [expanded, setExpanded] = useState<string[]>([]);
 	const previousSearch = useRef("");
 

@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
-import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
+import { getPlanForInstanceType } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
@@ -42,7 +42,7 @@ export function ConfigurationInstanceType({
 	const instanceType = instance.type.slug;
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
-	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
+	const guessedPlan = getPlanForInstanceType(instance.type);
 
 	const handleUpdate = useStable(() => {
 		if (variant === "drawer") {

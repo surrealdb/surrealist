@@ -40,6 +40,10 @@ export function PricingCard({
 
 	const isHourly = typeof config.price === "number";
 	const showFromPerHour = isHourly && !isDedicated;
+	const displayPrice =
+		state === "available" && typeof config.price !== "number" && config.price !== "Free"
+			? "Available"
+			: config.price;
 
 	return (
 		<Anchor
@@ -94,9 +98,9 @@ export function PricingCard({
 								fz={40}
 								lh={1.1}
 							>
-								{typeof config.price === "number"
-									? `$${config.price.toFixed(3)}`
-									: config.price}
+								{typeof displayPrice === "number"
+									? `$${displayPrice.toFixed(3)}`
+									: displayPrice}
 							</Title>
 							{showFromPerHour && (
 								<Text
@@ -120,13 +124,13 @@ export function PricingCard({
 							lh={1.1}
 							className="selectable"
 						>
-							{config.price}
+							{displayPrice}
 						</Text>
 					)}
 					<Text className="selectable">{config.description}</Text>
 					<Label mt="xl">What you get</Label>
 					<Stack className="selectable">
-						{config.features.map((feat) => (
+						{(config.features ?? []).map((feat) => (
 							<Group
 								gap="sm"
 								c="bright"
@@ -161,7 +165,7 @@ export function PricingCard({
 						<>
 							<Label mt="xl">Resources</Label>
 							<Stack className="selectable">
-								{config.resources.map((resource) => (
+								{(config.resources ?? []).map((resource) => (
 									<Group
 										gap="sm"
 										c="bright"
