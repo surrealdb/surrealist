@@ -25,17 +25,15 @@ function buildReoIdentity(user: User): ReoIdentity | null {
 }
 
 export function identifyReoUser(user: User) {
-	// if (!isProduction || !adapter.isTelemetryEnabled) {
-	// 	return;
-	// }
+	if (!isProduction || !adapter.isTelemetryEnabled) {
+		return;
+	}
 
 	const identity = buildReoIdentity(user);
 
 	if (!identity) {
 		return;
 	}
-
-	console.log("Identifying user with Reo", identity);
 
 	window.Reo?.identify(identity);
 }
