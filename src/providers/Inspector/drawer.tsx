@@ -36,7 +36,7 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { CodeInput } from "~/components/Inputs";
 import { Spacer } from "~/components/Spacer";
 import { LQ_SUPPORTED, MAX_LIVE_MESSAGES } from "~/constants";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import type { HistoryHandle } from "~/hooks/history";
 import { useSaveable } from "~/hooks/save";
 import { useTables } from "~/hooks/schema";
@@ -50,6 +50,7 @@ import {
 import type { LiveMessage } from "~/types";
 import { newId } from "~/util/helpers";
 import { getTableVariant } from "~/util/schema";
+import { SDB_3_0_0 } from "~/util/versions";
 import type { CreateState } from ".";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
@@ -110,6 +111,8 @@ export function InspectorDrawer({
 	const protocol = useConnection((c) => c?.authentication.protocol);
 	const liveSupported = !!protocol && LQ_SUPPORTED.has(protocol);
 
+	const [supportsReferences] = useMinimumVersion(SDB_3_0_0);
+
 	const tableSchema = useTables().find((t) => t.schema.name === history.current?.table.name);
 	const allowCreate = tableSchema ? getTableVariant(tableSchema) !== "view" : true;
 
@@ -154,16 +157,17 @@ export function InspectorDrawer({
 		const contentQuery = /* surql */ `SELECT * FROM ONLY $id`;
 		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY $id`;
 		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY $id`;
-		const referencesQuery = /* surql */ `SELECT VALUE <~? FROM ONLY $id`;
 
-		const [
-			{ result: content },
-			{ result: inputs },
-			{ result: outputs },
-			{ result: references },
-		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery};${referencesQuery}`, {
-			id,
-		});
+		const queryParts = [contentQuery, inputQuery, outputsQuery];
+
+		if (supportsReferences) {
+			queryParts.push(/* surql */ `SELECT VALUE <~? FROM ONLY $id`);
+		}
+
+		const results = await executeQuery(queryParts.join(";"), { id });
+
+		const [{ result: content }, { result: inputs }, { result: outputs }] = results;
+		const references = supportsReferences ? results[3]?.result : undefined;
 
 		const formatted = await getSurrealQL().formatValue(content, false, true);
 
@@ -227,6 +231,12 @@ export function InspectorDrawer({
 	});
 
 	const activeRecordId = history.current;
+
+	useEffect(() => {
+		if (!supportsReferences && tab === "references") {
+			setTab("content");
+		}
+	}, [supportsReferences, tab]);
 
 	useEffect(() => {
 		if (!isCreating && history.current) {
@@ -522,12 +532,14 @@ export function InspectorDrawer({
 								>
 									Relations
 								</Tabs.Tab>
-								<Tabs.Tab
-									value="references"
-									leftSection={<Icon path={iconArrowEnter} />}
-								>
-									References
-								</Tabs.Tab>
+								{supportsReferences && (
+									<Tabs.Tab
+										value="references"
+										leftSection={<Icon path={iconArrowEnter} />}
+									>
+										References
+									</Tabs.Tab>
+								)}
 								<Tabs.Tab
 									value="live"
 									leftSection={<Icon path={iconLive} />}
@@ -554,16 +566,11 @@ export function InspectorDrawer({
 								/>
 							</Tabs.Panel>
 
-							<Tabs.Panel value="outgoing">
-								<RelationsTab
-									inputs={currentRecord.inputs}
-									outputs={currentRecord.outputs}
-								/>
-							</Tabs.Panel>
-
-							<Tabs.Panel value="references">
-								<ReferencesTab references={currentRecord.references} />
-							</Tabs.Panel>
+							{supportsReferences && (
+								<Tabs.Panel value="references">
+									<ReferencesTab references={currentRecord.references} />
+								</Tabs.Panel>
+							)}
 
 							<Tabs.Panel value="live">
 								<LiveFeedTab
