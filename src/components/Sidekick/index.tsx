@@ -99,16 +99,6 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 						>
 							<Box pos="relative">
 								<Image
-									pos="absolute"
-									src={glowImg}
-									inset={0}
-									opacity={0.3}
-									style={{
-										transform: "scale(2.25)",
-										transition: "opacity 0.3s ease",
-									}}
-								/>
-								<Image
 									pos="relative"
 									src={pictoSidekickGradient}
 									w={36}

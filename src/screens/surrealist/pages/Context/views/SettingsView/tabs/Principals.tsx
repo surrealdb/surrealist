@@ -145,10 +145,11 @@ export function PrincipalsTab({ context, kind }: ContextViewProps & { kind: Owne
 
 	const isHuman = kind === "human";
 
+	// Always reveal after minting — a guard here previously swallowed the secret
+	// silently, and the reveal is shown in a modal so it can't be missed
+	// regardless of how far down the principal list the action was triggered.
 	const onKeyMinted = (key: ContextApiKey) => {
-		if (key.key) {
-			setMintedKey(key);
-		}
+		setMintedKey(key);
 	};
 
 	return (
@@ -170,12 +171,10 @@ export function PrincipalsTab({ context, kind }: ContextViewProps & { kind: Owne
 				/>
 			</ContextHero>
 
-			{mintedKey?.key && (
-				<MintedKeyAlert
-					apiKey={mintedKey}
-					onDismiss={() => setMintedKey(null)}
-				/>
-			)}
+			<MintedKeyModal
+				apiKey={mintedKey}
+				onClose={() => setMintedKey(null)}
+			/>
 
 			<Box>
 				<SectionTitle
@@ -1252,40 +1251,82 @@ function ContextKeysSection({
 
 // ─── One-time secret reveal ───
 
-function MintedKeyAlert({ apiKey, onDismiss }: { apiKey: ContextApiKey; onDismiss: () => void }) {
+/**
+ * Reveals a freshly minted key's secret in a modal so it is impossible to miss,
+ * even when the "Mint key" action was triggered far down the principal list. If
+ * the server didn't return a secret, it explains where to get a usable key
+ * rather than failing silently.
+ */
+function MintedKeyModal({
+	apiKey,
+	onClose,
+}: {
+	apiKey: ContextApiKey | null;
+	onClose: () => void;
+}) {
 	return (
-		<Alert
-			color="blue"
-			variant="light"
-			title={`Key "${apiKey.name}" is ready`}
-			withCloseButton
-			onClose={onDismiss}
-			icon={<Icon path={iconKey} />}
+		<Modal
+			opened={apiKey !== null}
+			onClose={onClose}
+			title={<Text fw={600}>{apiKey ? `Key "${apiKey.name}" is ready` : "Key ready"}</Text>}
 		>
-			<Text
-				mb="xs"
-				className="selectable"
-			>
-				Copy this secret now — it will not be shown again.
-			</Text>
-			<CopyButton value={apiKey.key ?? ""}>
-				{({ copied, copy }) => (
-					<TextInput
-						value={apiKey.key ?? ""}
-						variant="unstyled"
-						readOnly
-						onFocus={ON_FOCUS_SELECT}
-						onClick={copy}
-						styles={{ input: { fontFamily: "var(--mantine-font-family-monospace)" } }}
-						leftSection={
-							<Icon
-								path={copied ? iconCheck : iconCopy}
-								c="bright"
-							/>
-						}
-					/>
-				)}
-			</CopyButton>
-		</Alert>
+			{apiKey &&
+				(apiKey.key ? (
+					<Stack gap="md">
+						<Alert
+							color="orange"
+							variant="light"
+							icon={<Icon path={iconKey} />}
+						>
+							Copy this secret now — it will not be shown again.
+						</Alert>
+						<CopyButton value={apiKey.key}>
+							{({ copied, copy }) => (
+								<TextInput
+									label="Secret"
+									value={apiKey.key ?? ""}
+									readOnly
+									onFocus={ON_FOCUS_SELECT}
+									onClick={copy}
+									styles={{
+										input: {
+											fontFamily: "var(--mantine-font-family-monospace)",
+										},
+									}}
+									leftSection={
+										<Icon
+											path={copied ? iconCheck : iconCopy}
+											c="bright"
+										/>
+									}
+								/>
+							)}
+						</CopyButton>
+						<Group justify="flex-end">
+							<Button
+								variant="gradient"
+								onClick={onClose}
+							>
+								Done
+							</Button>
+						</Group>
+					</Stack>
+				) : (
+					<Stack gap="md">
+						<Alert
+							color="orange"
+							variant="light"
+							title="Secret not returned"
+							icon={<Icon path={iconKey} />}
+						>
+							The key was created, but the server didn't return its secret. Issue a
+							fresh key from the API Keys view to get a value you can copy.
+						</Alert>
+						<Group justify="flex-end">
+							<Button onClick={onClose}>Close</Button>
+						</Group>
+					</Stack>
+				))}
+		</Modal>
 	);
 }

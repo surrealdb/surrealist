@@ -69,6 +69,39 @@
 	}
 }
 
+.message {
+	position: relative;
+}
+
+.message-action {
+	opacity: 0;
+	transition: opacity 120ms ease;
+
+	.message:hover &,
+	.message:focus-within & {
+		opacity: 1;
+	}
+}
+
+// Pointer-less devices can't hover, so keep the action reachable there.
+@media (hover: none) {
+	.message-action {
+		opacity: 1;
+	}
+}
+
+.drop-overlay {
+	position: absolute;
+	inset: var(--mantine-spacing-sm);
+	z-index: 5;
+	border-radius: var(--mantine-radius-lg);
+	border: 2px dashed var(--mantine-color-violet-5);
+	background: color-mix(in srgb, var(--mantine-color-violet-5) 12%, transparent);
+	backdrop-filter: blur(2px);
+	// Let drag/drop events fall through to the chat-body handler underneath.
+	pointer-events: none;
+}
+
 .clamp {
 	display: -webkit-box;
 	-webkit-line-clamp: 3;

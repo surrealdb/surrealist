@@ -1,5 +1,7 @@
 import {
 	ActionIcon,
+	Alert,
+	Autocomplete,
 	Badge,
 	Box,
 	Button,
@@ -26,21 +28,24 @@ import {
 	iconBraces,
 	iconEye,
 	iconFile,
+	iconFolderPlus,
 	iconImage,
 	iconSearch,
 	iconText,
 	iconTrash,
 	iconUpload,
+	iconWarning,
 	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { useConfirmation } from "~/providers/Confirmation";
 import type { SpectronScopeSets } from "~/types";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
+import { normalizeScopePath, validateScopePath } from "../../utils/scope-validation";
 import classes from "./style.module.scss";
 
 // The SDK doesn't export the per-document JSON shape as a public alias, so we
@@ -953,22 +958,68 @@ interface UploadItem {
  * `"org/apple" OR ("team/x" AND "clearance/secret")`. Empty inherits the
  * uploader's full write region.
  */
+/** Splits the free-text scope draft into a deduped set of AND-ed paths. */
+function parseScopeDraft(draft: string): string[] {
+	return Array.from(new Set(draft.trim().split(/\s+/).filter(Boolean)));
+}
+
 function ScopeSetsField({
 	value,
 	onChange,
+	draft,
+	onDraftChange,
+	availableScopes,
+	onRegister,
+	registering,
+	error,
+	onError,
 	disabled,
 }: {
 	value: SpectronScopeSets;
 	onChange: (value: SpectronScopeSets) => void;
+	draft: string;
+	onDraftChange: (value: string) => void;
+	availableScopes: string[];
+	onRegister: (paths: string[]) => void;
+	registering: boolean;
+	error: string | null;
+	onError: (message: string | null) => void;
 	disabled?: boolean;
 }) {
-	const [draft, setDraft] = useState("");
+	const known = useMemo(() => new Set(availableScopes), [availableScopes]);
+
+	// Well-formed paths typed in the field that aren't registered yet — these are
+	// the ones the inline "Register" affordance offers to create. (#745)
+	const unknownPaths =
+		availableScopes.length > 0
+			? parseScopeDraft(draft).filter((p) => validateScopePath(p) === null && !known.has(p))
+			: [];
 
 	const addSet = () => {
-		const paths = Array.from(new Set(draft.trim().split(/\s+/).filter(Boolean)));
+		const paths = parseScopeDraft(draft);
 		if (paths.length === 0) return;
+
+		const formatError = paths.map(validateScopePath).find((e): e is string => e !== null);
+		if (formatError) {
+			onError(formatError);
+			return;
+		}
+
+		// Reject scopes that aren't registered so a document isn't pinned to a
+		// scope that doesn't exist. (#736)
+		if (availableScopes.length > 0) {
+			const missing = paths.filter((p) => !known.has(p));
+			if (missing.length > 0) {
+				onError(
+					`Unknown scope${missing.length > 1 ? "s" : ""}: ${missing.join(", ")}. Register ${missing.length > 1 ? "them" : "it"} or pick a suggestion.`,
+				);
+				return;
+			}
+		}
+
 		onChange([...value, paths]);
-		setDraft("");
+		onDraftChange("");
+		onError(null);
 	};
 
 	const removeSet = (index: number) => {
@@ -1012,13 +1063,19 @@ function ScopeSetsField({
 				wrap="nowrap"
 				align="flex-end"
 			>
-				<TextInput
+				<Autocomplete
 					flex={1}
 					label="Scope set"
 					placeholder="e.g. team/x clearance/secret"
 					value={draft}
+					data={availableScopes}
 					disabled={disabled}
-					onChange={(event) => setDraft(event.currentTarget.value)}
+					onChange={(val) => {
+						onDraftChange(val);
+						if (error) {
+							onError(null);
+						}
+					}}
 					onKeyDown={(event) => {
 						if (event.key === "Enter") {
 							event.preventDefault();
@@ -1034,6 +1091,36 @@ function ScopeSetsField({
 					Add set
 				</Button>
 			</Group>
+
+			{error && (
+				<Group
+					gap="xs"
+					wrap="nowrap"
+					align="center"
+				>
+					<Text
+						fz="xs"
+						c="red"
+						flex={1}
+					>
+						{error}
+					</Text>
+					{unknownPaths.length > 0 && (
+						<Button
+							size="compact-xs"
+							variant="subtle"
+							leftSection={<Icon path={iconFolderPlus} />}
+							loading={registering}
+							disabled={disabled}
+							onClick={() => onRegister(unknownPaths)}
+						>
+							{unknownPaths.length > 1
+								? `Register ${unknownPaths.length} scopes`
+								: `Register "${unknownPaths[0]}"`}
+						</Button>
+					)}
+				</Group>
+			)}
 
 			{value.length > 0 && (
 				<Stack gap={4}>
@@ -1128,17 +1215,70 @@ function UploadModal({
 	onClose: () => void;
 	onUploaded: () => void;
 }) {
+	const queryClient = useQueryClient();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [items, setItems] = useState<UploadItem[]>([]);
 	const [busy, setBusy] = useState(false);
 	const [dragging, setDragging] = useState(false);
 	const [scopes, setScopes] = useState<SpectronScopeSets>([]);
+	const [scopeDraft, setScopeDraft] = useState("");
+	const [scopeError, setScopeError] = useState<string | null>(null);
+
+	const scopesQueryKey = ["spectron", client.contextId, "scopes", "list"];
+
+	// Registered scopes power autocomplete + validation in the scope field. (#736, #745)
+	const scopesQuery = useQuery({
+		queryKey: scopesQueryKey,
+		queryFn: () => client.scopes.list(),
+		retry: false,
+		enabled: opened,
+	});
+
+	const availableScopes = useMemo(
+		() =>
+			(scopesQuery.data ?? [])
+				.map((scope) => normalizeScopePath(scope.path))
+				.filter((path) => path.length > 0),
+		[scopesQuery.data],
+	);
+
+	const registerScopes = useMutation({
+		mutationFn: async (paths: string[]) => {
+			for (const path of paths) {
+				await client.scopes.register({ path });
+			}
+		},
+		onSuccess: (_data, paths) => {
+			queryClient.invalidateQueries({ queryKey: scopesQueryKey });
+			showInfo({
+				title: paths.length > 1 ? "Scopes registered" : "Scope registered",
+				subtitle: paths.join(", "),
+			});
+		},
+		onError: (err) => {
+			showErrorNotification({ title: "Couldn't register scope", content: err });
+		},
+	});
+
+	// Register the unknown paths, then commit the whole draft as a set. (#745)
+	const handleRegisterScopes = async (paths: string[]) => {
+		try {
+			await registerScopes.mutateAsync(paths);
+			setScopes((prev) => [...prev, parseScopeDraft(scopeDraft)]);
+			setScopeDraft("");
+			setScopeError(null);
+		} catch {
+			// The mutation already surfaced the error via a notification.
+		}
+	};
 
 	const reset = () => {
 		setItems([]);
 		setBusy(false);
 		setDragging(false);
 		setScopes([]);
+		setScopeDraft("");
+		setScopeError(null);
 	};
 
 	const handleClose = () => {
@@ -1169,6 +1309,30 @@ function UploadModal({
 			.filter(({ item }) => item.state === "pending" || item.state === "failed");
 		if (queue.length === 0) return;
 
+		// Auto-commit any text still in the scope field so the user doesn't have to
+		// click "Add set" before uploading. (#745)
+		const scopeSets = scopeDraft.trim() ? [...scopes, parseScopeDraft(scopeDraft)] : scopes;
+
+		// Reject unknown scopes up front so the failure is loud and explained here
+		// rather than a silent per-file server rejection. (#736)
+		if (availableScopes.length > 0) {
+			const known = new Set(availableScopes);
+			const unknown = Array.from(new Set(scopeSets.flat())).filter((p) => !known.has(p));
+			if (unknown.length > 0) {
+				setScopeError(
+					`Unknown scope${unknown.length > 1 ? "s" : ""}: ${unknown.join(", ")}. Register ${unknown.length > 1 ? "them" : "it"}, or pick from the suggestions, before uploading.`,
+				);
+				return;
+			}
+		}
+		setScopeError(null);
+
+		// Reflect the committed draft in the visible chips.
+		if (scopeDraft.trim()) {
+			setScopes(scopeSets);
+			setScopeDraft("");
+		}
+
 		setBusy(true);
 
 		const update = (index: number, patch: Partial<UploadItem>) => {
@@ -1176,6 +1340,7 @@ function UploadModal({
 		};
 
 		let anySucceeded = false;
+		let anyFailed = false;
 
 		for (const { item, index } of queue) {
 			update(index, { state: "uploading", error: undefined });
@@ -1185,7 +1350,7 @@ function UploadModal({
 					filename: item.file.name,
 					title: item.file.name,
 					contentType: item.file.type || undefined,
-					scopes: scopes.length > 0 ? scopes : undefined,
+					scopes: scopeSets.length > 0 ? scopeSets : undefined,
 				});
 				update(index, { state: "done", deduplicated: result.deduplicated });
 				anySucceeded = true;
@@ -1194,10 +1359,18 @@ function UploadModal({
 					state: "failed",
 					error: err instanceof Error ? err.message : String(err),
 				});
+				anyFailed = true;
 			}
 		}
 
 		setBusy(false);
+
+		if (anyFailed) {
+			showErrorNotification({
+				title: "Some uploads failed",
+				content: new Error("See the highlighted files below for details."),
+			});
+		}
 
 		if (anySucceeded) {
 			onUploaded();
@@ -1205,6 +1378,10 @@ function UploadModal({
 				title: "Upload complete",
 				subtitle: "Spectron is processing your documents.",
 			});
+			// Auto-close once everything uploaded cleanly. (#735)
+			if (!anyFailed) {
+				handleClose();
+			}
 		}
 	};
 
@@ -1302,9 +1479,39 @@ function UploadModal({
 					</Stack>
 				)}
 
+				{items.some((item) => item.state === "failed") && (
+					<Alert
+						color="red"
+						variant="light"
+						icon={<Icon path={iconWarning} />}
+						title="Some uploads failed"
+					>
+						<Stack gap={4}>
+							{items
+								.filter((item) => item.state === "failed")
+								.map((item, idx) => (
+									<Text
+										key={`${item.file.name}-${idx}`}
+										fz="sm"
+										className="selectable"
+									>
+										<b>{item.file.name}</b>: {item.error ?? "Upload failed"}
+									</Text>
+								))}
+						</Stack>
+					</Alert>
+				)}
+
 				<ScopeSetsField
 					value={scopes}
 					onChange={setScopes}
+					draft={scopeDraft}
+					onDraftChange={setScopeDraft}
+					availableScopes={availableScopes}
+					onRegister={handleRegisterScopes}
+					registering={registerScopes.isPending}
+					error={scopeError}
+					onError={setScopeError}
 					disabled={busy}
 				/>
 
@@ -1318,7 +1525,6 @@ function UploadModal({
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
 					<Button
-						variant="default"
 						leftSection={<Icon path={iconUpload} />}
 						onClick={() => inputRef.current?.click()}
 						disabled={busy}

@@ -37,6 +37,7 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
+import { validateScopePath } from "../../utils/scope-validation";
 import classes from "./style.module.scss";
 
 // The SDK declares `ScopeNodeJson` as a non-exported local alias, so we recover
@@ -74,6 +75,26 @@ function buildTree(nodes: ScopeNodeJson[]): ScopeTreeNode[] {
 		// Drop the trailing empty segment from the canonical trailing slash.
 		const segments = node.path.split("/").filter((s) => s.length > 0);
 		if (segments.length === 0) {
+			// The root scope (path "/" or empty) folds to no segments. Surface it
+			// as a top-level node instead of dropping it, so a registered root
+			// scope still appears in the tree and the tab's count matches the
+			// Overview scope count. (#738)
+			const existing = byPath.get("/");
+			if (existing) {
+				existing.registered = true;
+				existing.tombstonedAt = node.tombstonedAt;
+			} else {
+				const root: ScopeTreeNode = {
+					segment: "/",
+					path: "/",
+					registered: true,
+					tombstonedAt: node.tombstonedAt,
+					depth: 0,
+					children: [],
+				};
+				byPath.set("/", root);
+				roots.push(root);
+			}
 			continue;
 		}
 
@@ -124,37 +145,6 @@ function defaultExpanded(roots: ScopeTreeNode[]): Set<string> {
 	};
 	roots.forEach(walk);
 	return open;
-}
-
-// ─── Path validation ───
-
-const SEGMENT = /^[a-z0-9][a-z0-9._-]*$/;
-
-/**
- * Validates a slash-separated scope path: lowercase segments, no spaces, no
- * `=` or `*`, and no empty segments. Returns an error string, or `null` when
- * the path is acceptable.
- */
-function validatePath(raw: string): string | null {
-	const value = raw.trim();
-	if (!value) {
-		return "Enter a scope path";
-	}
-	if (/\s/.test(value)) {
-		return "Paths cannot contain spaces";
-	}
-	if (value.includes("=") || value.includes("*")) {
-		return "Paths cannot contain '=' or '*'";
-	}
-
-	const segments = value.replace(/\/+$/, "").split("/");
-	if (segments.some((s) => s.length === 0)) {
-		return "Paths cannot contain empty segments";
-	}
-	if (!segments.every((s) => SEGMENT.test(s))) {
-		return "Use lowercase segments like org/apple/product";
-	}
-	return null;
 }
 
 // ─── Page ───
@@ -553,7 +543,7 @@ function RegisterModal({
 		}
 	}
 
-	const validationError = validatePath(path);
+	const validationError = validateScopePath(path);
 	const canonical = path.trim().replace(/\/+$/, "");
 	const duplicate =
 		!validationError &&

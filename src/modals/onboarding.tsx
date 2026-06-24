@@ -241,7 +241,7 @@ export function ContextsOnboarding({ deployHref }: ContextsOnboardingProps) {
 		>
 			<List.Item>Automatically extract memories and facts from conversations</List.Item>
 			<List.Item>Hybrid retrieval combining graph traversal and vector similarity</List.Item>
-			<List.Item>Temporal awareness with bi-temporal, append-only facts</List.Item>
+			<List.Item>Temporal awareness with tri-temporal, append-only facts</List.Item>
 			<List.Item>Multi-agent shared memory with full ACID transactions</List.Item>
 		</OnboardingModal>
 	);

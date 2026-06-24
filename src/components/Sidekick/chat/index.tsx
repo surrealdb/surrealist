@@ -17,7 +17,6 @@ import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekickGradient } f
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
-import glowImg from "~/assets/images/radial-glow.png";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useAuthentication } from "~/providers/Auth";
@@ -113,16 +112,6 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 						gap={0}
 					>
 						<Box pos="relative">
-							<Image
-								pos="absolute"
-								src={glowImg}
-								inset={0}
-								opacity={0.5}
-								style={{
-									transform: "scale(2.5)",
-									transition: "opacity 0.3s ease",
-								}}
-							/>
 							<Image
 								pos="relative"
 								src={pictoSidekickGradient}

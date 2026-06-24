@@ -48,26 +48,30 @@ import { ON_FOCUS_SELECT, showErrorNotification } from "~/util/helpers";
 import { PageContainer } from "../../components/PageContainer";
 import classes from "./style.module.scss";
 
+// Business-outcome framing (draft for PM review, #748): each card speaks to a
+// user benefit rather than the underlying engine mechanic.
 const SPECTRON_HIGHLIGHTS: { label: string; description: string; icon: string }[] = [
 	{
-		label: "ACID memory",
-		description: "Atomic writes across entities, facts, and embeddings.",
-		icon: iconServerSecure,
-	},
-	{
-		label: "Temporal facts",
-		description: "Bi-temporal history - know what was true and when.",
-		icon: iconCloudClock,
-	},
-	{
-		label: "Hybrid retrieval",
-		description: "Graph, vectors, and filters in a single query.",
+		label: "Answers you can trust",
+		description: "Every answer is grounded in stored facts you can trace back to their source.",
 		icon: iconRelation,
 	},
 	{
-		label: "Multi-agent",
-		description: "Shared memory for coordinated agent swarms.",
+		label: "Always up to date",
+		description:
+			"Knows what's true now versus what was true before, so stale facts don't resurface.",
+		icon: iconCloudClock,
+	},
+	{
+		label: "Access on your terms",
+		description: "Decide exactly which memories each user and agent is allowed to see.",
 		icon: iconAuth,
+	},
+	{
+		label: "Your data stays yours",
+		description:
+			"Memory lives in an isolated context you control — never shared, never trained on.",
+		icon: iconServerSecure,
 	},
 ];
 
@@ -196,10 +200,10 @@ function PageContent({ organisation }: PageContentProps) {
 								lh={1.55}
 								className="selectable"
 							>
-								A context is a dedicated Spectron environment: ingest conversations
-								and documents, extract structure, and retrieve with hybrid search.
-								Choose a suitable name and the region where memory will reside to
-								get started.
+								A context is your agent's private memory layer — it remembers what
+								matters from every conversation and document, keeps it current, and
+								serves it back with sources you can trust. Name it and choose a
+								region to get started.
 							</Text>
 						</Box>
 						<Group
@@ -230,170 +234,150 @@ function PageContent({ organisation }: PageContentProps) {
 						</Group>
 					</Paper>
 
-					<SimpleGrid
+					<Paper
 						mt="xl"
-						spacing={48}
-						cols={{ base: 1, md: 2 }}
+						p="xl"
+						radius="md"
 					>
-						<Paper
-							p="xl"
-							radius="md"
-						>
-							<Stack gap="xl">
-								<SectionTitle
-									kicker="Configuration"
-									order={2}
-								>
-									Build your context
-								</SectionTitle>
-
-								{blockedWithoutPlan && (
-									<Alert
-										color="orange"
-										title="Spectron plan required"
-									>
-										<Text className="selectable">
-											This organisation does not have an active Spectron plan.
-											Only the organisation owner can subscribe to a plan.
-											Contact your organisation owner to continue.
-										</Text>
-									</Alert>
-								)}
-
-								<TextInput
-									label="Name"
-									placeholder="e.g. Production context"
-									value={name}
-									onChange={(e) => setName(e.currentTarget.value)}
-									onFocus={ON_FOCUS_SELECT}
-									autoFocus
-									disabled={blockedWithoutPlan}
-									error={
-										name.length > 30
-											? "Context name cannot exceed 30 characters"
-											: null
-									}
-								/>
-
-								<Box>
-									<Label id={regionGroupLabelId}>Region</Label>
-									<Box
-										role="radiogroup"
-										aria-labelledby={regionGroupLabelId}
-									>
-										<SimpleGrid
-											cols={{ base: 1, xs: 2, md: 1, lg: 2 }}
-											spacing="md"
-										>
-											{supportedRegions.map((r) => {
-												const selected = region === r.slug;
-
-												return (
-													<Option
-														key={r.slug}
-														label={r.description}
-														checked={selected}
-														disabled={blockedWithoutPlan}
-														onChange={() => setRegion(r.slug)}
-														withBorder
-														py="md"
-														icon={
-															<Image
-																src={REGION_FLAGS[r.slug]}
-																w={18}
-															/>
-														}
-													/>
-												);
-											})}
-										</SimpleGrid>
-									</Box>
-								</Box>
-
-								<Group>
-									<Button
-										onClick={() => navigate(`/o/${organisation.id}/contexts`)}
-									>
-										Back
-									</Button>
-									<Spacer />
-									<Button
-										variant="gradient"
-										disabled={!canDeploy || blockedWithoutPlan}
-										loading={isDeploying}
-										onClick={handleDeploy}
-									>
-										Create context
-									</Button>
-								</Group>
-							</Stack>
-						</Paper>
-						<Stack
-							gap="lg"
-							visibleFrom="md"
-						>
-							<Box>
-								<SectionTitle
-									kicker="What you get"
-									order={2}
-								>
-									Agent memory that actually works
-								</SectionTitle>
-								<Text
-									mt="sm"
-									fz="sm"
-									lh={1.6}
-									className="selectable"
-								>
-									Each context is provisioned with SurrealDB&apos;s Spectron
-									pipeline - the same model described in your context dashboard
-									after deployment.
-								</Text>
-							</Box>
-							<SimpleGrid
-								cols={{ base: 1, sm: 2 }}
-								spacing="sm"
+						<Stack gap="xl">
+							<SectionTitle
+								kicker="Configuration"
+								order={2}
 							>
-								{SPECTRON_HIGHLIGHTS.map((item) => (
-									<Paper
-										key={item.label}
-										p="md"
+								Build your context
+							</SectionTitle>
+
+							{blockedWithoutPlan && (
+								<Alert
+									color="orange"
+									title="Spectron plan required"
+								>
+									<Text className="selectable">
+										This organisation does not have an active Spectron plan.
+										Only the organisation owner can subscribe to a plan. Contact
+										your organisation owner to continue.
+									</Text>
+								</Alert>
+							)}
+
+							<TextInput
+								label="Name"
+								placeholder="e.g. Production context"
+								value={name}
+								onChange={(e) => setName(e.currentTarget.value)}
+								onFocus={ON_FOCUS_SELECT}
+								autoFocus
+								disabled={blockedWithoutPlan}
+								error={
+									name.length > 30
+										? "Context name cannot exceed 30 characters"
+										: null
+								}
+							/>
+
+							<Box>
+								<Label id={regionGroupLabelId}>Region</Label>
+								<Box
+									role="radiogroup"
+									aria-labelledby={regionGroupLabelId}
+								>
+									<SimpleGrid
+										cols={{ base: 1, xs: 2, md: 1, lg: 2 }}
+										spacing="md"
 									>
-										<Group
-											gap="sm"
-											wrap="nowrap"
-											align="flex-start"
-										>
-											<ThemeIcon
-												size={34}
-												radius="md"
-												variant="light"
-												color="violet"
-											>
-												<Icon path={item.icon} />
-											</ThemeIcon>
-											<Box miw={0}>
-												<Text
-													fw={600}
-													c="bright"
-												>
-													{item.label}
-												</Text>
-												<Text
-													fz="sm"
-													lh={1.45}
-													mt={2}
-													className="selectable"
-												>
-													{item.description}
-												</Text>
-											</Box>
-										</Group>
-									</Paper>
-								))}
-							</SimpleGrid>
+										{supportedRegions.map((r) => {
+											const selected = region === r.slug;
+
+											return (
+												<Option
+													key={r.slug}
+													label={r.description}
+													checked={selected}
+													disabled={blockedWithoutPlan}
+													onChange={() => setRegion(r.slug)}
+													withBorder
+													py="md"
+													icon={
+														<Image
+															src={REGION_FLAGS[r.slug]}
+															w={18}
+														/>
+													}
+												/>
+											);
+										})}
+									</SimpleGrid>
+								</Box>
+							</Box>
+
+							<Group>
+								<Button onClick={() => navigate(`/o/${organisation.id}/contexts`)}>
+									Back
+								</Button>
+								<Spacer />
+								<Button
+									variant="gradient"
+									disabled={!canDeploy || blockedWithoutPlan}
+									loading={isDeploying}
+									onClick={handleDeploy}
+								>
+									Create context
+								</Button>
+							</Group>
 						</Stack>
-					</SimpleGrid>
+					</Paper>
+
+					<Box mt="xl">
+						<SectionTitle
+							kicker="What you get"
+							order={2}
+						>
+							Why teams build on Spectron
+						</SectionTitle>
+						<SimpleGrid
+							mt="lg"
+							cols={{ base: 1, sm: 2, lg: 4 }}
+							spacing="md"
+						>
+							{SPECTRON_HIGHLIGHTS.map((item) => (
+								<Paper
+									key={item.label}
+									p="md"
+								>
+									<Group
+										gap="sm"
+										wrap="nowrap"
+										align="flex-start"
+									>
+										<ThemeIcon
+											size={34}
+											radius="md"
+											variant="light"
+											color="violet"
+										>
+											<Icon path={item.icon} />
+										</ThemeIcon>
+										<Box miw={0}>
+											<Text
+												fw={600}
+												c="bright"
+											>
+												{item.label}
+											</Text>
+											<Text
+												fz="sm"
+												lh={1.45}
+												mt={2}
+												className="selectable"
+											>
+												{item.description}
+											</Text>
+										</Box>
+									</Group>
+								</Paper>
+							))}
+						</SimpleGrid>
+					</Box>
 				</PageContainer>
 			</CloudAdminGuard>
 		</>
