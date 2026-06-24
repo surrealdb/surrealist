@@ -4,7 +4,7 @@ import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import {
 	DEFAULT_DEPLOY_CONFIG,
-	INSTANCE_CATEGORY_PLANS,
+	getPlanForInstanceType,
 	INSTANCE_PLAN_ARCHITECTURES,
 } from "~/cloud/helpers";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
@@ -112,7 +112,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 				return;
 			}
 
-			const guessedPlan = INSTANCE_CATEGORY_PLANS[foundInstance.type.category];
+			const guessedPlan = getPlanForInstanceType(foundInstance.type);
 
 			setDetails((draft) => {
 				draft.startingData = {

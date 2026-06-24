@@ -1,7 +1,7 @@
 import { Alert, Box, Button, Group, Select, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowDownFat, iconHelp, iconInfo, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { INSTANCE_CATEGORY_PLANS, isScalePlan } from "~/cloud/helpers";
+import { getPlanForInstanceType, isScalePlan } from "~/cloud/helpers";
 import { filterSurrealDB3Versions } from "~/util/versions";
 import { DeploySectionProps } from "../types";
 
@@ -14,7 +14,7 @@ export function DataOptionsSection({
 }: DeploySectionProps) {
 	const restorableInstances = instances
 		.filter((instance) => {
-			const instancePlan = INSTANCE_CATEGORY_PLANS[instance.type.category] ?? "start";
+			const instancePlan = getPlanForInstanceType(instance.type);
 
 			return instancePlan === details.plan && instance.region === details.region;
 		})

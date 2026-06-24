@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { isScaleInstanceCategory } from "~/cloud/helpers";
 import { CloudBackupPolicySummary, CloudMeasurement } from "~/types";
 import { plural } from "./helpers";
 
@@ -79,6 +80,10 @@ export function openSurrealChangelog(version: string) {
  * Returns the display name for the given instance type category
  */
 export function getTypeCategoryName(category: string) {
+	if (isScaleInstanceCategory(category)) {
+		return "Scale";
+	}
+
 	switch (category) {
 		case "free":
 			return "Free";
@@ -90,17 +95,16 @@ export function getTypeCategoryName(category: string) {
 			return "General purpose";
 		case "production-compute":
 			return "Compute intensive";
-		case "large-scale":
-		case "xlarge-scale":
-		case "2xlarge-scale":
-		case "4xlarge-scale":
-			return "Scale";
 		default:
 			return category;
 	}
 }
 
 export function getTypeCategoryDescription(category: string) {
+	if (isScaleInstanceCategory(category)) {
+		return "Distributed instances for scalable production workloads";
+	}
+
 	switch (category) {
 		case "free":
 			return "Explore SurrealDB with a free instance";
@@ -112,11 +116,6 @@ export function getTypeCategoryDescription(category: string) {
 			return "General purpose instances for high performance workloads";
 		case "production-compute":
 			return "Distributed compute intensive instances for high performance";
-		case "large-scale":
-		case "xlarge-scale":
-		case "2xlarge-scale":
-		case "4xlarge-scale":
-			return "Distributed instances for scalable production workloads";
 		default:
 			return category;
 	}

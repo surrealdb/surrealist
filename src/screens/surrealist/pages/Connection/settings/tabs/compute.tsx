@@ -1,6 +1,6 @@
 import { Box, Button, Group, Paper, Stack } from "@mantine/core";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { hasOrganizationRoles, INSTANCE_CATEGORY_PLANS, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { getPlanForInstanceType, hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceNodeMutation } from "~/cloud/mutations/node";
 import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
@@ -33,7 +33,7 @@ export function ConnectionComputeTab({
 
 	const isAdmin = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
 	const isIdle = instance.state !== "ready" && instance.state !== "paused";
-	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
+	const guessedPlan = getPlanForInstanceType(instance.type);
 	const showComputeNodes = guessedPlan === "scale";
 
 	if (!isAdmin || isIdle) {

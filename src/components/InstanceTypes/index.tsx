@@ -1,7 +1,13 @@
 import { Badge, Box, Divider, Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { INSTANCE_PLAN_CATEGORIES, SCALE_INSTANCE_CATEGORIES } from "~/cloud/helpers";
+import {
+	INSTANCE_PLAN_CATEGORIES,
+	isInstanceTypeEnabled,
+	isScaleInstanceType,
+	isScalePlan,
+	SCALE_INSTANCE_CATEGORIES,
+} from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
@@ -45,6 +51,20 @@ export function InstanceTypes({
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
+
+		if (isScalePlan(plan)) {
+			const scaleTypes = typeList
+				.filter(isScaleInstanceType)
+				.filter(isInstanceTypeEnabled)
+				.sort((a, b) => a.price_hour - b.price_hour);
+
+			if (scaleTypes.length === 0) {
+				return [];
+			}
+
+			return [{ category: scaleTypes[0].category, types: scaleTypes }];
+		}
+
 		const grouped = new Map<string, { labelCategory: string; types: CloudInstanceType[] }>();
 		const groupOrder: string[] = [];
 
@@ -55,22 +75,18 @@ export function InstanceTypes({
 
 			const types = typeList
 				.filter((type) => type.category === category)
-				.filter((type) => type.restricted !== true);
+				.filter(isInstanceTypeEnabled);
 
 			if (types.length === 0) {
 				continue;
 			}
 
-			const groupKey = (SCALE_INSTANCE_CATEGORIES as readonly string[]).includes(category)
-				? "scale"
-				: category;
-
-			if (!grouped.has(groupKey)) {
-				grouped.set(groupKey, { labelCategory: category, types: [] });
-				groupOrder.push(groupKey);
+			if (!grouped.has(category)) {
+				grouped.set(category, { labelCategory: category, types: [] });
+				groupOrder.push(category);
 			}
 
-			grouped.get(groupKey)?.types.push(...types);
+			grouped.get(category)?.types.push(...types);
 		}
 
 		return groupOrder.map((groupKey) => {
@@ -83,7 +99,7 @@ export function InstanceTypes({
 
 			return { category: group.labelCategory, types: group.types };
 		});
-	}, [instanceTypes, available]);
+	}, [instanceTypes, available, plan]);
 
 	const categoryGroups = categories.map(({ category, types }) => (
 		<Box key={category}>
