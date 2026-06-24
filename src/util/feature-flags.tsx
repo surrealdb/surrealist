@@ -72,9 +72,6 @@ export const schema = {
 	website_base: {
 		options: ["production", "custom"],
 	},
-	support_tickets_endpoint: {
-		options: ["production", "staging"],
-	},
 	support_tickets: {
 		options: [false, true],
 	},
@@ -120,7 +117,6 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
-			support_tickets_endpoint: "staging",
 			sandbox_deploy: true,
 		},
 		preview: {
@@ -143,7 +139,6 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
-			support_tickets_endpoint: "staging",
 			sandbox_deploy: true,
 		},
 		production: {
@@ -165,7 +160,6 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
-			support_tickets_endpoint: "production",
 			sandbox_deploy: true,
 		},
 	},

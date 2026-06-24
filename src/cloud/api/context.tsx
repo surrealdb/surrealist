@@ -8,7 +8,6 @@ import { getApiBase } from "./endpoints";
  */
 export async function fetchContextAPI<T = unknown>(
 	path: string,
-	environment: "production" | "staging",
 	options?: RequestInit | undefined,
 ): Promise<T> {
 	const apiBase = getApiBase();
@@ -27,7 +26,6 @@ export async function fetchContextAPI<T = unknown>(
 
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
-		headers["X-SurrealDB-Cloud-Environment"] = environment;
 	}
 
 	try {
