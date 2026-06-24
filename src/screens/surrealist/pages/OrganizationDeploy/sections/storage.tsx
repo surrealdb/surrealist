@@ -46,6 +46,8 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
+	const sliderStep = isScale ? 100 : 1;
+
 	return (
 		<Box>
 			<Box>
@@ -62,6 +64,7 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 					h={32}
 					min={storageMin}
 					max={storageMax}
+					step={sliderStep}
 					disabled={!details.computeType}
 					value={details.storageAmount}
 					onChange={updateAmount}
