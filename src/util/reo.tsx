@@ -25,9 +25,9 @@ function buildReoIdentity(user: User): ReoIdentity | null {
 }
 
 export function identifyReoUser(user: User) {
-	if (!isProduction || !adapter.isTelemetryEnabled) {
-		return;
-	}
+	// if (!isProduction || !adapter.isTelemetryEnabled) {
+	// 	return;
+	// }
 
 	const identity = buildReoIdentity(user);
 
