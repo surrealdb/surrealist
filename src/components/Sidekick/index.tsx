@@ -173,6 +173,11 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 						flex={1}
 						pos="absolute"
 						direction="column"
+						className={classes.chatLayer}
+						style={{
+							visibility: historyOpened ? "hidden" : "visible",
+							pointerEvents: historyOpened ? "none" : "auto",
+						}}
 					>
 						<SidekickChatLazy
 							isAuthed={isAuthed}
