@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { Duration, sub } from "date-fns";
 import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
@@ -33,23 +32,10 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	},
 });
 
-export const SCALE_INSTANCE_CATEGORIES = [
-	"medium-scale",
-	"large-scale",
-	"xlarge-scale",
-	"2xlarge-scale",
-	"4xlarge-scale",
-	"8xlarge-scale",
-	"16xlarge-scale",
-] as const;
-
 export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, CloudPlanCategories> = {
 	free: { compute: ["free", "development", "production"], storage: [] },
 	start: { compute: ["development", "production"], storage: [] },
-	scale: {
-		compute: [...SCALE_INSTANCE_CATEGORIES],
-		storage: [],
-	},
+	scale: { compute: ["scale"], storage: [] },
 };
 
 export const INSTANCE_PLAN_ARCHITECTURES: Record<InstancePlan, [string, string]> = {
@@ -62,13 +48,13 @@ export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
 	free: "start",
 	development: "start",
 	production: "start",
-	...Object.fromEntries(SCALE_INSTANCE_CATEGORIES.map((category) => [category, "scale"])),
+	scale: "scale",
 };
 
 export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
-	scale: ["large-scale", "xlarge-scale", "2xlarge-scale"],
+	scale: ["medium-scale", "large-scale", "xlarge-scale"],
 };
 
 export const BILLING_PROVIDER_ACTIONS: Record<OrganisationBillingProvider, string> = {
@@ -87,8 +73,6 @@ export function clearCachedConnections() {
 	useConfigStore.setState((s) => {
 		s.connections = pruned;
 	});
-
-	Button;
 }
 
 const METRIC_DURATION_MAP: Record<MetricsDuration, Duration> = {
@@ -162,24 +146,9 @@ export function isScalePlan(plan: InstancePlan): boolean {
 	return plan === "scale";
 }
 
-export function isScaleInstanceCategory(category: string): boolean {
-	return (
-		category.endsWith("-scale") ||
-		(SCALE_INSTANCE_CATEGORIES as readonly string[]).includes(category)
-	);
-}
-
-export function isScaleInstanceType(type: Pick<CloudInstanceType, "slug" | "category">): boolean {
-	return type.slug.endsWith("-scale") || isScaleInstanceCategory(type.category);
-}
-
 export function getPlanForInstanceType(
 	type: Pick<CloudInstanceType, "slug" | "category">,
 ): InstancePlan {
-	if (isScaleInstanceType(type)) {
-		return "scale";
-	}
-
 	return INSTANCE_CATEGORY_PLANS[type.category] ?? "start";
 }
 
@@ -200,13 +169,6 @@ export function getInstanceTypesForPlan(
 	plan: InstancePlan,
 	variant: keyof CloudPlanCategories = "compute",
 ): CloudInstanceType[] {
-	if (plan === "scale" && variant === "compute") {
-		return [...registry]
-			.filter(isScaleInstanceType)
-			.filter(isInstanceTypeEnabled)
-			.sort((a, b) => a.price_hour - b.price_hour);
-	}
-
 	const categories = INSTANCE_PLAN_CATEGORIES[plan][variant];
 
 	return [...registry]
@@ -226,10 +188,10 @@ export function getFeaturedInstanceTypes(
 		.filter((type): type is CloudInstanceType => !!type && isInstanceTypeEnabled(type));
 
 	if (fromSuggestions.length > 0) {
-		return fromSuggestions.slice(0, 3).toReversed();
+		return fromSuggestions.slice(0, 3);
 	}
 
-	return getInstanceTypesForPlan(registry, plan).slice(0, 3).toReversed();
+	return getInstanceTypesForPlan(registry, plan).slice(0, 3);
 }
 
 export function normalizeRole(role: string): string {

@@ -89,7 +89,6 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const isRecommended = recommendations.some((type) => type.slug === details.computeType);
 	const selected = instanceTypes.get(details.computeType);
-	const featuredCount = Math.max(selected && !isRecommended ? 1 : recommendations.length, 1);
 
 	useEffect(() => {
 		if (selected) {
@@ -107,7 +106,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	useLayoutEffect(() => {
 		setDetails((draft) => {
 			if (!draft.computeType) {
-				draft.computeType = recommendations.at(-1)?.slug ?? "";
+				draft.computeType = recommendations[0]?.slug ?? "";
 			}
 		});
 	}, [details.plan, setDetails, recommendations]);
@@ -127,7 +126,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 				</Alert>
 			)}
 			<SimpleGrid
-				cols={{ base: 1, xs: Math.min(2, featuredCount), md: featuredCount }}
+				cols={{ base: 1, xs: 2, md: 3 }}
 				spacing="xl"
 				className={classes.content}
 			>

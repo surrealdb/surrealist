@@ -1,13 +1,7 @@
 import { Badge, Box, Divider, Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
-import {
-	INSTANCE_PLAN_CATEGORIES,
-	isInstanceTypeEnabled,
-	isScaleInstanceType,
-	isScalePlan,
-	SCALE_INSTANCE_CATEGORIES,
-} from "~/cloud/helpers";
+import { INSTANCE_PLAN_CATEGORIES, isInstanceTypeEnabled } from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
@@ -22,7 +16,7 @@ const CATEGORIES = [
 	"production",
 	"production-compute",
 	"production-memory",
-	...SCALE_INSTANCE_CATEGORIES,
+	"scale",
 ];
 
 export interface InstanceTypesProps {
@@ -51,20 +45,6 @@ export function InstanceTypes({
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
-
-		if (isScalePlan(plan)) {
-			const scaleTypes = typeList
-				.filter(isScaleInstanceType)
-				.filter(isInstanceTypeEnabled)
-				.sort((a, b) => a.price_hour - b.price_hour);
-
-			if (scaleTypes.length === 0) {
-				return [];
-			}
-
-			return [{ category: scaleTypes[0].category, types: scaleTypes }];
-		}
-
 		const grouped = new Map<string, { labelCategory: string; types: CloudInstanceType[] }>();
 		const groupOrder: string[] = [];
 
@@ -99,7 +79,7 @@ export function InstanceTypes({
 
 			return { category: group.labelCategory, types: group.types };
 		});
-	}, [instanceTypes, available, plan]);
+	}, [instanceTypes, available]);
 
 	const categoryGroups = categories.map(({ category, types }) => (
 		<Box key={category}>

@@ -19,6 +19,7 @@ import { clearCachedConnections } from "~/cloud/helpers";
 import { startConfigSync } from "~/util/config";
 import { exposeDebug } from "~/util/helpers";
 import { preloadImages } from "~/util/preloader";
+import { initializeReo } from "~/util/reo";
 import { configureDayjs } from "~/util/timezone";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
@@ -33,6 +34,9 @@ import { promptChangelog } from "../util/changelogs";
 
 	// Initialize adapter
 	await adapter.initialize();
+
+	// Initialize Reo
+	initializeReo();
 
 	// Generate editor icons
 	generateEditorIcons();

@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { isScalePlan } from "~/cloud/helpers";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Spacer } from "~/components/Spacer";
+import { isProduction } from "~/util/environment";
 import { ComputeNodesSection } from "../sections/compute-nodes";
 import { DataOptionsSection } from "../sections/data-opts";
 import { DeploymentSection } from "../sections/instance";
@@ -87,6 +88,9 @@ export function ConfigureStep({
 		if (isScale) {
 			if (!details.computeUnits) return true;
 			if (!details.storageAmount) return true;
+
+			// TODO Remove when higher node counts are available
+			if (details.computeUnits > 5 && isProduction) return true;
 		}
 
 		return false;

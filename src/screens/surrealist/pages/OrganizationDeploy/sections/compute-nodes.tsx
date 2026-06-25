@@ -1,8 +1,10 @@
-import { Box, Slider, Text, Tooltip } from "@mantine/core";
+import { Alert, Box, Collapse, Slider, Text, Tooltip } from "@mantine/core";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
+import { isProduction } from "~/util/environment";
 import { plural } from "~/util/helpers";
 import { DeploySectionProps } from "../types";
 
@@ -65,6 +67,17 @@ export function ComputeNodesSection({ organisation, details, setDetails }: Deplo
 					}}
 				/>
 			</Tooltip>
+
+			<Collapse expanded={details.computeUnits > 5 && isProduction}>
+				<Alert
+					color="orange"
+					title="Warning"
+					icon={<Icon path={iconWarning} />}
+					mt="xl"
+				>
+					Clusters with more than 5 nodes will be available soon.
+				</Alert>
+			</Collapse>
 		</Box>
 	);
 }
