@@ -54,7 +54,7 @@ export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
 export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
-	scale: ["medium", "large-scale", "xlarge-scale"],
+	scale: ["medium-scale", "large-scale", "xlarge-scale"],
 };
 
 export const BILLING_PROVIDER_ACTIONS: Record<OrganisationBillingProvider, string> = {
