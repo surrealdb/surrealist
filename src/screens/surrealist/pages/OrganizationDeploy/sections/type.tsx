@@ -270,6 +270,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	}
 
 	const isActive = details.computeType === type.slug;
+	const priceSuffix = isScalePlan(details.plan) ? "/node/hr" : "/hour";
 
 	return (
 		<Anchor variant="glow">
@@ -314,7 +315,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 							fz="sm"
 							fw={500}
 						>
-							/ hour
+							{priceSuffix}
 						</Text>
 					</Group>
 				</Group>
