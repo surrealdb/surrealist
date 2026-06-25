@@ -107,7 +107,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	useLayoutEffect(() => {
 		setDetails((draft) => {
 			if (!draft.computeType) {
-				draft.computeType = recommendations.at(-1)?.slug ?? "";
+				draft.computeType = recommendations[0]?.slug ?? "";
 			}
 		});
 	}, [details.plan, setDetails, recommendations]);
