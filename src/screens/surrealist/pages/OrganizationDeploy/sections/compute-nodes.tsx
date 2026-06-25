@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
+import { isProduction } from "~/util/environment";
 import { plural } from "~/util/helpers";
 import { DeploySectionProps } from "../types";
 
@@ -67,7 +68,7 @@ export function ComputeNodesSection({ organisation, details, setDetails }: Deplo
 				/>
 			</Tooltip>
 
-			<Collapse expanded={details.computeUnits > 5}>
+			<Collapse expanded={details.computeUnits > 5 && isProduction}>
 				<Alert
 					color="orange"
 					title="Warning"
