@@ -87,6 +87,9 @@ export function ConfigureStep({
 		if (isScale) {
 			if (!details.computeUnits) return true;
 			if (!details.storageAmount) return true;
+
+			// TODO Remove when higher node counts are available
+			if (details.computeUnits > 5) return true;
 		}
 
 		return false;
