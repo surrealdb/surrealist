@@ -40,6 +40,7 @@ export function PricingCard({
 
 	const isHourly = typeof config.price === "number";
 	const showFromPerHour = isHourly && !isDedicated;
+	const priceSuffix = config.surrealist?.plan === "scale" ? "/node/hr" : "/hour";
 	const displayPrice =
 		state === "available" && typeof config.price !== "number" && config.price !== "Free"
 			? "Available"
@@ -111,7 +112,7 @@ export function PricingCard({
 								>
 									From
 									<br />
-									per hour
+									{priceSuffix}
 								</Text>
 							)}
 						</Group>
