@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSupportTicketsEnvironment } from "~/hooks/context";
 import {
 	IntercomConversation,
 	IntercomConversationCreateRequest,
@@ -15,7 +14,6 @@ import { fetchContextAPI } from "../api/context";
  */
 export function useCreateTicketMutation(organization?: string) {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async (body: IntercomTicketCreateRequest) => {
@@ -24,8 +22,7 @@ export function useCreateTicketMutation(organization?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomTicket>(
-				`/cloud/org/${organization}/tickets`,
-				env,
+				`/api/support/v1/cloud/org/${organization}/tickets`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),
@@ -46,13 +43,11 @@ export function useCreateTicketMutation(organization?: string) {
  */
 export function useConversationCreateMutation() {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async (body: IntercomConversationCreateRequest) => {
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations`,
-				env,
+				`/api/support/v1/cloud/conversations`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),
@@ -73,7 +68,6 @@ export function useConversationCreateMutation() {
  */
 export function useConversationReplyMutation(conversationId?: string) {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async (body: IntercomConversationReplyRequest) => {
@@ -82,8 +76,7 @@ export function useConversationReplyMutation(conversationId?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}/reply`,
-				env,
+				`/api/support/v1/cloud/conversations/${conversationId}/reply`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),
@@ -104,7 +97,6 @@ export function useConversationReplyMutation(conversationId?: string) {
  */
 export function useConversationReopenMutation(conversationId?: string) {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async (message: string) => {
@@ -113,8 +105,7 @@ export function useConversationReopenMutation(conversationId?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}/reopen`,
-				env,
+				`/api/support/v1/cloud/conversations/${conversationId}/reopen`,
 				{
 					method: "POST",
 					body: JSON.stringify({
@@ -137,13 +128,11 @@ export function useConversationReopenMutation(conversationId?: string) {
  */
 export function useConversationStateMutation() {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async (request: IntercomConversationStateRequest) => {
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${request.conversationId}/mark_as/${request.state}`,
-				env,
+				`/api/support/v1/cloud/conversations/${request.conversationId}/mark_as/${request.state}`,
 				{
 					method: "PATCH",
 				},
@@ -163,13 +152,11 @@ export function useConversationStateMutation() {
  */
 export function useTicketStateMutation(ticketId: string, stateId: "open" | "close") {
 	const client = useQueryClient();
-	const env = useSupportTicketsEnvironment();
 
 	return useMutation({
 		mutationFn: async () => {
 			const result = await fetchContextAPI<IntercomTicket>(
-				`/cloud/tickets/${ticketId}/${stateId}`,
-				env,
+				`/api/support/v1/cloud/tickets/${ticketId}/${stateId}`,
 				{
 					method: "PATCH",
 				},

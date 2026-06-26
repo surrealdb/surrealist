@@ -1,28 +1,68 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RecordId, surql } from "surrealdb";
-import { useContextConnection } from "~/providers/Context";
-import { SidekickChat, SidekickChatMessage } from "~/types";
+import { getApiBase } from "~/cloud/api/endpoints";
+import { getAccessToken, useAuthentication } from "~/providers/Auth";
+import type { SidekickChat, SidekickChatMessage } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 
+async function sidekickFetch<T>(path: string, options?: RequestInit): Promise<T> {
+	const accessToken = await getAccessToken();
+	const response = await fetch(`${getApiBase()}/api/sidekick/v1${path}`, {
+		...options,
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+			"Content-Type": "application/json",
+			...options?.headers,
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error(`Sidekick API error: ${response.status}`);
+	}
+
+	const json = await response.json();
+	return json.data as T;
+}
+
+function extractKey(id: unknown): string {
+	if (typeof id !== "string") return String(id);
+	const idx = id.indexOf(":");
+	return idx >= 0 ? id.slice(idx + 1) : id;
+}
+
+function parseChat(raw: Record<string, unknown>): SidekickChat {
+	return {
+		id: extractKey(raw.id),
+		author: raw.author as string,
+		title: raw.title as string,
+		last_activity: new Date(raw.last_activity as string),
+	};
+}
+
+function parseMessage(raw: Record<string, unknown>): SidekickChatMessage {
+	return {
+		id: raw.id ? extractKey(raw.id) : null,
+		content: raw.content as string,
+		role: raw.role as "user" | "assistant",
+		sent_at: new Date(raw.sent_at as string),
+		sources: raw.sources as SidekickChatMessage["sources"],
+	};
+}
+
 export function useSidekickChatsQuery(search?: string) {
-	const [surreal, isAvailable] = useContextConnection();
+	const { isAuthenticated } = useAuthentication();
 
 	return useQuery({
 		queryKey: ["sidekick", "chats", { search }],
-		enabled: isAvailable,
+		enabled: isAuthenticated,
 		refetchInterval: 30_000,
 		queryFn: async () => {
 			try {
-				const [conversations] = await surreal
-					.query(surql`
-					SELECT *
-					FROM sidekick_chat
-					WHERE !${search} || title = <regex>${search} || <-sent_in<-sidekick_message.content ?= <regex>${search}
-					ORDER BY last_activity DESC
-				`)
-					.collect<[SidekickChat[]]>();
+				const params = new URLSearchParams();
+				if (search) params.set("search", search);
 
-				return conversations;
+				const suffix = params.size > 0 ? `?${params}` : "";
+				const chats = await sidekickFetch<Record<string, unknown>[]>(`/chats${suffix}`);
+				return chats.map(parseChat);
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to fetch chat history",
@@ -37,18 +77,13 @@ export function useSidekickChatsQuery(search?: string) {
 }
 
 export function useSidekickMessagesMutation() {
-	const [surreal] = useContextConnection();
-
 	return useMutation({
-		mutationFn: async (chatId: RecordId) => {
+		mutationFn: async (chatId: string) => {
 			try {
-				const [messages] = await surreal
-					.query(surql`
-					SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
-				`)
-					.collect<[SidekickChatMessage[]]>();
-
-				return messages;
+				const messages = await sidekickFetch<Record<string, unknown>[]>(
+					`/chats/${encodeURIComponent(chatId)}/messages`,
+				);
+				return messages.map(parseMessage);
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to fetch chat messages",
@@ -63,12 +98,14 @@ export function useSidekickMessagesMutation() {
 }
 
 export function useSidekickRenameMutation() {
-	const [surreal] = useContextConnection();
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ chatId, newName }: { chatId: RecordId; newName: string }) => {
-			await surreal.query(surql`UPDATE ${chatId} SET title = ${newName}`);
+		mutationFn: async ({ chatId, newName }: { chatId: string; newName: string }) => {
+			await sidekickFetch(`/chats/${encodeURIComponent(chatId)}`, {
+				method: "PATCH",
+				body: JSON.stringify({ title: newName }),
+			});
 		},
 		onMutate: async ({ chatId, newName }) => {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
@@ -77,7 +114,7 @@ export function useSidekickRenameMutation() {
 				{ queryKey: ["sidekick", "chats"] },
 				(old) => {
 					return old?.map((chat) =>
-						chat.id.equals(chatId) ? { ...chat, title: newName } : chat,
+						chat.id === chatId ? { ...chat, title: newName } : chat,
 					);
 				},
 			);
@@ -89,15 +126,14 @@ export function useSidekickRenameMutation() {
 }
 
 export function useSidekickDeleteMutation() {
-	const [surreal] = useContextConnection();
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (chatId: RecordId) => {
+		mutationFn: async (chatId: string) => {
 			try {
-				await surreal.query(surql`
-					DELETE ${chatId}<-sent_in<-sidekick_message, ${chatId}
-				`);
+				await sidekickFetch(`/chats/${encodeURIComponent(chatId)}`, {
+					method: "DELETE",
+				});
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to delete chat",
@@ -111,7 +147,7 @@ export function useSidekickDeleteMutation() {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
 
 			queryClient.setQueriesData<SidekickChat[]>({ queryKey: ["sidekick", "chats"] }, (old) =>
-				old?.filter((chat) => !chat.id.equals(chatId)),
+				old?.filter((chat) => chat.id !== chatId),
 			);
 		},
 		onSettled: () => {

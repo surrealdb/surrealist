@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useHasCloudSession } from "~/hooks/cloud";
-import { useSupportTicketsEnvironment } from "~/hooks/context";
 import { useAuthentication } from "~/providers/Auth";
 import {
 	IntercomConversation,
@@ -19,7 +18,6 @@ import { fetchContextAPI } from "../api/context";
 export function useConversationsQuery() {
 	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
-	const env = useSupportTicketsEnvironment();
 
 	const [flags] = useFeatureFlags();
 
@@ -28,7 +26,7 @@ export function useConversationsQuery() {
 		refetchInterval: 30_000,
 		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`, env);
+			return fetchContextAPI<IntercomConversation[]>(`/api/support/v1/cloud/conversations`);
 		},
 	});
 }
@@ -37,7 +35,6 @@ export function useConversationsQuery() {
  * Fetch a list of all tickets for an organization
  */
 export function useCloudOrganizationTicketsQuery(organizationId?: string) {
-	const env = useSupportTicketsEnvironment();
 	const [flags] = useFeatureFlags();
 
 	return useQuery({
@@ -45,7 +42,9 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
 		refetchInterval: 30_000,
 		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomTicket[]>(`/cloud/org/${organizationId}/tickets`, env);
+			return fetchContextAPI<IntercomTicket[]>(
+				`/api/support/v1/cloud/org/${organizationId}/tickets`,
+			);
 		},
 	});
 }
@@ -55,25 +54,23 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
  */
 export function useCloudOrganizationTicketAttributesQuery(organizationId?: string) {
 	const [flags] = useFeatureFlags();
-	const env = useSupportTicketsEnvironment();
 
 	return useQuery({
 		queryKey: ["cloud", "organization_ticket_attributes", organizationId],
 		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicketTypeAttribute[]>(
-				`/cloud/org/${organizationId}/ticket_attributes`,
-				env,
+				`/api/support/v1/cloud/org/${organizationId}/ticket_attributes`,
 			);
 		},
 	});
 }
+
 /**
  * Fetch a single conversation
  */
 export function useCloudConversationQuery(conversationId?: string) {
 	const [flags] = useFeatureFlags();
-	const env = useSupportTicketsEnvironment();
 	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
@@ -83,8 +80,7 @@ export function useCloudConversationQuery(conversationId?: string) {
 		enabled: !!conversationId && isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}`,
-				env,
+				`/api/support/v1/cloud/conversations/${conversationId}`,
 			);
 		},
 	});
@@ -95,7 +91,6 @@ export function useCloudConversationQuery(conversationId?: string) {
  */
 export function useCloudUnreadConversationsQuery() {
 	const [flags] = useFeatureFlags();
-	const env = useSupportTicketsEnvironment();
 	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
@@ -104,7 +99,7 @@ export function useCloudUnreadConversationsQuery() {
 		refetchInterval: 30_000,
 		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`, env);
+			return fetchContextAPI<boolean>(`/api/support/v1/cloud/conversations/has_unread`);
 		},
 	});
 }
@@ -113,12 +108,12 @@ export function useCloudUnreadConversationsQuery() {
  * Get all help collections
  */
 export function useSupportCollectionsQuery() {
-	const env = useSupportTicketsEnvironment();
-
 	return useQuery({
 		queryKey: ["cloud", "support_categories"],
 		queryFn: async () => {
-			return fetchContextAPI<IntercomSupportCollectionShallow[]>(`/help/collections`, env);
+			return fetchContextAPI<IntercomSupportCollectionShallow[]>(
+				`/api/support/v1/help/collections`,
+			);
 		},
 	});
 }
@@ -127,15 +122,12 @@ export function useSupportCollectionsQuery() {
  * Get a single help collection
  */
 export function useSupportCollectionQuery(collectionId?: string) {
-	const env = useSupportTicketsEnvironment();
-
 	return useQuery({
 		queryKey: ["cloud", "support_collections", collectionId],
 		enabled: !!collectionId,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportCollection>(
-				`/help/collections/${collectionId}`,
-				env,
+				`/api/support/v1/help/collections/${collectionId}`,
 			);
 		},
 	});
@@ -145,13 +137,13 @@ export function useSupportCollectionQuery(collectionId?: string) {
  * Get a single support article
  */
 export function useSupportArticleQuery(articleId?: string) {
-	const env = useSupportTicketsEnvironment();
-
 	return useQuery({
 		queryKey: ["cloud", "support_articles", articleId],
 		enabled: !!articleId,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomSupportArticle>(`/help/articles/${articleId}`, env);
+			return fetchContextAPI<IntercomSupportArticle>(
+				`/api/support/v1/help/articles/${articleId}`,
+			);
 		},
 	});
 }
@@ -160,19 +152,20 @@ export function useSupportArticleQuery(articleId?: string) {
  * Search help articles
  */
 export function useSearchHelpArticlesQuery(query: string) {
-	const env = useSupportTicketsEnvironment();
-
 	return useQuery({
 		queryKey: ["cloud", "support_search", query],
 		enabled: !!query && query.length > 0,
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomSupportArticle[]>(`/help/articles/search`, env, {
-				method: "POST",
-				body: JSON.stringify({
-					query: query,
-				}),
-			});
+			return fetchContextAPI<IntercomSupportArticle[]>(
+				`/api/support/v1/help/articles/search`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						query: query,
+					}),
+				},
+			);
 		},
 	});
 }
