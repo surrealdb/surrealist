@@ -96,14 +96,14 @@ const FRAGMENT_SHADER = /* glsl */ `
 			dd.y /= (1.0 + 0.35 * cos(t * 0.06 + ph * 0.7));
 
 			float dist = length(dd) / radius;
-			float w = (0.07 + 0.05 * hr) * exp(-dist * dist);
+			float w = (0.17 + 0.12 * hr) * exp(-dist * dist);
 
 			cover += w;
 			col += mix(magenta, violet, hc) * w;
 		}
 
 		vec3 tint = cover > 0.0001 ? col / cover : vec3(0.0);
-		float alpha = min(cover, 0.17);
+		float alpha = min(cover, 0.40);
 
 		// Premultiplied alpha output.
 		gl_FragColor = vec4(tint * alpha, alpha);
