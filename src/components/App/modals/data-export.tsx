@@ -34,7 +34,7 @@ import {
 	iconWrench,
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { SqlExportOptions } from "surrealdb";
 import { adapter, isBrowser } from "~/adapter";
 import { Option } from "~/components/Option";
@@ -121,24 +121,10 @@ export function DatabaseExportPanel({
 	const [configSupport] = useMinimumVersion("2.1.0");
 	const [search, setSearch] = useInputState("");
 
-	const exportFlags = useSet<ExportFlag>();
-	const exportTables = useSet<string>();
+	const exportFlags = useSet<ExportFlag>(selectAllResources ? RESOURCES : undefined);
+	const exportTables = useSet<string>(selectAllTables ? tables : undefined);
 
 	const fileName = `${slugify(name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
-
-	useEffect(() => {
-		if (selectAllResources) {
-			exportFlags.clear();
-			RESOURCES.forEach((resource) => exportFlags.add(resource));
-		}
-	}, [selectAllResources, exportFlags]);
-
-	useEffect(() => {
-		if (selectAllTables) {
-			exportTables.clear();
-			tables.forEach((table) => exportTables.add(table));
-		}
-	}, [selectAllTables, exportTables, tables]);
 
 	const handleExport = useStable(async () => {
 		onClose?.();
