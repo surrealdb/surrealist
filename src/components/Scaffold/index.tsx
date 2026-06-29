@@ -11,7 +11,6 @@ import { AuthProvider } from "~/providers/Auth";
 import { CloudProvider } from "~/providers/Cloud";
 import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
-import { ContextProvider } from "~/providers/Context";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { SURREALIST_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
@@ -79,9 +78,7 @@ export function Scaffold({ authentication, children }: PropsWithChildren<Scaffol
 				>
 					<ConfirmationProvider>
 						<ModalsProvider>
-							<CommandsProvider>
-								<ContextProvider>{children}</ContextProvider>
-							</CommandsProvider>
+							<CommandsProvider>{children}</CommandsProvider>
 						</ModalsProvider>
 					</ConfirmationProvider>
 				</ContextMenuProvider>

@@ -73,11 +73,11 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 
 		useEffect(() => {
 			return () => {
-				if (activeId?.id) {
+				if (activeId) {
 					stream.cancel();
 				}
 			};
-		}, [activeId?.id, stream.cancel]);
+		}, [activeId, stream.cancel]);
 
 		const showGlow = !activeRequest && !activeResponse && activeHistory.length === 0;
 
@@ -173,6 +173,11 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 						flex={1}
 						pos="absolute"
 						direction="column"
+						className={classes.chatLayer}
+						style={{
+							visibility: historyOpened ? "hidden" : "visible",
+							pointerEvents: historyOpened ? "none" : "auto",
+						}}
 					>
 						<SidekickChatLazy
 							isAuthed={isAuthed}

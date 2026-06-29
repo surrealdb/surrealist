@@ -736,24 +736,24 @@ export function useComputedPreferences(): PreferenceSection[] {
 					{
 						id: "api-base",
 						name: "API base",
+						description: "The base URL for the SurrealDB API",
+						controller: new TextController({
+							placeholder: "https://api.surrealdb.com",
+							reader: (config) => config.settings.cloud.urlSurrealApiBase,
+							writer: (config, value) => {
+								config.settings.cloud.urlSurrealApiBase = value;
+							},
+						}),
+					},
+					{
+						id: "cloud-api-base",
+						name: "Cloud API base",
 						description: "The base URL for the cloud API",
 						controller: new TextController({
 							placeholder: "https://...",
 							reader: (config) => config.settings.cloud.urlApiBase,
 							writer: (config, value) => {
 								config.settings.cloud.urlApiBase = value;
-							},
-						}),
-					},
-					{
-						id: "tickets-base",
-						name: "Tickets base",
-						description: "The base URL for the tickets API",
-						controller: new TextController({
-							placeholder: "https://...",
-							reader: (config) => config.settings.cloud.urlApiTicketsBase,
-							writer: (config, value) => {
-								config.settings.cloud.urlApiTicketsBase = value;
 							},
 						}),
 					},
