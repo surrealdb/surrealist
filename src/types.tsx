@@ -271,6 +271,7 @@ export interface SurrealistAppearanceSettings {
 	formatMaxLineLength: number;
 	logoGreetAnimation: boolean;
 	backgroundGlobulesOpacity: number;
+	backgroundGlobulesSpeed: number;
 }
 
 export interface SurrealistTemplateSettings {
