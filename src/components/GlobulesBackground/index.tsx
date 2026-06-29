@@ -3,11 +3,12 @@ import globulesImg from "~/assets/images/globules.webp";
 import { useSetting } from "~/hooks/config";
 
 /**
- * Render-scale for the WebGL drawing buffer. The globules are heavily blurred,
- * so rendering at half resolution is visually indistinguishable while roughly
- * quartering the number of shader invocations.
+ * Render-scale for the WebGL drawing buffer, relative to the element's CSS
+ * size. Kept at 1.0 (rather than the device pixel ratio) so the shader's
+ * per-pixel dither lands on whole pixels and effectively breaks up gradient
+ * banding — a downscaled buffer would have the dither blurred away on upscale.
  */
-const RENDER_SCALE = 0.5;
+const RENDER_SCALE = 1;
 
 const VERTEX_SHADER = /* glsl */ `
 	attribute vec2 a_position;
@@ -32,6 +33,7 @@ const FRAGMENT_SHADER = /* glsl */ `
 
 	uniform vec2 u_resolution;
 	uniform float u_time;
+	uniform float u_opacity;
 
 	const int COLS = ${GLOBULE_COLS};
 	const int ROWS = ${GLOBULE_ROWS};
@@ -40,6 +42,11 @@ const FRAGMENT_SHADER = /* glsl */ `
 	// Deterministic pseudo-random in [0,1] from a scalar seed.
 	float hash(float n) {
 		return fract(sin(n) * 43758.5453123);
+	}
+
+	// Screen-space pseudo-random in [0,1] for dithering.
+	float hash2(vec2 p) {
+		return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453123);
 	}
 
 	void main() {
@@ -103,10 +110,17 @@ const FRAGMENT_SHADER = /* glsl */ `
 		}
 
 		vec3 tint = cover > 0.0001 ? col / cover : vec3(0.0);
-		float alpha = min(cover, 0.40);
+		// Bake the overall opacity in here (rather than via CSS) so there is a
+		// single quantisation into the 8-bit buffer that the dither can break up.
+		float alpha = min(cover, 0.40) * u_opacity;
+
+		// Dither by ~1 LSB to break up 8-bit gradient banding in the very gradual
+		// falloff. Applied to the premultiplied output right before it is quantised
+		// into the buffer; static (screen-space only) so it never shimmers.
+		float d = (hash2(gl_FragCoord.xy) - 0.5) / 255.0;
 
 		// Premultiplied alpha output.
-		gl_FragColor = vec4(tint * alpha, alpha);
+		gl_FragColor = vec4(tint * alpha + d, alpha + d);
 	}
 `;
 
@@ -139,10 +153,12 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const [disableAnimations] = useSetting("appearance", "disableAnimations");
 
-	// Latest speed kept in a ref so the render loop reads it without restarting.
+	// Latest speed/opacity kept in refs so the render loop reads them without
+	// restarting the WebGL setup.
 	const speedRef = useRef(speed);
+	const opacityRef = useRef(opacity);
 
-	// Lets the speed effect re-arm the render loop when it has gone idle.
+	// Lets the speed/opacity effects re-arm the render loop when it has gone idle.
 	const wakeRef = useRef<(() => void) | null>(null);
 
 	useEffect(() => {
@@ -163,6 +179,7 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 			canvas.style.backgroundImage = `url(${globulesImg})`;
 			canvas.style.backgroundSize = "cover";
 			canvas.style.backgroundPosition = "center";
+			canvas.style.opacity = String(opacityRef.current);
 			return;
 		}
 
@@ -174,6 +191,7 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 			canvas.style.backgroundImage = `url(${globulesImg})`;
 			canvas.style.backgroundSize = "cover";
 			canvas.style.backgroundPosition = "center";
+			canvas.style.opacity = String(opacityRef.current);
 			return;
 		}
 
@@ -198,6 +216,7 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 
 		const resolutionLoc = gl.getUniformLocation(program, "u_resolution");
 		const timeLoc = gl.getUniformLocation(program, "u_time");
+		const opacityLoc = gl.getUniformLocation(program, "u_opacity");
 
 		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -221,6 +240,7 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 			resize();
 			gl.uniform2f(resolutionLoc, canvas.width, canvas.height);
 			gl.uniform1f(timeLoc, clock);
+			gl.uniform1f(opacityLoc, opacityRef.current);
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		};
 
@@ -283,12 +303,14 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 		};
 	}, [disableAnimations]);
 
-	// Keep the loop reading the latest speed, and re-arm it when the speed
-	// changes (e.g. from 0, where the loop has gone idle, to moving).
+	// Keep the loop reading the latest speed/opacity, and re-arm it when either
+	// changes (e.g. speed from 0, where the loop has gone idle, to moving, or an
+	// opacity change that must be redrawn while idle).
 	useEffect(() => {
 		speedRef.current = speed;
+		opacityRef.current = opacity;
 		wakeRef.current?.();
-	}, [speed]);
+	}, [speed, opacity]);
 
 	return (
 		<canvas
@@ -299,7 +321,6 @@ export function GlobulesBackground({ opacity, speed }: GlobulesBackgroundProps) 
 				inset: 0,
 				width: "100%",
 				height: "100%",
-				opacity,
 				zIndex: 0,
 				pointerEvents: "none",
 			}}
