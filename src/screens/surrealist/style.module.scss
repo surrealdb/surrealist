@@ -10,22 +10,6 @@ $sidebar-wide: 225px;
 	@include light {
 		background-color: rgba(from var(--mantine-color-obsidian-0) r g b / 0.5);
 	}
-
-	&::before {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background-image: var(--bg-image);
-		background-position: cover;
-		background-repeat: no-repeat;
-		background-size: cover;
-		opacity: var(--bg-opacity);
-		z-index: 0;
-
-		@include light {
-			display: none;
-		}
-	}
 }
 
 .wrapper {

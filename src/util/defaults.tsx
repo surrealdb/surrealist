@@ -87,6 +87,7 @@ export function createBaseSettings(): SurrealistSettings {
 			formatMaxLineLength: 120,
 			logoGreetAnimation: false,
 			backgroundGlobulesOpacity: 0.35,
+			backgroundGlobulesSpeed: 0.15,
 		},
 		templates: {
 			list: [],

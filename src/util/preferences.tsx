@@ -242,6 +242,25 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "background-globules-speed",
+						name: "Background lights speed",
+						description:
+							"Adjust the animation speed of the background lights in dark mode",
+						controller: new SliderController({
+							min: 0,
+							max: 1,
+							step: 0.05,
+							label: (value) => `${Math.round(value * 100)}%`,
+							reader: (config) => config.settings.appearance.backgroundGlobulesSpeed,
+							writer: (config, value) => {
+								config.settings.appearance.backgroundGlobulesSpeed = Math.max(
+									0,
+									Math.min(1, value),
+								);
+							},
+						}),
+					},
 				],
 			},
 			{
