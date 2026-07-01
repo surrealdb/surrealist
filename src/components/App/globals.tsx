@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { adapter } from "~/adapter";
+import { useAppearanceSettings } from "./hooks/appearance";
 import { useConnectionSwitch } from "./hooks/connection";
 import { useEscapeKeyListener, useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
@@ -15,6 +16,7 @@ export function Globals(): ReactNode {
 	useKeybindListener();
 	useEscapeKeyListener();
 	useWindowSettings();
+	useAppearanceSettings();
 	useConnectionSwitch();
 	useTitleSync();
 	useViewSync();
