@@ -796,7 +796,7 @@ function LearnedSection({ learned }: { learned: ExtractionResult | null }) {
 										span
 										c="violet.3"
 									>
-										{" —"}
+										{" →"}
 										{r.label}
 										{"→ "}
 									</Text>
