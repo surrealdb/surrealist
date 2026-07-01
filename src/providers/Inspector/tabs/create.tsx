@@ -99,13 +99,13 @@ export function CreateTab({ table, content, onCreated }: CreateTabProps) {
 	});
 
 	const setCursor = useStable((view: EditorView) => {
-		if (content) {
-			const length = view.state.doc.length;
+		// Clamp the cursor to the document length. When creating a fresh record the
+		// editor content may not be populated yet by the time this fires, so an
+		// unclamped position would throw "Selection points outside of document".
+		const length = view.state.doc.length;
+		const position = content ? length : Math.min(6, length);
 
-			view.dispatch({ selection: { anchor: length, head: length } });
-		} else {
-			view.dispatch({ selection: { anchor: 6, head: 6 } });
-		}
+		view.dispatch({ selection: { anchor: position, head: position } });
 	});
 
 	useLayoutEffect(() => {
