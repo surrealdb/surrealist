@@ -7,8 +7,10 @@ import {
 	Divider,
 	Group,
 	Image,
+	List,
 	Loader,
 	Paper,
+	Popover,
 	ScrollArea,
 	Skeleton,
 	Stack,
@@ -23,8 +25,10 @@ import {
 	iconBookmark,
 	iconChat,
 	iconCursor,
+	iconHelp,
 	iconHistory,
 	iconMemory,
+	iconOpen,
 	iconRefresh,
 	iconRelation,
 	iconTag,
@@ -36,6 +40,7 @@ import {
 	SectionTitle,
 } from "@surrealdb/ui";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { adapter } from "~/adapter";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -76,6 +81,70 @@ export default function PlaygroundView({ context }: ContextViewProps) {
 				)}
 			</SpectronGate>
 		</Box>
+	);
+}
+
+// ─── Playground help ───
+
+// In-app explainer for the Playground — what it is, how to read the activity
+// panel, and (the most common question) whether you can ask about uploaded
+// documents. The full guide lives in the docs site. (#755)
+function PlaygroundHelp() {
+	return (
+		<Popover
+			width={340}
+			position="bottom-end"
+			withArrow
+			shadow="md"
+		>
+			<Popover.Target>
+				<Button
+					size="xs"
+					variant="subtle"
+					color="slate"
+					leftSection={<Icon path={iconHelp} />}
+				>
+					How it works
+				</Button>
+			</Popover.Target>
+			<Popover.Dropdown>
+				<Stack gap="sm">
+					<Text
+						fw={600}
+						c="bright"
+					>
+						How the Playground works
+					</Text>
+					<List
+						spacing="xs"
+						fz="sm"
+						withPadding
+					>
+						<List.Item>
+							Chat with your agent in real time. Every reply is grounded in what this
+							context remembers.
+						</List.Item>
+						<List.Item>
+							The <b>Memory activity</b> panel shows what was recalled for each
+							message and what the agent just learned.
+						</List.Item>
+						<List.Item>
+							<b>You can ask about your documents.</b> Anything uploaded in the
+							Documents view is retrieved and used to ground answers, with sources it
+							can cite.
+						</List.Item>
+					</List>
+					<Button
+						variant="light"
+						size="xs"
+						rightSection={<Icon path={iconOpen} />}
+						onClick={() => adapter.openUrl("https://surrealdb.com/docs/spectron")}
+					>
+						Read the docs
+					</Button>
+				</Stack>
+			</Popover.Dropdown>
+		</Popover>
 	);
 }
 
@@ -250,18 +319,21 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 				p={0}
 				withTopPadding={false}
 				rightSection={
-					<Tooltip label="Start a fresh session">
-						<Button
-							size="xs"
-							variant="subtle"
-							color="slate"
-							leftSection={<Icon path={iconRefresh} />}
-							onClick={resetSession}
-							disabled={busy || !hasConversation}
-						>
-							New session
-						</Button>
-					</Tooltip>
+					<Group gap="xs">
+						<PlaygroundHelp />
+						<Tooltip label="Start a fresh session">
+							<Button
+								size="xs"
+								variant="subtle"
+								color="slate"
+								leftSection={<Icon path={iconRefresh} />}
+								onClick={resetSession}
+								disabled={busy || !hasConversation}
+							>
+								New session
+							</Button>
+						</Tooltip>
+					</Group>
 				}
 			>
 				<Box
@@ -329,8 +401,8 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 										className="selectable"
 									>
 										Tell it about yourself, then ask what it remembers. Each
-										reply is grounded in recalled memory and may teach it
-										something new.
+										reply is grounded in recalled memory and any documents
+										you've uploaded — and may teach it something new.
 									</Text>
 									<Stack
 										mt={36}
