@@ -27,12 +27,15 @@ import type { Spectron } from "@surrealdb/spectron";
 import { ScopeError } from "@surrealdb/spectron";
 import {
 	Icon,
+	iconAccount,
+	iconBook,
 	iconChevronRight,
 	iconClock,
 	iconHistory,
 	iconMemory,
 	iconRelation,
 	iconSearch,
+	iconTag,
 	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
@@ -58,6 +61,14 @@ const CATEGORY_COLOR: Record<MemoryCategory, string> = {
 	identity: "violet",
 	knowledge: "blue",
 	context: "teal",
+};
+
+// Distinct icon per node type so identity / knowledge / context are eyeballable
+// at a glance in the graph, not just by colour. (#746)
+const CATEGORY_ICON: Record<MemoryCategory, string> = {
+	identity: iconAccount,
+	knowledge: iconBook,
+	context: iconTag,
 };
 
 /** Friendly relative timestamp; falls back to the raw string when unparseable. */
@@ -312,7 +323,7 @@ function CategoryCard({
 					color={color}
 				>
 					<Icon
-						path={iconRelation}
+						path={CATEGORY_ICON[categoryKey]}
 						size="sm"
 					/>
 				</ThemeIcon>
@@ -777,7 +788,7 @@ function EntityCard({ entity, onSelect }: { entity: EntityDetail; onSelect: () =
 						color={color}
 					>
 						<Icon
-							path={iconRelation}
+							path={CATEGORY_ICON[entity.memoryCategory]}
 							size="lg"
 						/>
 					</ThemeIcon>
@@ -895,7 +906,7 @@ function EntityInspectorDrawer({
 								variant="light"
 								color={CATEGORY_COLOR[entity.memoryCategory]}
 							>
-								<Icon path={iconRelation} />
+								<Icon path={CATEGORY_ICON[entity.memoryCategory]} />
 							</ThemeIcon>
 							<Text
 								fw={600}

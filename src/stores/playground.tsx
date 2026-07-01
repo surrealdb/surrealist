@@ -28,6 +28,8 @@ export interface ChatMessage {
 	content: string;
 	traceId?: string;
 	fresh?: boolean;
+	/** A user turn whose reply never arrived (the request errored or was aborted). */
+	failed?: boolean;
 }
 
 interface PlaygroundConversation {
@@ -69,6 +71,11 @@ export interface PlaygroundStore {
 	 * user navigates away from the Playground while it is processing.
 	 */
 	send: (contextId: string, client: Spectron, raw: string) => Promise<void>;
+	/**
+	 * Re-runs a user turn that previously failed: drops the failed message and
+	 * resends its text, so a 500'd/aborted turn isn't left dangling. (#737)
+	 */
+	retry: (contextId: string, client: Spectron, messageId: string) => Promise<void>;
 	/** Clears the conversation and closes the server-side session. */
 	reset: (contextId: string) => void;
 }
@@ -91,6 +98,9 @@ export const usePlaygroundStore = create<PlaygroundStore>()(
 				return;
 			}
 
+			// Kept so a failed reply can flag exactly this turn (and no other). (#737)
+			const userMessageId = crypto.randomUUID();
+
 			set((draft) => {
 				if (!draft.conversations[contextId]) {
 					draft.conversations[contextId] = emptyConversation();
@@ -101,7 +111,7 @@ export const usePlaygroundStore = create<PlaygroundStore>()(
 				for (const msg of conv.messages) {
 					msg.fresh = false;
 				}
-				conv.messages.push({ id: crypto.randomUUID(), role: "user", content: text });
+				conv.messages.push({ id: userMessageId, role: "user", content: text });
 				conv.learned = null;
 				conv.busy = true;
 				conv.recalling = true;
@@ -159,6 +169,16 @@ export const usePlaygroundStore = create<PlaygroundStore>()(
 					conv.learned = res.memoryUpdates;
 				});
 			} catch (err) {
+				// Flag the turn inline so the failed exchange is clearly marked and
+				// offers a retry, instead of lingering as a silent, reply-less
+				// message. (#737)
+				set((draft) => {
+					const conv = draft.conversations[contextId];
+					const msg = conv?.messages.find((m) => m.id === userMessageId);
+					if (msg) {
+						msg.failed = true;
+					}
+				});
 				showErrorNotification({ title: "Chat failed", content: err });
 			} finally {
 				set((draft) => {
@@ -169,6 +189,25 @@ export const usePlaygroundStore = create<PlaygroundStore>()(
 					}
 				});
 			}
+		},
+
+		retry: async (contextId, client, messageId) => {
+			const conv = get().conversations[contextId];
+			if (!conv || conv.busy) {
+				return;
+			}
+			const target = conv.messages.find((m) => m.id === messageId);
+			if (!target || target.role !== "user") {
+				return;
+			}
+			// Drop the failed turn so resending doesn't duplicate it, then replay.
+			set((draft) => {
+				const draftConv = draft.conversations[contextId];
+				if (draftConv) {
+					draftConv.messages = draftConv.messages.filter((m) => m.id !== messageId);
+				}
+			});
+			await get().send(contextId, client, target.content);
 		},
 
 		reset: (contextId) => {

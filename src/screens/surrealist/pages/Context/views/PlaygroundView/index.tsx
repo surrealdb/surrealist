@@ -7,8 +7,10 @@ import {
 	Divider,
 	Group,
 	Image,
+	List,
 	Loader,
 	Paper,
+	Popover,
 	ScrollArea,
 	Skeleton,
 	Stack,
@@ -23,8 +25,10 @@ import {
 	iconBookmark,
 	iconChat,
 	iconCursor,
+	iconHelp,
 	iconHistory,
 	iconMemory,
+	iconOpen,
 	iconRefresh,
 	iconRelation,
 	iconTag,
@@ -36,6 +40,7 @@ import {
 	SectionTitle,
 } from "@surrealdb/ui";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { adapter } from "~/adapter";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -79,6 +84,70 @@ export default function PlaygroundView({ context }: ContextViewProps) {
 	);
 }
 
+// ─── Playground help ───
+
+// In-app explainer for the Playground — what it is, how to read the activity
+// panel, and (the most common question) whether you can ask about uploaded
+// documents. The full guide lives in the docs site. (#755)
+function PlaygroundHelp() {
+	return (
+		<Popover
+			width={340}
+			position="bottom-end"
+			withArrow
+			shadow="md"
+		>
+			<Popover.Target>
+				<Button
+					size="xs"
+					variant="subtle"
+					color="slate"
+					leftSection={<Icon path={iconHelp} />}
+				>
+					How it works
+				</Button>
+			</Popover.Target>
+			<Popover.Dropdown>
+				<Stack gap="sm">
+					<Text
+						fw={600}
+						c="bright"
+					>
+						How the Playground works
+					</Text>
+					<List
+						spacing="xs"
+						fz="sm"
+						withPadding
+					>
+						<List.Item>
+							Chat with your agent in real time. Every reply is grounded in what this
+							context remembers.
+						</List.Item>
+						<List.Item>
+							The <b>Memory activity</b> panel shows what was recalled for each
+							message and what the agent just learned.
+						</List.Item>
+						<List.Item>
+							<b>You can ask about your documents.</b> Anything uploaded in the
+							Documents view is retrieved and used to ground answers, with sources it
+							can cite.
+						</List.Item>
+					</List>
+					<Button
+						variant="light"
+						size="xs"
+						rightSection={<Icon path={iconOpen} />}
+						onClick={() => adapter.openUrl("https://surrealdb.com/docs/spectron")}
+					>
+						Read the docs
+					</Button>
+				</Stack>
+			</Popover.Dropdown>
+		</Popover>
+	);
+}
+
 // ─── Live playground (client guaranteed ready) ───
 
 function Playground({ client }: { client: Spectron; context: ContextViewProps["context"] }) {
@@ -92,6 +161,7 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 	const conversation = usePlaygroundStore((s) => s.conversations[contextId]);
 	const setInputStore = usePlaygroundStore((s) => s.setInput);
 	const sendMessage = usePlaygroundStore((s) => s.send);
+	const retryMessage = usePlaygroundStore((s) => s.retry);
 	const resetConversation = usePlaygroundStore((s) => s.reset);
 
 	const messages = conversation?.messages ?? EMPTY_MESSAGES;
@@ -147,6 +217,13 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 			void sendMessage(contextId, client, raw);
 		},
 		[sendMessage, contextId, client],
+	);
+
+	const retry = useCallback(
+		(messageId: string) => {
+			void retryMessage(contextId, client, messageId);
+		},
+		[retryMessage, contextId, client],
 	);
 
 	const handleKeyDown = useCallback(
@@ -242,18 +319,21 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 				p={0}
 				withTopPadding={false}
 				rightSection={
-					<Tooltip label="Start a fresh session">
-						<Button
-							size="xs"
-							variant="subtle"
-							color="slate"
-							leftSection={<Icon path={iconRefresh} />}
-							onClick={resetSession}
-							disabled={busy || !hasConversation}
-						>
-							New session
-						</Button>
-					</Tooltip>
+					<Group gap="xs">
+						<PlaygroundHelp />
+						<Tooltip label="Start a fresh session">
+							<Button
+								size="xs"
+								variant="subtle"
+								color="slate"
+								leftSection={<Icon path={iconRefresh} />}
+								onClick={resetSession}
+								disabled={busy || !hasConversation}
+							>
+								New session
+							</Button>
+						</Tooltip>
+					</Group>
 				}
 			>
 				<Box
@@ -321,8 +401,8 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 										className="selectable"
 									>
 										Tell it about yourself, then ask what it remembers. Each
-										reply is grounded in recalled memory and may teach it
-										something new.
+										reply is grounded in recalled memory and any documents
+										you've uploaded — and may teach it something new.
 									</Text>
 									<Stack
 										mt={36}
@@ -373,6 +453,8 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 											key={msg.id}
 											message={msg}
 											isLight={isLight}
+											busy={busy}
+											onRetry={() => retry(msg.id)}
 											onSaveAsDocument={() =>
 												confirmSaveAsDocument(msg.content)
 											}
@@ -473,10 +555,14 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 function ChatBubble({
 	message,
 	isLight,
+	busy,
+	onRetry,
 	onSaveAsDocument,
 }: {
 	message: ChatMessage;
 	isLight: boolean;
+	busy: boolean;
+	onRetry: () => void;
 	onSaveAsDocument: () => void;
 }) {
 	const saveAction = (
@@ -500,6 +586,9 @@ function ChatBubble({
 				p="md"
 				bg={isLight ? "obsidian.1" : "obsidian.6"}
 				className={`${classes.message} selectable`}
+				style={
+					message.failed ? { border: "1px solid var(--mantine-color-red-5)" } : undefined
+				}
 			>
 				<Group
 					justify="space-between"
@@ -512,6 +601,41 @@ function ChatBubble({
 					</Box>
 					{saveAction}
 				</Group>
+				{message.failed && (
+					<Group
+						justify="space-between"
+						gap="xs"
+						mt="xs"
+						wrap="nowrap"
+					>
+						<Group
+							gap={6}
+							wrap="nowrap"
+						>
+							<Icon
+								path={iconWarning}
+								size="sm"
+								c="red"
+							/>
+							<Text
+								fz="xs"
+								c="red"
+							>
+								No reply — this turn failed.
+							</Text>
+						</Group>
+						<Button
+							size="compact-xs"
+							variant="light"
+							color="red"
+							leftSection={<Icon path={iconRefresh} />}
+							onClick={onRetry}
+							disabled={busy}
+						>
+							Retry
+						</Button>
+					</Group>
+				)}
 			</Paper>
 		);
 	}
@@ -796,7 +920,7 @@ function LearnedSection({ learned }: { learned: ExtractionResult | null }) {
 										span
 										c="violet.3"
 									>
-										{" —"}
+										{" →"}
 										{r.label}
 										{"→ "}
 									</Text>
