@@ -16,45 +16,51 @@ export function buildN8nSteps(context: CloudContext): IntegrationStep[] {
 			title: "Open a session (HTTP Request)",
 			description:
 				"Use an HTTP Request node against this context’s REST root. POST JSON with a scopes array; store the session id from the response for later nodes.",
-			code: `POST ${restRoot}/sessions
-Headers:
-  API-KEY: {{ $env.SPECTRON_API_KEY }}
-  Content-Type: application/json
-Body:
+			code: `-- POST ${restRoot}/sessions
+
+-- Headers:
+--   API-KEY: {{ $env.SPECTRON_API_KEY }}
+--   Content-Type: application/json
+
+-- Body:
 {
   "scopes": ["user/{{ $json.userId }}"]
 }`,
-			lang: "text",
+			lang: "surrealql",
 		},
 		{
 			title: "Record a turn",
 			description:
 				"POST user or assistant turns to /sessions/{id}/turns so Spectron can extract memory. Replace the session id with the value from the previous step.",
-			code: `POST ${restRoot}/sessions/<session_id>/turns
-Headers:
-  API-KEY: {{ $env.SPECTRON_API_KEY }}
-  Content-Type: application/json
-Body:
+			code: `-- POST ${restRoot}/sessions/<session_id>/turns
+
+-- Headers:
+--   API-KEY: {{ $env.SPECTRON_API_KEY }}
+--   Content-Type: application/json
+
+-- Body:
 {
   "role": "user",
   "content": "{{ $json.message }}"
 }`,
-			lang: "text",
+			lang: "surrealql",
 		},
 		{
 			title: "Recall with hybrid search",
 			description:
 				"Add a query node to retrieve ranked memory for an incoming message before you call your LLM or downstream tools.",
-			code: `POST ${restRoot}/query
-Headers:
-  API-KEY: {{ $env.SPECTRON_API_KEY }}
-  Content-Type: application/json
-Body:
+			code: `-- POST ${restRoot}/query
+
+-- Headers:
+--   API-KEY: {{ $env.SPECTRON_API_KEY }}
+--   Content-Type: application/json
+
+-- Body:
 {
   "query": "{{ $json.userQuestion }}",
   "k": 10
 }`,
-			lang: "text",
+			lang: "surrealql",
 		},
 		{
 			title: "Explore Spectron",

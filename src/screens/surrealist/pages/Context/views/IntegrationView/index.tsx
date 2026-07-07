@@ -22,6 +22,7 @@ import {
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
+	iconConsole,
 	iconMCP,
 	pictoIntegrationsGradient,
 } from "@surrealdb/ui";
@@ -32,6 +33,7 @@ import type { CloudContext, ContextViewPage } from "~/types";
 import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
+import { buildCliSteps } from "./integrations/cli";
 import { buildCursorSteps } from "./integrations/cursor";
 import { buildLangChainSteps } from "./integrations/langchain";
 import { buildMcpSteps } from "./integrations/mcp";
@@ -46,6 +48,7 @@ type IntegrationTab =
 	| "python"
 	| "javascript"
 	| "api"
+	| "cli"
 	| "claude-code"
 	| "cursor"
 	| "mcp"
@@ -58,6 +61,7 @@ const INTEGRATION_TABS: IntegrationTab[] = [
 	"python",
 	"javascript",
 	"api",
+	"cli",
 	"claude-code",
 	"cursor",
 	"mcp",
@@ -71,6 +75,7 @@ const TAB_META: Record<IntegrationTab, { label: string; img?: string; icon?: str
 	python: { label: "Python", img: brandPython },
 	javascript: { label: "JavaScript", img: brandJavaScript },
 	api: { label: "REST API", icon: iconAPI },
+	cli: { label: "Spectron CLI", icon: iconConsole },
 	"claude-code": { label: "Claude Code", icon: iconMCP },
 	cursor: { label: "Cursor", icon: iconMCP },
 	mcp: { label: "MCP", icon: iconMCP },
@@ -228,6 +233,7 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 				action: "documentation",
 			},
 		],
+		cli: buildCliSteps(context),
 		"claude-code": buildClaudeCodeSteps(context),
 		cursor: buildCursorSteps(context),
 		mcp: buildMcpSteps(context),
@@ -243,6 +249,7 @@ function isIntegrationTab(v: string | undefined): v is IntegrationTab {
 		v === "python" ||
 		v === "javascript" ||
 		v === "api" ||
+		v === "cli" ||
 		v === "claude-code" ||
 		v === "cursor" ||
 		v === "mcp" ||
