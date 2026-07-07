@@ -1,4 +1,5 @@
-import { Box, Button, Group, Paper, Stack } from "@mantine/core";
+import { Alert, Box, Button, Group, Stack } from "@mantine/core";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { getPlanForInstanceType, hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
@@ -10,6 +11,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
 import { showErrorNotification } from "~/util/helpers";
+import { ResumeBlock } from "../../views/dashboard/ResumeBlock";
 import { ConfigurationNodes } from "../sections/compute/nodes";
 import { ConfigurationStorage, getStorageConstraints } from "../sections/compute/storage";
 import { ConfigurationInstanceType } from "../sections/compute/type";
@@ -32,20 +34,35 @@ export function ConnectionComputeTab({
 	}
 
 	const isAdmin = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
+	const isPaused = instance.state === "paused";
 	const isIdle = instance.state !== "ready" && instance.state !== "paused";
 	const guessedPlan = getPlanForInstanceType(instance.type);
 	const showComputeNodes = guessedPlan === "scale";
+
+	if (isPaused) {
+		return (
+			<Stack>
+				<PrimaryTitle fz={32}>Instance configuration</PrimaryTitle>
+				<ResumeBlock
+					instance={instance}
+					organisation={organisation}
+					description="You must rusume your instance before you can configure it."
+				/>
+			</Stack>
+		);
+	}
 
 	if (!isAdmin || isIdle) {
 		return (
 			<Stack>
 				<PrimaryTitle fz={32}>Instance configuration</PrimaryTitle>
-				<Section title="Unavailable">
-					<Paper p="md">
-						Instance configuration is unavailable while the instance is not ready or you
-						lack admin permissions.
-					</Paper>
-				</Section>
+				<Alert
+					color="orange"
+					icon={<Icon path={iconWarning} />}
+				>
+					Instance configuration is unavailable while the instance is not ready or you
+					lack admin permissions.
+				</Alert>
 			</Stack>
 		);
 	}

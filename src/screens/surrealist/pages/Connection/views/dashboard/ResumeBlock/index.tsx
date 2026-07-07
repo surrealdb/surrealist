@@ -9,9 +9,10 @@ import { CloudInstance, CloudOrganization } from "~/types";
 export interface ResumelockProps {
 	instance: CloudInstance;
 	organisation: CloudOrganization;
+	description?: string;
 }
 
-export function ResumeBlock({ instance, organisation }: ResumelockProps) {
+export function ResumeBlock({ instance, organisation, description }: ResumelockProps) {
 	const canResume = hasOrganizationRoles(organisation, ORG_ROLES_OWNER);
 	const resumeInstance = useResumeInstance(instance);
 
@@ -30,7 +31,9 @@ export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 						<Icon path={iconPause} />
 					</ActionIcon>
 					<PrimaryTitle mt="xl">This instance is paused</PrimaryTitle>
-					<Text>Resume your instance to continue where you left off.</Text>
+					<Text>
+						{description ?? "Resume your instance to continue where you left off."}
+					</Text>
 					<Tooltip
 						label="Ask your organization owner to resume this instance"
 						disabled={canResume}
