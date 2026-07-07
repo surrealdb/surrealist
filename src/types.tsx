@@ -723,16 +723,24 @@ export interface CloudBackupPolicyTierMonthly {
 	editable: boolean;
 }
 
+export interface CloudBackupPolicyFrequency {
+	frequency_hours: number;
+	allowed_frequency_hours: number[];
+	editable: boolean;
+}
+
 export interface CloudBackupPolicyResponse {
 	daily: CloudBackupPolicyTierDaily;
 	weekly: CloudBackupPolicyTierWeekly;
 	monthly: CloudBackupPolicyTierMonthly;
+	frequency?: CloudBackupPolicyFrequency;
 }
 
 export interface CloudUpdateBackupPolicyRequest {
 	daily_retention_days?: number | null;
 	weekly_retention_weeks?: number | null;
 	monthly_retention_months?: number | null;
+	frequency_hours?: number | null;
 }
 
 export interface CloudBackupPolicySummary {
