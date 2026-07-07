@@ -48,6 +48,10 @@ export async function fetchAPI<T = unknown>(
 			return await response.json();
 		}
 	} catch (err) {
+		if (err instanceof ApiError) {
+			throw err;
+		}
+
 		throw new Error(`Failed API request to ${apiBase}${path}: ${err}`);
 	}
 

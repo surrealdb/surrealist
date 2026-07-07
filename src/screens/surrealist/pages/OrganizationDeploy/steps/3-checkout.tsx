@@ -15,6 +15,7 @@ import {
 import {
 	Icon,
 	iconArrowUpRight,
+	iconChevronRight,
 	iconCreditCard,
 	iconDatabase,
 	iconHistory,
@@ -24,11 +25,13 @@ import {
 	iconQuery,
 	iconRelation,
 	iconTag,
+	iconWarning,
 	pictoSDBCloudGradient,
 } from "@surrealdb/ui";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.png";
+import { ApiError } from "~/cloud/api";
 import {
 	getBillingProviderAction,
 	isBillingManaged,
@@ -55,6 +58,7 @@ import {
 	resolveDefaultDeployDatasetPath,
 } from "~/util/datasets";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
@@ -65,11 +69,14 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 	const isScale = details.plan === "scale";
 	const deployMutation = useInstanceDeployMutation(organisation);
 	const computeTypes = useInstanceTypeRegistry(organisation, "compute");
-	const storageTypes = useInstanceTypeRegistry(organisation, "storage");
+	// const storageTypes = useInstanceTypeRegistry(organisation, "storage");
 	const instanceType = computeTypes.get(details.computeType);
-	const storageType = storageTypes.get(details.storageType);
+	// const storageType = storageTypes.get(details.storageType);
+	const [limitReached, setLimitReached] = useState(false);
 
 	const handleDeploy = useStable(async () => {
+		setLimitReached(false);
+
 		try {
 			const [instance, connection] = await deployMutation.mutateAsync(details);
 
@@ -97,6 +104,11 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 
 			navigateConnection(connection.id, "dashboard");
 		} catch (err: any) {
+			if (err instanceof ApiError && err.status === 412) {
+				setLimitReached(true);
+				return;
+			}
+
 			showErrorNotification({
 				title: "Failed to deploy instance",
 				content: err.message,
@@ -118,21 +130,31 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 	const computeMax = instanceType?.compute_units.max ?? 0;
 	const computeTypeName = instanceType?.display_name ?? "";
 	const computeTypeCategory = instanceType?.category ?? "";
-	const storageTypeName = storageType?.display_name ?? "";
-	const storageTypeCategory = storageType?.category ?? "";
+	// const storageTypeName = storageType?.display_name ?? "";
+	// const storageTypeCategory = storageType?.category ?? "";
 
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const computeTypeText = isFree
 		? "Free"
 		: `${computeTypeName} (${getTypeCategoryName(computeTypeCategory)})`;
-	const _storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
+	// const _storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
 	const computeText = isScale
 		? `${computeCores} ${plural(computeCores, "vCPU", "vCPUs")}`
 		: `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const computeNodesText = isScale ? `${details.computeUnits} Nodes` : "Single-node";
-	const _storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
+	// const _storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
 	const storageText = formatMemory(details.storageAmount * 1000, true);
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
+
+	const handleContactSales = useStable(() => {
+		dispatchIntent("create-message", {
+			type: "conversation",
+			organisation: organisation.id,
+			conversationType: "sales-enquiry",
+			subject: "Instance limit enquiry",
+			message: `Hello! I would like to discuss increasing organisation instance limits for my organisation (ID: ${organisation.id}). Thanks!`,
+		});
+	});
 
 	const updateMigration = useStable((e: ChangeEvent<HTMLInputElement>) => {
 		setDetails((draft) => {
@@ -440,6 +462,32 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 			</Box>
 
 			<Divider my={36} />
+
+			{limitReached && (
+				<Alert
+					mb="xl"
+					color="red"
+					icon={<Icon path={iconWarning} />}
+					title="Instance limit reached"
+				>
+					<Text className="selectable">
+						You have reached the maximum number of instances for this organisation.
+					</Text>
+					<Text className="selectable">
+						Remove an existing instance or contact support to increase your limit before
+						deploying a new instance.
+					</Text>
+					<Button
+						mt="md"
+						size="xs"
+						variant="gradient"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={handleContactSales}
+					>
+						Contact us
+					</Button>
+				</Alert>
+			)}
 
 			<Group>
 				<Button
