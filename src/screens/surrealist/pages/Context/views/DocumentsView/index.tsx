@@ -26,6 +26,9 @@ import type { Spectron } from "@surrealdb/spectron";
 import {
 	Icon,
 	iconBraces,
+	iconCheck,
+	iconClose,
+	iconEdit,
 	iconEye,
 	iconFile,
 	iconFolderPlus,
@@ -38,7 +41,7 @@ import {
 	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Fragment, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useConfirmation } from "~/providers/Confirmation";
 import type { SpectronScopeSets } from "~/types";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
@@ -289,6 +292,10 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 				client={client}
 				document={inspecting}
 				onClose={() => setInspecting(null)}
+				onRenamed={(updated) => {
+					setInspecting(updated);
+					invalidateList();
+				}}
 			/>
 		</Stack>
 	);
@@ -676,10 +683,12 @@ function InspectorDrawer({
 	client,
 	document: doc,
 	onClose,
+	onRenamed,
 }: {
 	client: Spectron;
 	document: DocumentEntry | null;
 	onClose: () => void;
+	onRenamed: (document: DocumentEntry) => void;
 }) {
 	const [chunkPage, setChunkPage] = useState(1);
 
@@ -720,9 +729,155 @@ function InspectorDrawer({
 					document={doc}
 					chunkPage={chunkPage}
 					onChunkPageChange={setChunkPage}
+					onRenamed={onRenamed}
 				/>
 			)}
 		</Drawer>
+	);
+}
+
+// Editable document name. There is no dedicated rename endpoint, so the only
+// way to change the stored title is to reprocess the document — we round-trip
+// its existing bytes with the new title. That re-runs the ingestion pipeline,
+// so we tell the user the document will be re-processed. (#750)
+function DocumentNameField({
+	client,
+	document: doc,
+	onRenamed,
+}: {
+	client: Spectron;
+	document: DocumentEntry;
+	onRenamed: (document: DocumentEntry) => void;
+}) {
+	const [editing, setEditing] = useState(false);
+	const [title, setTitle] = useState(doc.title ?? "");
+
+	// Re-sync the field whenever the inspected document's title changes.
+	useEffect(() => {
+		setTitle(doc.title ?? "");
+		setEditing(false);
+	}, [doc.title]);
+
+	const rename = useMutation({
+		mutationFn: async (nextTitle: string) => {
+			const bytes = await client.documents.raw(doc.id);
+			await client.documents.reprocess(doc.id, {
+				file: new Blob([bytes], {
+					type: doc.mimeType || "application/octet-stream",
+				}),
+				filename: doc.source || doc.title || doc.id,
+				title: nextTitle,
+				contentType: doc.mimeType || undefined,
+			});
+			return client.documents.get(doc.id);
+		},
+		onSuccess: (updated) => {
+			onRenamed(updated);
+			setEditing(false);
+			showInfo({
+				title: "Document renamed",
+				subtitle: "Spectron is re-processing it under the new name.",
+			});
+		},
+		onError: (err) => {
+			showErrorNotification({ title: "Couldn't rename document", content: err });
+		},
+	});
+
+	const trimmed = title.trim();
+	const canSave = trimmed.length > 0 && trimmed !== (doc.title ?? "") && !rename.isPending;
+
+	const cancel = () => {
+		setTitle(doc.title ?? "");
+		setEditing(false);
+	};
+
+	if (!editing) {
+		return (
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				align="center"
+			>
+				<Text
+					fw={600}
+					c="bright"
+					flex={1}
+					truncate
+					className="selectable"
+				>
+					{doc.title || doc.source || "Untitled document"}
+				</Text>
+				<Tooltip label="Rename">
+					<ActionIcon
+						variant="subtle"
+						color="slate"
+						size="sm"
+						aria-label="Rename document"
+						onClick={() => setEditing(true)}
+					>
+						<Icon path={iconEdit} />
+					</ActionIcon>
+				</Tooltip>
+			</Group>
+		);
+	}
+
+	return (
+		<Stack gap={4}>
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				align="center"
+			>
+				<TextInput
+					flex={1}
+					value={title}
+					autoFocus
+					disabled={rename.isPending}
+					aria-label="Document name"
+					onChange={(event) => setTitle(event.currentTarget.value)}
+					onKeyDown={(event) => {
+						if (event.key === "Enter" && canSave) {
+							event.preventDefault();
+							rename.mutate(trimmed);
+						} else if (event.key === "Escape") {
+							event.preventDefault();
+							cancel();
+						}
+					}}
+				/>
+				<Tooltip label="Save">
+					<ActionIcon
+						variant="light"
+						color="green"
+						aria-label="Save name"
+						disabled={!canSave}
+						loading={rename.isPending}
+						onClick={() => rename.mutate(trimmed)}
+					>
+						<Icon path={iconCheck} />
+					</ActionIcon>
+				</Tooltip>
+				<Tooltip label="Cancel">
+					<ActionIcon
+						variant="subtle"
+						color="slate"
+						aria-label="Cancel rename"
+						disabled={rename.isPending}
+						onClick={cancel}
+					>
+						<Icon path={iconClose} />
+					</ActionIcon>
+				</Tooltip>
+			</Group>
+			<Text
+				fz="xs"
+				c="slate"
+			>
+				Renaming re-processes the document so retrieval stays in sync.
+			</Text>
+		</Stack>
 	);
 }
 
@@ -731,11 +886,13 @@ function InspectorBody({
 	document: doc,
 	chunkPage,
 	onChunkPageChange,
+	onRenamed,
 }: {
 	client: Spectron;
 	document: DocumentEntry;
 	chunkPage: number;
 	onChunkPageChange: (page: number) => void;
+	onRenamed: (document: DocumentEntry) => void;
 }) {
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
@@ -753,6 +910,12 @@ function InspectorBody({
 
 	return (
 		<Stack gap="lg">
+			<DocumentNameField
+				client={client}
+				document={doc}
+				onRenamed={onRenamed}
+			/>
+
 			<Stack gap={6}>
 				<MetaRow label="Status">
 					<StatusBadge
