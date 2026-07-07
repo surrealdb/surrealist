@@ -1,6 +1,6 @@
 .card {
 	position: relative;
-	height: 152px;
+	height: 148px;
 	overflow: hidden;
 	transition: border-color 150ms ease;
 
@@ -29,21 +29,6 @@
 
 .card:hover .card-icon {
 	transform: translateY(-50%) scale(1.05);
-}
-
-.pill {
-	align-self: flex-start;
-	padding: 5px 14px;
-	border-radius: 999px;
-	border: 1px solid var(--mantine-color-default-border);
-	font-size: var(--mantine-font-size-xs);
-	font-weight: 500;
-	line-height: 1;
-	color: var(--mantine-color-slate-1);
-	background: color-mix(in srgb, var(--mantine-color-obsidian-9) 55%, transparent);
-	transition:
-		border-color 150ms ease,
-		color 150ms ease;
 }
 
 .card:hover .pill {

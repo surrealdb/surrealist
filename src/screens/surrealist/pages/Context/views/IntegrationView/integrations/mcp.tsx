@@ -1,5 +1,6 @@
 import type { CloudContext } from "~/types";
-import { getSpectronUrls } from "./spectron-urls";
+import { dedent } from "~/util/dedent";
+import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildMcpSteps(context: CloudContext): IntegrationStep[] {
@@ -8,40 +9,49 @@ export function buildMcpSteps(context: CloudContext): IntegrationStep[] {
 	return [
 		{
 			title: "Create an API key",
-			description:
-				"The MCP server authenticates with a scoped API key bound to your principal. Create one for this context.",
-			action: "api_keys",
+			description: dedent(`
+				The MCP server authenticates with a scoped API key bound to your principal. Create one for this context.
+
+				<ApiKey />
+			`),
 		},
 		{
 			title: "MCP endpoint",
-			description:
-				"Spectron exposes a streamable HTTP MCP server. Point any MCP-compatible client at this URL.",
-			code: mcpUrl,
-			lang: "bash",
+			description: dedent(`
+				Spectron exposes a streamable HTTP MCP server. Point any MCP-compatible client at this URL.
+
+				~~~bash
+				${mcpUrl}
+				~~~
+			`),
 		},
 		{
 			title: "Configuration reference",
-			description:
-				"Most MCP clients accept a server entry like this. Send your API key as a Bearer token and select this context with the X-Spectron-Context header.",
-			code: `{
-  "mcpServers": {
-    "spectron": {
-      "url": "${mcpUrl}",
-      "headers": {
-        "Authorization": "Bearer your-api-key",
-        "X-Spectron-Context": "${context.id}"
-      }
-    }
-  }
-}`,
-			lang: "json",
+			description: dedent(`
+				Most MCP clients accept a server entry like this. Send your API key as a Bearer token and select this context with the X-Spectron-Context header.
+
+				~~~json
+				{
+				  "mcpServers": {
+				    "spectron": {
+				      "url": "${mcpUrl}",
+				      "headers": {
+				        "Authorization": "Bearer your-api-key",
+				        "X-Spectron-Context": "${context.id}"
+				      }
+				    }
+				  }
+				}
+				~~~
+			`),
 		},
 		{
 			title: "Explore Spectron",
-			description:
-				"Read the MCP server reference for the available memory and knowledge tools, scope headers, and authentication.",
-			action: "documentation",
-			documentationUrl: "https://surrealdb.com/docs/spectron/integrations/mcp-server",
+			description: dedent(`
+				Read the MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server" />
+			`),
 		},
 	];
 }

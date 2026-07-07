@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
 export interface IntegrationStep {
+	/** Short label shown as the timeline step title. */
 	title: ReactNode;
-	description: ReactNode;
-	action?: "api_keys" | "documentation";
-	/** Used when `action` is `documentation`; falls back to a generic docs URL if omitted. */
-	documentationUrl?: string;
-	code?: string;
-	lang?: string;
+	/**
+	 * Markdown body rendered with `MarkdownViewer`. May embed fenced code blocks
+	 * (using `~~~` fences) and custom components such as `<ApiKey />` and
+	 * `<Documentation />`.
+	 */
+	description: string;
 }
