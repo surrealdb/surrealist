@@ -1,4 +1,4 @@
-import { Button, Group, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Button, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
+import { BackupFrequency } from "../sections/backups/BackupFrequency";
 import { BackupRetention } from "../sections/backups/BackupRetention";
 import { InstanceBackup } from "../sections/backups/InstanceBackup";
 import type { ConnectionSettingsTabProps } from "../types";
@@ -49,21 +50,23 @@ export function ConnectionBackupsTab({
 				description="Create a new instance from a backup snapshot"
 			>
 				{!backups?.length ? (
-					<Stack
-						align="center"
-						py="xl"
-						gap="xs"
-					>
-						<Icon path={iconHistory} />
-						<Text
-							fz="lg"
-							c="bright"
-							fw={600}
+					<Paper>
+						<Stack
+							align="center"
+							py="xl"
+							gap="xs"
 						>
-							No backups available
-						</Text>
-						<Text>There are no backups available for this instance.</Text>
-					</Stack>
+							<Icon path={iconHistory} />
+							<Text
+								fz="lg"
+								c="bright"
+								fw={600}
+							>
+								No backups available
+							</Text>
+							<Text>There are no backups available for this instance.</Text>
+						</Stack>
+					</Paper>
 				) : (
 					<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
 						{backups
@@ -96,6 +99,13 @@ export function ConnectionBackupsTab({
 						</Button>
 					</Group>
 				)}
+			</Section>
+
+			<Section
+				title="Backup frequency"
+				description="Configure how often automated backups are taken"
+			>
+				<BackupFrequency instance={instance} />
 			</Section>
 
 			<Section

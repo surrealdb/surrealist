@@ -1,9 +1,7 @@
 import {
-	Anchor,
 	Box,
 	Button,
 	Center,
-	Divider,
 	Group,
 	Loader,
 	NumberInput,
@@ -23,6 +21,7 @@ import { useIsLight } from "~/hooks/theme";
 import { CloudBackupPolicyResponse, CloudInstance, CloudUpdateBackupPolicyRequest } from "~/types";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
+import { BackupUpgradeNotice } from "./BackupUpgradeNotice";
 
 export interface BackupRetentionProps {
 	instance: CloudInstance;
@@ -117,24 +116,14 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 		onClose?.();
 	});
 
-	const handleContactSales = useStable(() => {
-		dispatchIntent("create-message", {
-			type: "conversation",
-			organisation: instance.organization_id,
-			conversationType: "sales-enquiry",
-			subject: "Backup retention enquiry",
-			message: `Hello! I would like to discuss backup retention options for my instance (ID: ${instance.id}). Could you help me explore additional retention tiers? Thanks!`,
-		});
-	});
-
 	const applyDisabled = !hasEditableTier || isUnchanged || isPending || !values;
 
 	const retentionForm =
 		policy && values ? (
 			<RetentionPolicyForm
+				instance={instance}
 				policy={policy}
 				values={values}
-				onContactSales={handleContactSales}
 				onChange={setValues}
 			/>
 		) : null;
@@ -237,19 +226,24 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 }
 
 interface RetentionPolicyFormProps {
+	instance: CloudInstance;
 	policy: CloudBackupPolicyResponse;
 	values: BackupPolicyFormValues;
-	onContactSales: () => void;
 	onChange: Dispatch<SetStateAction<BackupPolicyFormValues | null>>;
 }
 
-function RetentionPolicyForm({
-	policy,
-	values,
-	onContactSales,
-	onChange,
-}: RetentionPolicyFormProps) {
+function RetentionPolicyForm({ instance, policy, values, onChange }: RetentionPolicyFormProps) {
 	const isLight = useIsLight();
+
+	const handleContactSales = useStable(() => {
+		dispatchIntent("create-message", {
+			type: "conversation",
+			organisation: instance.organization_id,
+			conversationType: "sales-enquiry",
+			subject: "Backup retention enquiry",
+			message: `Hello! I would like to discuss backup retention options for my instance (ID: ${instance.id}). Could you help me explore additional retention tiers? Thanks!`,
+		});
+	});
 
 	const hasLockedTier =
 		!policy.daily.editable || !policy.weekly.editable || !policy.monthly.editable;
@@ -257,7 +251,7 @@ function RetentionPolicyForm({
 	const tiers = [
 		{
 			title: "Daily",
-			schedule: "Automated every day",
+			schedule: "Snapshots every day",
 			value: values.daily_retention_days,
 			min: policy.daily.min_days,
 			max: policy.daily.max_days,
@@ -299,29 +293,19 @@ function RetentionPolicyForm({
 			bg={isLight ? "obsidian.1" : "obsidian.8"}
 		>
 			<Stack gap="md">
-				{tiers.map((tier, index) => (
-					<Box key={tier.title}>
-						{index > 0 && <Divider mb="md" />}
-						<BackupTierRow {...tier} />
-					</Box>
+				{tiers.map((tier) => (
+					<BackupTierRow
+						key={tier.title}
+						{...tier}
+					/>
 				))}
 			</Stack>
-
 			{hasLockedTier && (
-				<Text
-					fz="sm"
-					mt="lg"
-				>
-					Some retention tiers are fixed on your current plan.{" "}
-					<Anchor
-						variant="vibrant"
-						fz="sm"
-						onClick={onContactSales}
-					>
-						Contact us
-					</Anchor>{" "}
-					to make changes.
-				</Text>
+				<BackupUpgradeNotice
+					message="Longer backup retention across daily, weekly, and monthly tiers is available on higher instance plans."
+					actionLabel="Contact us"
+					onAction={handleContactSales}
+				/>
 			)}
 		</Paper>
 	);
