@@ -42,6 +42,7 @@ import { buildCliSteps } from "./integrations/cli";
 import { buildCodexSteps } from "./integrations/codex";
 import { buildDartSteps } from "./integrations/dart";
 import { buildElixirSteps } from "./integrations/elixir";
+import { buildEveSteps } from "./integrations/eve";
 import { buildGolangSteps } from "./integrations/golang";
 import { buildHaskellSteps } from "./integrations/haskell";
 import { buildKotlinSteps } from "./integrations/kotlin";
@@ -260,6 +261,7 @@ function buildIntegrationSteps(context: CloudContext): Record<IntegrationId, Int
 		n8n: buildN8nSteps(context),
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
+		eve: buildEveSteps(context),
 	};
 }
 

@@ -12,6 +12,7 @@ import {
 	brandOpenAi,
 	brandPython,
 	brandSwift,
+	brandVercel,
 	pictoEmbeddinggGradient,
 	pictoMCPGradient,
 	pictoSpectronGradient,
@@ -34,7 +35,8 @@ export type IntegrationId =
 	| "mcp"
 	| "n8n"
 	| "langchain"
-	| "openai-agents";
+	| "openai-agents"
+	| "eve";
 
 export interface IntegrationMeta {
 	label: string;
@@ -70,6 +72,7 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 	n8n: { label: "n8n", connect: "Connect via node", img: brandN8N },
 	langchain: { label: "LangChain", connect: "Connect via package", img: brandLangchain },
 	"openai-agents": { label: "OpenAI Agents", connect: "Connect via package", img: brandOpenAi },
+	eve: { label: "EveJS", connect: "Connect via package", img: brandVercel },
 };
 
 /**
@@ -102,7 +105,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 	{
 		title: "Frameworks",
 		description: "Wire this context into your agent framework of choice.",
-		integrations: ["langchain", "openai-agents"],
+		integrations: ["langchain", "openai-agents", "eve"],
 	},
 	{
 		title: "Automation platforms",
