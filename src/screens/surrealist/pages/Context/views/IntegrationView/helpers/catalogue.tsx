@@ -1,30 +1,41 @@
 import {
 	brandClaude,
+	brandCloudflare,
 	brandCodex,
-	brandCursor,
+	brandCursorDark,
+	brandCursorLight,
 	brandDart,
 	brandElixir,
-	brandGithub,
+	brandGithubDark,
+	brandGithubLight,
 	brandGo,
 	brandHaskell,
+	brandHermesDark,
+	brandHermesLight,
 	brandJavaScript,
 	brandKotlin,
 	brandLangchain,
+	brandMastraDark,
+	brandMastraLight,
 	brandN8N,
-	brandOpenAi,
+	brandOpenAiDark,
+	brandOpenAiLight,
+	brandOpenClaw,
 	brandPython,
 	brandSurrealDB,
 	brandSwift,
-	brandVercel,
+	brandTanStackDark,
+	brandTanStackLight,
+	brandVercelDark,
+	brandVercelLight,
 	brandVSCode,
-	pictoBotGradient,
+	brandZapier,
+	brandZedDark,
+	brandZedLight,
 	pictoConnectGradient,
 	pictoEmbeddinggGradient,
 	pictoMCPGradient,
-	pictoSidekickGradient,
 	pictoSpectronGradient,
-	pictoZapierGradient,
-	pictoZedGradient,
 } from "@surrealdb/ui";
 
 /** Stable identifier for an integration, used for deep-linking (`?integration=<id>`). */
@@ -52,6 +63,13 @@ export type IntegrationId =
 	| "langchain"
 	| "openai-agents"
 	| "eve"
+	| "cloudflare"
+	| "tanstack-ai"
+	| "mastra"
+	| "whatsapp"
+	| "telegram"
+	| "facebook-messenger"
+	| "sms-rcs"
 	| "surrealdb"
 	| "slack"
 	| "notion"
@@ -62,12 +80,15 @@ export type IntegrationId =
 	| "databricks"
 	| "snowflake";
 
+/** A brand image, either a single asset or a light/dark pair resolved by theme. */
+export type IntegrationImage = string | { light: string; dark: string };
+
 export interface IntegrationMeta {
 	label: string;
 	/** Short verb shown on the card, e.g. "Connect via MCP". */
 	connect?: string;
 	/** Brand image asset (full colour). */
-	img?: string;
+	img?: IntegrationImage;
 	/** Monochrome icon path (falls back when no brand image exists). */
 	icon?: string;
 	/** When set, the card is a non-interactive "Coming soon" placeholder. */
@@ -94,22 +115,61 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 	cli: { label: "Spectron CLI", connect: "Connect via CLI", img: pictoSpectronGradient },
 	"claude-code": { label: "Claude Code", connect: "Connect via MCP", img: brandClaude },
 	codex: { label: "OpenAI Codex", connect: "Connect via MCP", img: brandCodex },
-	cursor: { label: "Cursor", connect: "Connect via MCP", img: brandCursor },
-	openclaw: { label: "OpenClaw", connect: "Connect via MCP", img: pictoBotGradient },
-	hermes: { label: "Hermes", connect: "Connect via MCP", img: pictoSidekickGradient },
+	cursor: {
+		label: "Cursor",
+		connect: "Connect via MCP",
+		img: { light: brandCursorLight, dark: brandCursorDark },
+	},
+	openclaw: { label: "OpenClaw", connect: "Connect via MCP", img: brandOpenClaw },
+	hermes: {
+		label: "Hermes",
+		connect: "Connect via MCP",
+		img: { light: brandHermesLight, dark: brandHermesDark },
+	},
 	vscode: { label: "VS Code", connect: "Connect via MCP", img: brandVSCode },
-	zed: { label: "Zed", connect: "Connect via MCP", img: pictoZedGradient },
+	zed: {
+		label: "Zed",
+		connect: "Connect via MCP",
+		img: { light: brandZedLight, dark: brandZedDark },
+	},
 	mcp: { label: "MCP", connect: "Connect via MCP", img: pictoMCPGradient },
 	n8n: { label: "n8n", connect: "Connect via node", img: brandN8N },
-	zapier: { label: "Zapier", connect: "Connect via MCP", img: pictoZapierGradient },
+	zapier: { label: "Zapier", connect: "Connect via MCP", img: brandZapier },
 	langchain: { label: "LangChain", connect: "Connect via package", img: brandLangchain },
-	"openai-agents": { label: "OpenAI Agents", connect: "Connect via package", img: brandOpenAi },
-	eve: { label: "EveJS", connect: "Connect via package", img: brandVercel },
+	"openai-agents": {
+		label: "OpenAI Agents",
+		connect: "Connect via package",
+		img: { light: brandOpenAiLight, dark: brandOpenAiDark },
+	},
+	eve: {
+		label: "EveJS",
+		connect: "Connect via package",
+		img: { light: brandVercelLight, dark: brandVercelDark },
+	},
+	cloudflare: { label: "Cloudflare", connect: "Connect via MCP", img: brandCloudflare },
+	"tanstack-ai": {
+		label: "TanStack AI",
+		connect: "Connect via MCP",
+		img: { light: brandTanStackLight, dark: brandTanStackDark },
+	},
+	mastra: {
+		label: "Mastra",
+		connect: "Connect via package",
+		img: { light: brandMastraLight, dark: brandMastraDark },
+	},
+	whatsapp: { label: "WhatsApp", comingSoon: true },
+	telegram: { label: "Telegram", comingSoon: true },
+	"facebook-messenger": { label: "Facebook Messenger", comingSoon: true },
+	"sms-rcs": { label: "SMS / RCS", comingSoon: true },
 	surrealdb: { label: "SurrealDB", img: brandSurrealDB, comingSoon: true },
 	slack: { label: "Slack", img: pictoConnectGradient, comingSoon: true },
 	notion: { label: "Notion", img: pictoConnectGradient, comingSoon: true },
 	"google-drive": { label: "Google Drive", img: pictoConnectGradient, comingSoon: true },
-	github: { label: "GitHub", img: brandGithub, comingSoon: true },
+	github: {
+		label: "GitHub",
+		img: { light: brandGithubLight, dark: brandGithubDark },
+		comingSoon: true,
+	},
 	linear: { label: "Linear", img: pictoConnectGradient, comingSoon: true },
 	confluence: { label: "Confluence", img: pictoConnectGradient, comingSoon: true },
 	databricks: { label: "Databricks", img: pictoConnectGradient, comingSoon: true },
@@ -155,12 +215,17 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 	{
 		title: "Frameworks",
 		description: "Wire this context into your agent framework of choice.",
-		integrations: ["langchain", "openai-agents", "eve"],
+		integrations: ["langchain", "openai-agents", "eve", "cloudflare", "tanstack-ai", "mastra"],
 	},
 	{
 		title: "Automation platforms",
 		description: "Give your automation workflows access to this context's memory.",
 		integrations: ["n8n", "zapier"],
+	},
+	{
+		title: "Messaging",
+		description: "Bring this context's memory to the channels you are already messaging on.",
+		integrations: ["whatsapp", "telegram", "facebook-messenger", "sms-rcs"],
 	},
 	{
 		title: "Connectors",

@@ -25,6 +25,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
+import { useIsLight } from "~/hooks/theme";
 import type { CloudContext } from "~/types";
 import { dedent } from "~/util/dedent";
 import { ContextHero } from "../../components/ContextHero";
@@ -39,6 +40,7 @@ import {
 import { getSpectronUrls } from "./helpers/spectron-urls";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
 import { buildCliSteps } from "./integrations/cli";
+import { buildCloudflareSteps } from "./integrations/cloudflare";
 import { buildCodexSteps } from "./integrations/codex";
 import { buildCursorSteps } from "./integrations/cursor";
 import { buildDartSteps } from "./integrations/dart";
@@ -54,6 +56,7 @@ import { buildN8nSteps } from "./integrations/n8n";
 import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
 import { buildOpenClawSteps } from "./integrations/openclaw";
 import { buildSwiftSteps } from "./integrations/swift";
+import { buildTanStackSteps } from "./integrations/tanstack";
 import type { IntegrationStep } from "./integrations/types";
 import { buildVsCodeSteps } from "./integrations/vscode";
 import { buildZapierSteps } from "./integrations/zapier";
@@ -276,6 +279,8 @@ function buildIntegrationSteps(
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
 		eve: buildEveSteps(context),
+		cloudflare: buildCloudflareSteps(context),
+		"tanstack-ai": buildTanStackSteps(context),
 	};
 }
 
@@ -283,10 +288,14 @@ const DOCS_FALLBACK = "https://surrealdb.com/docs/spectron";
 
 /** Renders a large brand image or a monochrome icon for an integration. */
 function IntegrationGlyph({ meta, size }: { meta: IntegrationMeta; size: number }) {
+	const isLight = useIsLight();
+
 	if (meta.img) {
+		const src = typeof meta.img === "string" ? meta.img : meta.img[isLight ? "dark" : "light"];
+
 		return (
 			<Image
-				src={meta.img}
+				src={src}
 				w={size}
 				h={size}
 				alt=""
@@ -310,10 +319,11 @@ function IntegrationGlyph({ meta, size }: { meta: IntegrationMeta; size: number 
 
 interface IntegrationCardProps {
 	id: IntegrationId;
+	hasSteps: boolean;
 	onSelect: (id: IntegrationId) => void;
 }
 
-function IntegrationCard({ id, onSelect }: IntegrationCardProps) {
+function IntegrationCard({ id, hasSteps, onSelect }: IntegrationCardProps) {
 	const meta = INTEGRATION_META[id];
 
 	if (meta.comingSoon) {
@@ -350,50 +360,60 @@ function IntegrationCard({ id, onSelect }: IntegrationCardProps) {
 		);
 	}
 
+	const card = (
+		<Paper
+			p="lg"
+			radius="md"
+			className={classes.card}
+			withBorder
+		>
+			<Box
+				className={classes.cardIcon}
+				aria-hidden
+			>
+				<IntegrationGlyph
+					meta={meta}
+					size={74}
+				/>
+			</Box>
+			<Stack
+				h="100%"
+				justify="space-between"
+				gap={0}
+				pos="relative"
+				style={{ zIndex: 1 }}
+			>
+				<Text
+					fw={600}
+					fz="lg"
+					c="bright"
+				>
+					{meta.label}
+				</Text>
+				{hasSteps && (
+					<Group
+						gap="xs"
+						fz="xs"
+					>
+						{meta.connect}
+						<Icon path={iconArrowRight} />
+					</Group>
+				)}
+			</Stack>
+		</Paper>
+	);
+
+	if (!hasSteps) {
+		return <Box style={{ pointerEvents: "none" }}>{card}</Box>;
+	}
+
 	return (
 		<HoverGlow>
 			<UnstyledButton
 				w="100%"
 				onClick={() => onSelect(id)}
 			>
-				<Paper
-					p="lg"
-					radius="md"
-					className={classes.card}
-					withBorder
-				>
-					<Box
-						className={classes.cardIcon}
-						aria-hidden
-					>
-						<IntegrationGlyph
-							meta={meta}
-							size={74}
-						/>
-					</Box>
-					<Stack
-						h="100%"
-						justify="space-between"
-						gap={0}
-						pos="relative"
-						style={{ zIndex: 1 }}
-					>
-						<Text
-							fw={600}
-							fz="lg"
-							c="bright"
-						>
-							{meta.label}
-						</Text>
-						<Group
-							gap="xs"
-							fz="xs"
-						>
-							{meta.connect}
-							<Icon path={iconArrowRight} />
-						</Group>
-					</Stack>
-				</Paper>
+				{card}
 			</UnstyledButton>
 		</HoverGlow>
 	);
@@ -517,21 +537,28 @@ export default function IntegrationView({ context }: ContextViewProps) {
 	const idFromSearch = search.integration;
 	const navigateContext = useContextNavigator();
 
+	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
+
+	const canOpen = (id: string | undefined): id is IntegrationId =>
+		isIntegrationId(id) &&
+		!INTEGRATION_META[id].comingSoon &&
+		(integrationSteps[id]?.length ?? 0) > 0;
+
 	const [selected, setSelected] = useState<IntegrationId | null>(() =>
-		isIntegrationId(idFromSearch) && !INTEGRATION_META[idFromSearch].comingSoon
-			? idFromSearch
-			: null,
+		canOpen(idFromSearch) ? idFromSearch : null,
 	);
 	const [activeStep, setActiveStep] = useState(0);
 
-	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
-
 	// Deep-link support: open the modal when arriving with an `?integration=` param.
 	useEffect(() => {
-		if (isIntegrationId(idFromSearch) && !INTEGRATION_META[idFromSearch].comingSoon) {
+		if (
+			isIntegrationId(idFromSearch) &&
+			!INTEGRATION_META[idFromSearch].comingSoon &&
+			(integrationSteps[idFromSearch]?.length ?? 0) > 0
+		) {
 			setSelected(idFromSearch);
 		}
-	}, [idFromSearch]);
+	}, [idFromSearch, integrationSteps]);
 
 	const openIntegration = (id: IntegrationId) => {
 		setActiveStep(0);
@@ -583,6 +610,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 							<IntegrationCard
 								key={id}
 								id={id}
+								hasSteps={(integrationSteps[id]?.length ?? 0) > 0}
 								onSelect={openIntegration}
 							/>
 						))}
