@@ -4,6 +4,7 @@ import {
 	Box,
 	Button,
 	Group,
+	Loader,
 	Paper,
 	Select,
 	SimpleGrid,
@@ -12,6 +13,7 @@ import {
 	Text,
 	TextInput,
 	ThemeIcon,
+	Tooltip,
 } from "@mantine/core";
 import { Icon, iconDotsVertical, iconSearch, iconSpectron, Spacer } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
@@ -85,6 +87,11 @@ function ContextCard({
 								>
 									{context.name}
 								</Text>
+								{context.state === "creating" && (
+									<Tooltip label="Provisioning context...">
+										<Loader size="xs" />
+									</Tooltip>
+								)}
 							</Group>
 							<Text size="sm">
 								{regions.find((r) => r.slug === context.region)?.description ??

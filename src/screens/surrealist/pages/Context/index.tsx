@@ -1,4 +1,4 @@
-import { Box, Center, Loader, Skeleton } from "@mantine/core";
+import { Box, Center, Loader, Skeleton, Stack, Text } from "@mantine/core";
 import { type ComponentType, lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
@@ -95,6 +95,12 @@ export function ContextPage({ view }: ContextPageProps) {
 
 	const isFullHeightView = viewPage === "playground";
 
+	// Contexts are provisioned asynchronously: until the state flips to ready
+	// the Spectron endpoint refuses tokens, so gate the whole workspace behind
+	// a waiting view. The context query polls while creating, so this advances
+	// on its own.
+	const isProvisioning = contextQuery.data?.state === "creating";
+
 	const viewContent = (
 		<>
 			{isLoading && (
@@ -104,29 +110,52 @@ export function ContextPage({ view }: ContextPageProps) {
 					mt="sm"
 				/>
 			)}
-			{contextQuery.data && (
-				<SpectronProvider
-					context={contextQuery.data}
-					organizationId={organizationId ?? contextQuery.data.organization_id}
-				>
-					<Suspense
-						fallback={
-							<Center flex={1}>
-								<Loader />
-							</Center>
-						}
+			{contextQuery.data &&
+				(isProvisioning ? (
+					<Center flex={1}>
+						<Stack
+							align="center"
+							gap="lg"
+						>
+							<Loader />
+							<Stack
+								align="center"
+								gap={4}
+							>
+								<Text
+									c="bright"
+									fw={600}
+									fz="xl"
+								>
+									Provisioning your context
+								</Text>
+								<Text>This usually takes a few seconds</Text>
+							</Stack>
+						</Stack>
+					</Center>
+				) : (
+					<SpectronProvider
+						context={contextQuery.data}
+						organizationId={organizationId ?? contextQuery.data.organization_id}
 					>
-						{viewPage === "settings" ? (
-							<SettingsComponent
-								context={contextQuery.data}
-								tab={settingsTab ?? "general"}
-							/>
-						) : Component ? (
-							<Component context={contextQuery.data} />
-						) : null}
-					</Suspense>
-				</SpectronProvider>
-			)}
+						<Suspense
+							fallback={
+								<Center flex={1}>
+									<Loader />
+								</Center>
+							}
+						>
+							{viewPage === "settings" ? (
+								<SettingsComponent
+									context={contextQuery.data}
+									tab={settingsTab ?? "general"}
+								/>
+							) : Component ? (
+								<Component context={contextQuery.data} />
+							) : null}
+						</Suspense>
+					</SpectronProvider>
+				))}
 		</>
 	);
 

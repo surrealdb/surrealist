@@ -52,6 +52,9 @@ export function useCloudContextQuery(
 	return useQuery({
 		queryKey: ["cloud", "context", organization, contextId],
 		enabled: !!organization && !!contextId && isAuthenticated && hasCloudSession,
+		// Contexts are provisioned asynchronously; poll while one is still
+		// being created so the page advances to ready on its own.
+		refetchInterval: (query) => (query.state.data?.state === "creating" ? 5_000 : false),
 		queryFn: async () => {
 			const ctx = await fetchAPI<CloudContext>(
 				`/organizations/${organization}/spectron_contexts/${contextId}`,
