@@ -321,19 +321,10 @@ function IntegrationCard({ id, onSelect }: IntegrationCardProps) {
 			<Paper
 				p="lg"
 				radius="md"
-				className={classes.card}
+				className={`${classes.card} ${classes.cardComingSoon}`}
 				style={{ pointerEvents: "none", opacity: 0.6 }}
 				withBorder
 			>
-				<Box
-					className={classes.cardIcon}
-					aria-hidden
-				>
-					<IntegrationGlyph
-						meta={meta}
-						size={74}
-					/>
-				</Box>
 				<Stack
 					h="100%"
 					justify="space-between"
