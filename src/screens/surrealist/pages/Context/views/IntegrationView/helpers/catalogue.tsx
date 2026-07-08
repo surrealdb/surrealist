@@ -1,7 +1,10 @@
 import {
 	brandClaude,
 	brandCodex,
+	brandDart,
+	brandElixir,
 	brandGo,
+	brandHaskell,
 	brandJavaScript,
 	brandKotlin,
 	brandLangchain,
@@ -21,6 +24,9 @@ export type IntegrationId =
 	| "go"
 	| "swift"
 	| "kotlin"
+	| "haskell"
+	| "elixir"
+	| "dart"
 	| "api"
 	| "cli"
 	| "claude-code"
@@ -53,6 +59,9 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 	go: { label: "Go", connect: "Connect via SDK", img: brandGo },
 	swift: { label: "Swift", connect: "Connect via SDK", img: brandSwift },
 	kotlin: { label: "Kotlin", connect: "Connect via SDK", img: brandKotlin },
+	haskell: { label: "Haskell", connect: "Connect via SDK", img: brandHaskell },
+	elixir: { label: "Elixir", connect: "Connect via SDK", img: brandElixir },
+	dart: { label: "Dart", connect: "Connect via SDK", img: brandDart },
 	api: { label: "REST API", connect: "Connect via API", img: pictoEmbeddinggGradient },
 	cli: { label: "Spectron CLI", connect: "Connect via CLI", img: pictoSpectronGradient },
 	"claude-code": { label: "Claude Code", connect: "Connect via MCP", img: brandClaude },
@@ -71,7 +80,18 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 	{
 		title: "SDKs & API",
 		description: "Talk to this context directly from your own code.",
-		integrations: ["cli", "javascript", "python", "go", "swift", "kotlin", "api"],
+		integrations: [
+			"cli",
+			"javascript",
+			"python",
+			"go",
+			"swift",
+			"kotlin",
+			"haskell",
+			"elixir",
+			"dart",
+			"api",
+		],
 	},
 	{
 		title: "Agents & coding tools",

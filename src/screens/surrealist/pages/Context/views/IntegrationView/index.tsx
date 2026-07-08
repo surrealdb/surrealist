@@ -40,7 +40,10 @@ import { getSpectronUrls } from "./helpers/spectron-urls";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
 import { buildCliSteps } from "./integrations/cli";
 import { buildCodexSteps } from "./integrations/codex";
+import { buildDartSteps } from "./integrations/dart";
+import { buildElixirSteps } from "./integrations/elixir";
 import { buildGolangSteps } from "./integrations/golang";
+import { buildHaskellSteps } from "./integrations/haskell";
 import { buildKotlinSteps } from "./integrations/kotlin";
 import { buildLangChainSteps } from "./integrations/langchain";
 import { buildMcpSteps } from "./integrations/mcp";
@@ -247,6 +250,9 @@ function buildIntegrationSteps(context: CloudContext): Record<IntegrationId, Int
 		go: buildGolangSteps(context),
 		swift: buildSwiftSteps(context),
 		kotlin: buildKotlinSteps(context),
+		haskell: buildHaskellSteps(context),
+		elixir: buildElixirSteps(context),
+		dart: buildDartSteps(context),
 		cli: buildCliSteps(context),
 		"claude-code": buildClaudeCodeSteps(context),
 		codex: buildCodexSteps(context),
@@ -497,7 +503,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Quick start"
 				title="Connect to your context"
-				description="Wire this context into your agent — through the Python, JavaScript, Go, Swift, and Kotlin SDKs, the REST API and CLI, MCP-native coding tools, or a framework like LangChain, n8n, and the OpenAI Agents SDK."
+				description="Wire this context into your agent — through the Python, JavaScript, Go, Swift, Kotlin, Haskell, Elixir, and Dart SDKs, the REST API and CLI, MCP-native coding tools, or a framework like LangChain, n8n, and the OpenAI Agents SDK."
 				art={pictoIntegrationsGradient}
 			/>
 
