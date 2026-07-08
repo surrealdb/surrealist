@@ -3,32 +3,32 @@ import { dedent } from "~/util/dedent";
 import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
-export function buildMcpSteps(context: CloudContext): IntegrationStep[] {
+export function buildHermesSteps(context: CloudContext): IntegrationStep[] {
 	const { mcpUrl } = getSpectronUrls(context);
 
 	return [
 		{
 			title: "Create an API key",
 			description: dedent(`
-				The MCP server authenticates with a scoped API key bound to your principal. Create one for this context.
+				Hermes authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "MCP endpoint",
+			title: "Config location",
 			description: dedent(`
-				Spectron exposes a streamable HTTP MCP server. Point any MCP-compatible client at this URL.
+				Hermes reads MCP servers from \`~/.hermes/mcp.json\`. Create the file if it does not exist yet.
 
 				~~~bash
-				${mcpUrl}
+				~/.hermes/mcp.json
 				~~~
 			`),
 		},
 		{
 			title: "Configuration reference",
 			description: dedent(`
-				Most MCP clients accept a server entry like this. Send your API key as a Bearer token and select this context with the X-Spectron-Context header.
+				Add Spectron as a custom server. Point it at your context host, send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
 
 				~~~json
 				{
@@ -46,9 +46,15 @@ export function buildMcpSteps(context: CloudContext): IntegrationStep[] {
 			`),
 		},
 		{
+			title: "Verify",
+			description: dedent(`
+				Restart Hermes and confirm the Spectron memory and knowledge tools are listed for the session.
+			`),
+		},
+		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Read the MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
 
 				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server" />
 			`),

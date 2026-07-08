@@ -3,14 +3,14 @@ import { dedent } from "~/util/dedent";
 import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
-export function buildCursorSteps(context: CloudContext): IntegrationStep[] {
+export function buildVsCodeSteps(context: CloudContext): IntegrationStep[] {
 	const { mcpUrl } = getSpectronUrls(context);
 
 	return [
 		{
 			title: "Create an API key",
 			description: dedent(`
-				Cursor authenticates with a scoped API key bound to your principal. Create one for this context.
+				VS Code authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
@@ -18,22 +18,23 @@ export function buildCursorSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Config location",
 			description: dedent(`
-				Cursor reads MCP servers from \`~/.cursor/mcp.json\` for every project, or \`.cursor/mcp.json\` to scope them to a single workspace.
+				VS Code reads MCP servers from \`.vscode/mcp.json\` in your workspace, or from your user \`mcp.json\` to share them across projects.
 
 				~~~bash
-				~/.cursor/mcp.json
+				.vscode/mcp.json
 				~~~
 			`),
 		},
 		{
 			title: "Configuration reference",
 			description: dedent(`
-				Add Spectron as a custom server. Point it at your context host, send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
+				Register Spectron as a streamable HTTP server. Send your API key as a Bearer token and select this context with the X-Spectron-Context header.
 
 				~~~json
 				{
-				  "mcpServers": {
+				  "servers": {
 				    "spectron": {
+				      "type": "http",
 				      "url": "${mcpUrl}",
 				      "headers": {
 				        "Authorization": "Bearer your-api-key",
@@ -48,7 +49,7 @@ export function buildCursorSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Verify",
 			description: dedent(`
-				Open Settings → MCP and confirm Spectron is listed with a green indicator. The memory and knowledge tools are then available to the agent in chat.
+				Open the Chat view in agent mode and run "MCP: List Servers" from the Command Palette to confirm Spectron is connected and its tools are available.
 			`),
 		},
 		{
@@ -56,7 +57,7 @@ export function buildCursorSteps(context: CloudContext): IntegrationStep[] {
 			description: dedent(`
 				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server/coding-assistants/cursor" />
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server/coding-assistants/vscode" />
 			`),
 		},
 	];

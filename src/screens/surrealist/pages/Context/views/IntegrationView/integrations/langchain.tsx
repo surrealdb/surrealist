@@ -1,5 +1,6 @@
 import type { CloudContext } from "~/types";
-import { getSpectronUrls } from "./spectron-urls";
+import { dedent } from "~/util/dedent";
+import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildLangChainSteps(context: CloudContext): IntegrationStep[] {
@@ -8,73 +9,84 @@ export function buildLangChainSteps(context: CloudContext): IntegrationStep[] {
 	return [
 		{
 			title: "Install packages",
-			description:
-				"Add Spectron, the LangChain adapter, and your chosen model provider. The adapter does not bundle LangChain—install the stack you already use.",
-			code: "pip install spectron spectron-langchain langchain langchain-openai",
-			lang: "bash",
+			description: dedent(`
+				Add Spectron, the LangChain adapter, and your chosen model provider. The adapter does not bundle LangChain—install the stack you already use.
+
+				~~~bash
+				pip install spectron spectron-langchain langchain langchain-openai
+				~~~
+			`),
 		},
 		{
 			title: "Create API credentials",
-			description:
-				"SpectronMemory authenticates with an agent API key for this context. Create one here if you have not already.",
-			action: "api_keys",
+			description: dedent(`
+				SpectronMemory authenticates with an agent API key for this context. Create one here if you have not already.
+
+				<ApiKey />
+			`),
 		},
 		{
 			title: "Wire SpectronMemory",
-			description:
-				"Point memory at this context’s endpoint and scope. Each save_context call records user and assistant turns; load_memory_variables recalls relevant graph and vector context.",
-			code: `from langchain_openai import ChatOpenAI
-from langchain.chains import ConversationChain
-from spectron_langchain import SpectronMemory
+			description: dedent(`
+				Point memory at this context’s endpoint and scope. Each save_context call records user and assistant turns; load_memory_variables recalls relevant graph and vector context.
 
-memory = SpectronMemory(
-    api_key="your-api-key",
-    endpoint="${endpoint}",
-    scopes=[["user/alex", "org/acme"]],
-)
+				~~~python
+				from langchain_openai import ChatOpenAI
+				from langchain.chains import ConversationChain
+				from spectron_langchain import SpectronMemory
 
-chain = ConversationChain(
-    llm=ChatOpenAI(model="gpt-4o"),
-    memory=memory,
-)
+				memory = SpectronMemory(
+				    api_key="your-api-key",
+				    endpoint="${endpoint}",
+				    scopes=[["user/alex", "org/acme"]],
+				)
 
-response = chain.invoke({"input": "I'm Alex and I prefer dark mode."})
-print(response["response"])`,
-			lang: "python",
+				chain = ConversationChain(
+				    llm=ChatOpenAI(model="gpt-4o"),
+				    memory=memory,
+				)
+
+				response = chain.invoke({"input": "I'm Alex and I prefer dark mode."})
+				print(response["response"])
+				~~~
+			`),
 		},
 		{
 			title: "Optional: retrieval + memory",
-			description:
-				"Combine SpectronMemory with SpectronRetriever so ConversationalRetrievalChain blends experiential memory and authoritative knowledge.",
-			code: `from langchain.chains import ConversationalRetrievalChain
-from langchain_openai import ChatOpenAI
-from spectron_langchain import SpectronMemory, SpectronRetriever
+			description: dedent(`
+				Combine SpectronMemory with SpectronRetriever so ConversationalRetrievalChain blends experiential memory and authoritative knowledge.
 
-llm = ChatOpenAI(model="gpt-4o")
-memory = SpectronMemory(
-    api_key="your-api-key",
-    endpoint="${endpoint}",
-    scopes=[["user/alex", "org/acme"]],
-)
-retriever = SpectronRetriever(
-    api_key="your-api-key",
-    context_id="${context.id}",
-)
+				~~~python
+				from langchain.chains import ConversationalRetrievalChain
+				from langchain_openai import ChatOpenAI
+				from spectron_langchain import SpectronMemory, SpectronRetriever
 
-chain = ConversationalRetrievalChain.from_llm(
-    llm=llm,
-    retriever=retriever,
-    memory=memory,
-)`,
-			lang: "python",
+				llm = ChatOpenAI(model="gpt-4o")
+				memory = SpectronMemory(
+				    api_key="your-api-key",
+				    endpoint="${endpoint}",
+				    scopes=[["user/alex", "org/acme"]],
+				)
+				retriever = SpectronRetriever(
+				    api_key="your-api-key",
+				    context_id="${context.id}",
+				)
+
+				chain = ConversationalRetrievalChain.from_llm(
+				    llm=llm,
+				    retriever=retriever,
+				    memory=memory,
+				)
+				~~~
+			`),
 		},
 		{
 			title: "Explore Spectron",
-			description:
-				"Full adapter reference, session lifetime, tool-call capture, and LangChain message mapping.",
-			action: "documentation",
-			documentationUrl:
-				"https://surrealdb.com/docs/spectron/integrations/frameworks/langchain",
+			description: dedent(`
+				Full adapter reference, session lifetime, tool-call capture, and LangChain message mapping.
+
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/frameworks/langchain" />
+			`),
 		},
 	];
 }

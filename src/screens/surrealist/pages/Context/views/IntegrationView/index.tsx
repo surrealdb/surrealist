@@ -1,405 +1,667 @@
 import {
 	Box,
 	Button,
+	Collapse,
 	Group,
 	Image,
+	Modal,
 	Paper,
-	Scroller,
 	SimpleGrid,
 	Stack,
 	Text,
 	Timeline,
 	Title,
+	UnstyledButton,
 } from "@mantine/core";
 import {
-	brandJavaScript,
-	brandLangchain,
-	brandN8N,
-	brandOpenAi,
-	brandPython,
-	brandVercel,
-	CodeBlock,
+	HoverGlow,
 	Icon,
-	iconAPI,
+	iconArrowRight,
 	iconArrowUpRight,
-	iconMCP,
+	type MarkdownComponents,
+	MarkdownViewer,
 	pictoIntegrationsGradient,
 } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
-import type { CloudContext, ContextViewPage } from "~/types";
+import { useIsLight } from "~/hooks/theme";
+import type { CloudContext } from "~/types";
+import { dedent } from "~/util/dedent";
 import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
+import {
+	INTEGRATION_CATEGORIES,
+	INTEGRATION_META,
+	type IntegrationId,
+	type IntegrationMeta,
+	isIntegrationId,
+} from "./helpers/catalogue";
+import { getSpectronUrls } from "./helpers/spectron-urls";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
+import { buildCliSteps } from "./integrations/cli";
+import { buildCloudflareSteps } from "./integrations/cloudflare";
+import { buildCodexSteps } from "./integrations/codex";
 import { buildCursorSteps } from "./integrations/cursor";
+import { buildDartSteps } from "./integrations/dart";
+import { buildElixirSteps } from "./integrations/elixir";
+import { buildEveSteps } from "./integrations/eve";
+import { buildGolangSteps } from "./integrations/golang";
+import { buildHaskellSteps } from "./integrations/haskell";
+import { buildHermesSteps } from "./integrations/hermes";
+import { buildKotlinSteps } from "./integrations/kotlin";
 import { buildLangChainSteps } from "./integrations/langchain";
 import { buildMcpSteps } from "./integrations/mcp";
 import { buildN8nSteps } from "./integrations/n8n";
 import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
-import { getSpectronUrls } from "./integrations/spectron-urls";
+import { buildOpenClawSteps } from "./integrations/openclaw";
+import { buildSwiftSteps } from "./integrations/swift";
+import { buildTanStackSteps } from "./integrations/tanstack";
 import type { IntegrationStep } from "./integrations/types";
-import { buildVercelAiSteps } from "./integrations/vercel-ai";
+import { buildVsCodeSteps } from "./integrations/vscode";
+import { buildZapierSteps } from "./integrations/zapier";
+import { buildZedSteps } from "./integrations/zed";
 import classes from "./style.module.scss";
 
-type IntegrationTab =
-	| "python"
-	| "javascript"
-	| "api"
-	| "claude-code"
-	| "cursor"
-	| "mcp"
-	| "n8n"
-	| "langchain"
-	| "openai-agents"
-	| "vercel-ai";
-
-const INTEGRATION_TABS: IntegrationTab[] = [
-	"python",
-	"javascript",
-	"api",
-	"claude-code",
-	"cursor",
-	"mcp",
-	"n8n",
-	"langchain",
-	"openai-agents",
-	"vercel-ai",
-];
-
-const TAB_META: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
-	python: { label: "Python", img: brandPython },
-	javascript: { label: "JavaScript", img: brandJavaScript },
-	api: { label: "REST API", icon: iconAPI },
-	"claude-code": { label: "Claude Code", icon: iconMCP },
-	cursor: { label: "Cursor", icon: iconMCP },
-	mcp: { label: "MCP", icon: iconMCP },
-	n8n: { label: "n8n", img: brandN8N },
-	langchain: { label: "LangChain", img: brandLangchain },
-	"openai-agents": { label: "OpenAI Agents", img: brandOpenAi },
-	"vercel-ai": { label: "Vercel AI", img: brandVercel },
-};
-
-function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, IntegrationStep[]> {
+function buildIntegrationSteps(
+	context: CloudContext,
+): Partial<Record<IntegrationId, IntegrationStep[]>> {
 	const { endpoint, restRoot } = getSpectronUrls(context);
 
 	return {
 		python: [
 			{
 				title: "Install the SDK",
-				description: "Pull the official Python package into your environment.",
-				code: "pip install surrealdb",
-				lang: "bash",
+				description: dedent(`
+					Pull the official Python package into your environment.
+
+					~~~bash
+					pip install surrealdb
+					~~~
+				`),
 			},
 			{
 				title: "Initialise the client",
-				description:
-					"Create a Spectron client pointing at this context. The endpoint and context id are pre-filled from your selection.",
-				code: `from surrealdb import Spectron
+				description: dedent(`
+					Create a Spectron client pointing at this context. The endpoint and context id are pre-filled from your selection.
 
-client = Spectron(
-    context="${context.id}",
-    endpoint="${endpoint}",
-    api_key="your-api-key",
-)`,
-				lang: "python",
-				action: "api_keys",
+					~~~python
+					from surrealdb import Spectron
+
+					client = Spectron(
+					    context="${context.id}",
+					    endpoint="${endpoint}",
+					    api_key="your-api-key",
+					)
+					~~~
+
+					<ApiKey />
+				`),
 			},
 			{
 				title: "Capture a memory",
-				description:
-					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
-				code: `from surrealdb import SpectronTurnRole
+				description: dedent(`
+					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
 
-session = client.sessions.create(scopes=["user/alex"])
-session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
-session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")`,
-				lang: "python",
+					~~~python
+					from surrealdb import SpectronTurnRole
+
+					session = client.sessions.create(scopes=["user/alex"])
+					session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
+					session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")
+					~~~
+				`),
 			},
 			{
 				title: "Recall with hybrid search",
-				description:
-					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
-				code: `results = client.query("What are the user's preferences?", k=10)
+				description: dedent(`
+					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
 
-for hit in results.hits:
-    print(hit.score, hit.text)`,
-				lang: "python",
+					~~~python
+					results = client.query("What are the user's preferences?", k=10)
+
+					for hit in results.hits:
+					    print(hit.score, hit.text)
+					~~~
+				`),
 			},
 			{
 				title: "Explore Spectron",
-				description:
-					"Discover the full potential of Spectron with the official documentation.",
-				action: "documentation",
+				description: dedent(`
+					Discover the full potential of Spectron with the official documentation.
+
+					<Documentation />
+				`),
 			},
 		],
 		javascript: [
 			{
 				title: "Install the SDK",
-				description: "Add the Spectron npm package to your project.",
-				code: "npm install @surrealdb/spectron",
-				lang: "bash",
+				description: dedent(`
+					Add the Spectron npm package to your project.
+
+					~~~bash
+					npm install @surrealdb/spectron
+					~~~
+				`),
 			},
 			{
 				title: "Initialise the client",
-				description:
-					"Create a Spectron client pointing at this context. The base URL and context id are pre-filled from your selection.",
-				code: `import { Spectron } from "@surrealdb/spectron";
+				description: dedent(`
+					Create a Spectron client pointing at this context. The base URL and context id are pre-filled from your selection.
 
-const client = new Spectron({
-    context: "${context.id}",
-    endpoint: "${endpoint}",
-    apiKey: "your-api-key",
-});`,
-				lang: "javascript",
-				action: "api_keys",
+					~~~javascript
+					import { Spectron } from "@surrealdb/spectron";
+
+					const client = new Spectron({
+					    context: "${context.id}",
+					    endpoint: "${endpoint}",
+					    apiKey: "your-api-key",
+					});
+					~~~
+
+					<ApiKey />
+				`),
 			},
 			{
 				title: "Capture a memory",
-				description:
-					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
-				code: `import { TurnRole } from "@surrealdb/spectron";
+				description: dedent(`
+					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
 
-const session = await client.sessions.create({
-    scopes: ["user/alex"],
-});
+					~~~javascript
+					import { TurnRole } from "@surrealdb/spectron";
 
-await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
-await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });`,
-				lang: "javascript",
+					const session = await client.sessions.create({
+					    scopes: ["user/alex"],
+					});
+
+					await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
+					await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });
+					~~~
+				`),
 			},
 			{
 				title: "Recall with hybrid search",
-				description:
-					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
-				code: `const results = await client.query({
-    query: "What are the user's preferences?",
-    k: 10,
-});`,
-				lang: "javascript",
+				description: dedent(`
+					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+
+					~~~javascript
+					const results = await client.query({
+					    query: "What are the user's preferences?",
+					    k: 10,
+					});
+					~~~
+				`),
 			},
 			{
 				title: "Explore Spectron",
-				description:
-					"Discover the full potential of Spectron with the official documentation.",
-				action: "documentation",
+				description: dedent(`
+					Discover the full potential of Spectron with the official documentation.
+
+					<Documentation />
+				`),
 			},
 		],
 		api: [
 			{
 				title: "Create an API key",
-				description: "Request a new API key to authenticate your requests to the API.",
-				action: "api_keys",
+				description: dedent(`
+					Request a new API key to authenticate your requests to the API.
+
+					<ApiKey />
+				`),
 			},
 			{
 				title: "Open a session",
-				description:
-					"Create a session scoped to a user. The response includes an `id` you'll pass to subsequent calls when recording turns.",
-				code: `curl -X POST ${restRoot}/sessions \\
-    -H "API-KEY: your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{"scopes":["user/alex"]}'`,
-				lang: "bash",
+				description: dedent(`
+					Create a session scoped to a user. The response includes an \`id\` you'll pass to subsequent calls when recording turns.
+
+					~~~bash
+					curl -X POST ${restRoot}/sessions \\
+					    -H "API-KEY: your-api-key" \\
+					    -H "Content-Type: application/json" \\
+					    -d '{"scopes":["user/alex"]}'
+					~~~
+				`),
 			},
 			{
 				title: "Capture a memory",
-				description:
-					"Record a conversation turn against the session you just created. Replace `$SESSION_ID` with the `id` returned from the previous call.",
-				code: `curl -X POST ${restRoot}/sessions/$SESSION_ID/turns \\
-    -H "API-KEY: your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{"role":"user","content":"Hi, I am Alex. I prefer dark mode."}'`,
-				lang: "bash",
+				description: dedent(`
+					Record a conversation turn against the session you just created. Replace \`$SESSION_ID\` with the \`id\` returned from the previous call.
+
+					~~~bash
+					curl -X POST ${restRoot}/sessions/$SESSION_ID/turns \\
+					    -H "API-KEY: your-api-key" \\
+					    -H "Content-Type: application/json" \\
+					    -d '{"role":"user","content":"Hi, I am Alex. I prefer dark mode."}'
+					~~~
+				`),
 			},
 			{
 				title: "Recall with hybrid search",
-				description:
-					"Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.",
-				code: `curl -X POST ${restRoot}/query \\
-    -H "API-KEY: your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{"query":"What are the user preferences?","k":10}'`,
-				lang: "bash",
+				description: dedent(`
+					Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.
+
+					~~~bash
+					curl -X POST ${restRoot}/query \\
+					    -H "API-KEY: your-api-key" \\
+					    -H "Content-Type: application/json" \\
+					    -d '{"query":"What are the user preferences?","k":10}'
+					~~~
+				`),
 			},
 			{
 				title: "Explore Spectron",
-				description:
-					"Discover the full potential of Spectron with the official documentation.",
-				action: "documentation",
+				description: dedent(`
+					Discover the full potential of Spectron with the official documentation.
+
+					<Documentation />
+				`),
 			},
 		],
+		go: buildGolangSteps(context),
+		swift: buildSwiftSteps(context),
+		kotlin: buildKotlinSteps(context),
+		haskell: buildHaskellSteps(context),
+		elixir: buildElixirSteps(context),
+		dart: buildDartSteps(context),
+		cli: buildCliSteps(context),
 		"claude-code": buildClaudeCodeSteps(context),
+		codex: buildCodexSteps(context),
 		cursor: buildCursorSteps(context),
+		openclaw: buildOpenClawSteps(context),
+		hermes: buildHermesSteps(context),
+		vscode: buildVsCodeSteps(context),
+		zed: buildZedSteps(context),
 		mcp: buildMcpSteps(context),
 		n8n: buildN8nSteps(context),
+		zapier: buildZapierSteps(context),
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
-		"vercel-ai": buildVercelAiSteps(context),
+		eve: buildEveSteps(context),
+		cloudflare: buildCloudflareSteps(context),
+		"tanstack-ai": buildTanStackSteps(context),
 	};
 }
 
-function isIntegrationTab(v: string | undefined): v is IntegrationTab {
-	return (
-		v === "python" ||
-		v === "javascript" ||
-		v === "api" ||
-		v === "claude-code" ||
-		v === "cursor" ||
-		v === "mcp" ||
-		v === "n8n" ||
-		v === "langchain" ||
-		v === "openai-agents" ||
-		v === "vercel-ai"
-	);
-}
+const DOCS_FALLBACK = "https://surrealdb.com/docs/spectron";
 
-const DOCS_FALLBACK = "https://surrealdb.com/docs/learn/context";
+/** Renders a large brand image or a monochrome icon for an integration. */
+function IntegrationGlyph({ meta, size }: { meta: IntegrationMeta; size: number }) {
+	const isLight = useIsLight();
 
-export default function IntegrationView({ context }: ContextViewProps) {
-	const search = useSearchParams();
-	const tabFromSearch = search.tab;
-	const [activeTab, setActiveTab] = useState<IntegrationTab>(() =>
-		isIntegrationTab(tabFromSearch) ? tabFromSearch : "python",
-	);
-	const navigateContext = useContextNavigator();
-	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
-	const steps = integrationSteps[activeTab];
+	if (meta.img) {
+		const src = typeof meta.img === "string" ? meta.img : meta.img[isLight ? "dark" : "light"];
 
-	useEffect(() => {
-		if (isIntegrationTab(tabFromSearch)) {
-			setActiveTab(tabFromSearch);
-		}
-	}, [tabFromSearch]);
-
-	const goToPage = (page: ContextViewPage) => {
-		navigateContext(context.organization_id, context.id, page);
-	};
-
-	return (
-		<Stack gap={32}>
-			<ContextHero
-				kicker="Quick start"
-				title="Connect to your context"
-				description="Wire this context into your agent — through the Python and JavaScript SDKs, the REST API, MCP, or a framework like LangChain, n8n, and the OpenAI and Vercel AI toolkits."
-				art={pictoIntegrationsGradient}
+		return (
+			<Image
+				src={src}
+				w={size}
+				h={size}
+				alt=""
+				fit="contain"
 			/>
+		);
+	}
 
-			<Scroller
-				className={classes.integrationScroller}
-				edgeGradientColor="default"
-			>
-				<Group
-					wrap="nowrap"
-					pb="xs"
-				>
-					{INTEGRATION_TABS.map((tab) => (
-						<Button
-							key={tab}
-							size="md"
-							className={classes.integrationCard}
-							aria-pressed={activeTab === tab}
-							variant={activeTab === tab ? "light" : "surreal"}
-							onClick={() => setActiveTab(tab)}
-							leftSection={
-								TAB_META[tab].img ? (
-									<Image
-										src={TAB_META[tab].img}
-										w={16}
-										h={16}
-										alt=""
-									/>
-								) : TAB_META[tab].icon ? (
-									<Icon
-										path={TAB_META[tab].icon}
-										c="bright"
-										size="sm"
-									/>
-								) : null
-							}
-						>
-							{TAB_META[tab].label}
-						</Button>
-					))}
-				</Group>
-			</Scroller>
+	if (meta.icon) {
+		return (
+			<Icon
+				path={meta.icon}
+				size={size}
+				c="violet"
+			/>
+		);
+	}
 
+	return null;
+}
+
+interface IntegrationCardProps {
+	id: IntegrationId;
+	hasSteps: boolean;
+	onSelect: (id: IntegrationId) => void;
+}
+
+function IntegrationCard({ id, hasSteps, onSelect }: IntegrationCardProps) {
+	const meta = INTEGRATION_META[id];
+
+	if (meta.comingSoon) {
+		return (
 			<Paper
 				p="lg"
 				radius="md"
-				className={classes.integrationPane}
+				className={`${classes.card} ${classes.cardComingSoon}`}
+				style={{ pointerEvents: "none", opacity: 0.6 }}
+				withBorder
 			>
-				<Stack gap="lg">
-					<Timeline
-						mt="md"
-						bulletSize={24}
-						lineWidth={2}
-						styles={{
-							itemTitle: {
-								color: "var(--mantine-color-bright)",
-								fontWeight: 600,
-								fontSize: "14px",
-							},
-							itemBullet: {
-								backgroundColor: "var(--mantine-color-obsidian-filled)",
-								color: "var(--mantine-color-white)",
-								border: "none",
-							},
-							item: {
-								"--item-border-color": "var(--mantine-color-obsidian-7)",
-							},
-						}}
+				<Stack
+					h="100%"
+					justify="space-between"
+					gap={0}
+					pos="relative"
+					style={{ zIndex: 1 }}
+				>
+					<Text
+						fw={600}
+						fz="lg"
+						c="bright"
 					>
-						{steps.map((step, idx) => (
-							<Timeline.Item
-								key={idx}
-								bullet={idx + 1}
-							>
-								<SimpleGrid cols={2}>
-									<Box>
-										<Title
-											order={2}
-											fz="lg"
-										>
-											{step.title}
-										</Title>
-										<Text mt="xs">{step.description}</Text>
-									</Box>
-									{step.action === "api_keys" ? (
-										<Box>
-											<Button
-												variant="gradient"
-												rightSection={<Icon path={iconArrowUpRight} />}
-												onClick={() => goToPage("api-keys")}
-											>
-												Get API key
-											</Button>
-										</Box>
-									) : step.action === "documentation" ? (
-										<Box>
-											<Button
-												variant="gradient"
-												rightSection={<Icon path={iconArrowUpRight} />}
-												onClick={() =>
-													adapter.openUrl(
-														step.documentationUrl ?? DOCS_FALLBACK,
-													)
-												}
-											>
-												Read the documentation
-											</Button>
-										</Box>
-									) : step.code ? (
-										<CodeBlock
-											value={step.code}
-											lang={step.lang}
-										/>
-									) : null}
-								</SimpleGrid>
-							</Timeline.Item>
-						))}
-					</Timeline>
+						{meta.label}
+					</Text>
+					<Text
+						fz="xs"
+						c="slate"
+					>
+						Coming soon
+					</Text>
 				</Stack>
 			</Paper>
+		);
+	}
+
+	const card = (
+		<Paper
+			p="lg"
+			radius="md"
+			className={classes.card}
+			withBorder
+		>
+			<Box
+				className={classes.cardIcon}
+				aria-hidden
+			>
+				<IntegrationGlyph
+					meta={meta}
+					size={74}
+				/>
+			</Box>
+			<Stack
+				h="100%"
+				justify="space-between"
+				gap={0}
+				pos="relative"
+				style={{ zIndex: 1 }}
+			>
+				<Text
+					fw={600}
+					fz="lg"
+					c="bright"
+				>
+					{meta.label}
+				</Text>
+				{hasSteps && (
+					<Group
+						gap="xs"
+						fz="xs"
+					>
+						{meta.connect}
+						<Icon path={iconArrowRight} />
+					</Group>
+				)}
+			</Stack>
+		</Paper>
+	);
+
+	if (!hasSteps) {
+		return <Box style={{ pointerEvents: "none" }}>{card}</Box>;
+	}
+
+	return (
+		<HoverGlow>
+			<UnstyledButton
+				w="100%"
+				onClick={() => onSelect(id)}
+			>
+				{card}
+			</UnstyledButton>
+		</HoverGlow>
+	);
+}
+
+interface IntegrationStepsProps {
+	steps: IntegrationStep[];
+	active: number;
+	onActivate: (index: number) => void;
+	onApiKeys: () => void;
+}
+
+/** "Get API key" call-to-action, embedded in step markdown as `<ApiKey />`. */
+function ApiKeyButton({ onClick }: { onClick: () => void }) {
+	return (
+		<Button
+			variant="gradient"
+			rightSection={<Icon path={iconArrowUpRight} />}
+			onClick={onClick}
+		>
+			Get API key
+		</Button>
+	);
+}
+
+/** "Read the documentation" call-to-action, embedded as `<Documentation href="…" />`. */
+function DocumentationButton({ href }: { href?: string }) {
+	return (
+		<Button
+			variant="gradient"
+			rightSection={<Icon path={iconArrowUpRight} />}
+			onClick={() => adapter.openUrl(href ?? DOCS_FALLBACK)}
+		>
+			Read the documentation
+		</Button>
+	);
+}
+
+function IntegrationSteps({ steps, active, onActivate, onApiKeys }: IntegrationStepsProps) {
+	const components = useMemo<MarkdownComponents>(
+		() => ({
+			ApiKey: () => <ApiKeyButton onClick={onApiKeys} />,
+			Documentation: DocumentationButton,
+		}),
+		[onApiKeys],
+	);
+
+	return (
+		<Timeline
+			bulletSize={26}
+			lineWidth={2}
+			styles={{
+				itemBullet: {
+					backgroundColor: "var(--mantine-color-obsidian-5)",
+					color: "var(--mantine-color-white)",
+					border: "none",
+					fontSize: "12px",
+					fontWeight: 700,
+				},
+				item: {
+					"--item-border-color": "var(--mantine-color-obsidian-6)",
+				},
+			}}
+		>
+			{steps.map((step, idx) => {
+				const isActive = active === idx;
+				const isLast = idx === steps.length - 1;
+
+				return (
+					<Timeline.Item
+						key={idx}
+						bullet={idx + 1}
+						title={
+							<UnstyledButton
+								w="100%"
+								onClick={() => onActivate(idx)}
+								style={{ textAlign: "left" }}
+							>
+								<Text
+									fw={isActive ? 600 : 500}
+									c={isActive ? "bright" : "slate"}
+								>
+									{step.title}
+								</Text>
+							</UnstyledButton>
+						}
+					>
+						<Collapse expanded={isActive}>
+							<Box pt="xs">
+								<MarkdownViewer
+									content={step.description}
+									components={components}
+								/>
+								{!isLast && (
+									<UnstyledButton
+										onClick={() => onActivate(idx + 1)}
+										display="block"
+										variant="transparent"
+									>
+										<Group
+											gap="xs"
+											mt="md"
+											c="var(--surreal-passion)"
+										>
+											<Text>Continue to next step</Text>
+											<Icon path={iconArrowRight} />
+										</Group>
+									</UnstyledButton>
+								)}
+							</Box>
+						</Collapse>
+					</Timeline.Item>
+				);
+			})}
+		</Timeline>
+	);
+}
+
+export default function IntegrationView({ context }: ContextViewProps) {
+	const search = useSearchParams();
+	const idFromSearch = search.integration;
+	const navigateContext = useContextNavigator();
+
+	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
+
+	const canOpen = (id: string | undefined): id is IntegrationId =>
+		isIntegrationId(id) &&
+		!INTEGRATION_META[id].comingSoon &&
+		(integrationSteps[id]?.length ?? 0) > 0;
+
+	const [selected, setSelected] = useState<IntegrationId | null>(() =>
+		canOpen(idFromSearch) ? idFromSearch : null,
+	);
+	const [activeStep, setActiveStep] = useState(0);
+
+	// Deep-link support: open the modal when arriving with an `?integration=` param.
+	useEffect(() => {
+		if (
+			isIntegrationId(idFromSearch) &&
+			!INTEGRATION_META[idFromSearch].comingSoon &&
+			(integrationSteps[idFromSearch]?.length ?? 0) > 0
+		) {
+			setSelected(idFromSearch);
+		}
+	}, [idFromSearch, integrationSteps]);
+
+	const openIntegration = (id: IntegrationId) => {
+		setActiveStep(0);
+		setSelected(id);
+	};
+
+	const closeIntegration = () => {
+		setSelected(null);
+	};
+
+	const goToApiKeys = () => {
+		closeIntegration();
+		navigateContext(context.organization_id, context.id, "api-keys");
+	};
+
+	const selectedMeta = selected ? INTEGRATION_META[selected] : null;
+	const selectedSteps = (selected ? integrationSteps[selected] : []) ?? [];
+
+	return (
+		<Stack gap={48}>
+			<ContextHero
+				kicker="Quick start"
+				title="Connect to your context"
+				description="Wire this context into your agent — through the Python, JavaScript, Go, Swift, Kotlin, Haskell, Elixir, and Dart SDKs, the REST API and CLI, MCP-native coding tools, or a framework like LangChain, n8n, and the OpenAI Agents SDK."
+				art={pictoIntegrationsGradient}
+			/>
+
+			{INTEGRATION_CATEGORIES.map((category) => (
+				<Box key={category.title}>
+					<Title
+						order={2}
+						fz="xl"
+						c="bright"
+					>
+						{category.title}
+					</Title>
+					<Text
+						mt={4}
+						c="slate"
+					>
+						{category.description}
+					</Text>
+					<SimpleGrid
+						mt="lg"
+						cols={{ base: 2, sm: 3, md: 4, lg: 5 }}
+						spacing="lg"
+					>
+						{category.integrations.map((id) => (
+							<IntegrationCard
+								key={id}
+								id={id}
+								hasSteps={(integrationSteps[id]?.length ?? 0) > 0}
+								onSelect={openIntegration}
+							/>
+						))}
+					</SimpleGrid>
+				</Box>
+			))}
+
+			<Modal
+				opened={selected !== null}
+				onClose={closeIntegration}
+				size="lg"
+				title={
+					selectedMeta && (
+						<Group
+							gap="sm"
+							wrap="nowrap"
+							pt="lg"
+							pb="xl"
+						>
+							<IntegrationGlyph
+								meta={selectedMeta}
+								size={28}
+							/>
+							<Box>
+								<Text
+									fw={600}
+									fz="lg"
+									c="bright"
+								>
+									Connect {selectedMeta.label}
+								</Text>
+								<Text
+									fz="sm"
+									c="slate"
+								>
+									Step {activeStep + 1} of {selectedSteps.length}
+								</Text>
+							</Box>
+						</Group>
+					)
+				}
+			>
+				{selected && (
+					<IntegrationSteps
+						steps={selectedSteps}
+						active={activeStep}
+						onActivate={setActiveStep}
+						onApiKeys={goToApiKeys}
+					/>
+				)}
+			</Modal>
 		</Stack>
 	);
 }
