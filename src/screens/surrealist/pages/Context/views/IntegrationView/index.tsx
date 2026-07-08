@@ -40,21 +40,29 @@ import { getSpectronUrls } from "./helpers/spectron-urls";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
 import { buildCliSteps } from "./integrations/cli";
 import { buildCodexSteps } from "./integrations/codex";
+import { buildCursorSteps } from "./integrations/cursor";
 import { buildDartSteps } from "./integrations/dart";
 import { buildElixirSteps } from "./integrations/elixir";
 import { buildEveSteps } from "./integrations/eve";
 import { buildGolangSteps } from "./integrations/golang";
 import { buildHaskellSteps } from "./integrations/haskell";
+import { buildHermesSteps } from "./integrations/hermes";
 import { buildKotlinSteps } from "./integrations/kotlin";
 import { buildLangChainSteps } from "./integrations/langchain";
 import { buildMcpSteps } from "./integrations/mcp";
 import { buildN8nSteps } from "./integrations/n8n";
 import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
+import { buildOpenClawSteps } from "./integrations/openclaw";
 import { buildSwiftSteps } from "./integrations/swift";
 import type { IntegrationStep } from "./integrations/types";
+import { buildVsCodeSteps } from "./integrations/vscode";
+import { buildZapierSteps } from "./integrations/zapier";
+import { buildZedSteps } from "./integrations/zed";
 import classes from "./style.module.scss";
 
-function buildIntegrationSteps(context: CloudContext): Record<IntegrationId, IntegrationStep[]> {
+function buildIntegrationSteps(
+	context: CloudContext,
+): Partial<Record<IntegrationId, IntegrationStep[]>> {
 	const { endpoint, restRoot } = getSpectronUrls(context);
 
 	return {
@@ -257,8 +265,14 @@ function buildIntegrationSteps(context: CloudContext): Record<IntegrationId, Int
 		cli: buildCliSteps(context),
 		"claude-code": buildClaudeCodeSteps(context),
 		codex: buildCodexSteps(context),
+		cursor: buildCursorSteps(context),
+		openclaw: buildOpenClawSteps(context),
+		hermes: buildHermesSteps(context),
+		vscode: buildVsCodeSteps(context),
+		zed: buildZedSteps(context),
 		mcp: buildMcpSteps(context),
 		n8n: buildN8nSteps(context),
+		zapier: buildZapierSteps(context),
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
 		eve: buildEveSteps(context),
@@ -301,6 +315,49 @@ interface IntegrationCardProps {
 
 function IntegrationCard({ id, onSelect }: IntegrationCardProps) {
 	const meta = INTEGRATION_META[id];
+
+	if (meta.comingSoon) {
+		return (
+			<Paper
+				p="lg"
+				radius="md"
+				className={classes.card}
+				style={{ pointerEvents: "none", opacity: 0.6 }}
+				withBorder
+			>
+				<Box
+					className={classes.cardIcon}
+					aria-hidden
+				>
+					<IntegrationGlyph
+						meta={meta}
+						size={74}
+					/>
+				</Box>
+				<Stack
+					h="100%"
+					justify="space-between"
+					gap={0}
+					pos="relative"
+					style={{ zIndex: 1 }}
+				>
+					<Text
+						fw={600}
+						fz="lg"
+						c="bright"
+					>
+						{meta.label}
+					</Text>
+					<Text
+						fz="xs"
+						c="slate"
+					>
+						Coming soon
+					</Text>
+				</Stack>
+			</Paper>
+		);
+	}
 
 	return (
 		<HoverGlow>
@@ -470,7 +527,9 @@ export default function IntegrationView({ context }: ContextViewProps) {
 	const navigateContext = useContextNavigator();
 
 	const [selected, setSelected] = useState<IntegrationId | null>(() =>
-		isIntegrationId(idFromSearch) ? idFromSearch : null,
+		isIntegrationId(idFromSearch) && !INTEGRATION_META[idFromSearch].comingSoon
+			? idFromSearch
+			: null,
 	);
 	const [activeStep, setActiveStep] = useState(0);
 
@@ -478,7 +537,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 
 	// Deep-link support: open the modal when arriving with an `?integration=` param.
 	useEffect(() => {
-		if (isIntegrationId(idFromSearch)) {
+		if (isIntegrationId(idFromSearch) && !INTEGRATION_META[idFromSearch].comingSoon) {
 			setSelected(idFromSearch);
 		}
 	}, [idFromSearch]);
@@ -498,7 +557,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 	};
 
 	const selectedMeta = selected ? INTEGRATION_META[selected] : null;
-	const selectedSteps = selected ? integrationSteps[selected] : [];
+	const selectedSteps = (selected ? integrationSteps[selected] : []) ?? [];
 
 	return (
 		<Stack gap={48}>

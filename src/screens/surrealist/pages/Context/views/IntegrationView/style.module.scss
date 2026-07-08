@@ -4,6 +4,10 @@
 	overflow: hidden;
 	transition: border-color 150ms ease;
 
+	&.card-coming-soon {
+		height: 118px;
+	}
+
 	&:hover {
 		border-color: color-mix(
 			in srgb,

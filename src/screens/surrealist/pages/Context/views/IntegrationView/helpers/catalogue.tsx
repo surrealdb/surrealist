@@ -1,8 +1,10 @@
 import {
 	brandClaude,
 	brandCodex,
+	brandCursor,
 	brandDart,
 	brandElixir,
+	brandGithub,
 	brandGo,
 	brandHaskell,
 	brandJavaScript,
@@ -11,11 +13,18 @@ import {
 	brandN8N,
 	brandOpenAi,
 	brandPython,
+	brandSurrealDB,
 	brandSwift,
 	brandVercel,
+	brandVSCode,
+	pictoBotGradient,
+	pictoConnectGradient,
 	pictoEmbeddinggGradient,
 	pictoMCPGradient,
+	pictoSidekickGradient,
 	pictoSpectronGradient,
+	pictoZapierGradient,
+	pictoZedGradient,
 } from "@surrealdb/ui";
 
 /** Stable identifier for an integration, used for deep-linking (`?integration=<id>`). */
@@ -32,20 +41,37 @@ export type IntegrationId =
 	| "cli"
 	| "claude-code"
 	| "codex"
+	| "cursor"
+	| "openclaw"
+	| "hermes"
+	| "vscode"
+	| "zed"
 	| "mcp"
 	| "n8n"
+	| "zapier"
 	| "langchain"
 	| "openai-agents"
-	| "eve";
+	| "eve"
+	| "surrealdb"
+	| "slack"
+	| "notion"
+	| "google-drive"
+	| "github"
+	| "linear"
+	| "confluence"
+	| "databricks"
+	| "snowflake";
 
 export interface IntegrationMeta {
 	label: string;
 	/** Short verb shown on the card, e.g. "Connect via MCP". */
-	connect: string;
+	connect?: string;
 	/** Brand image asset (full colour). */
 	img?: string;
 	/** Monochrome icon path (falls back when no brand image exists). */
 	icon?: string;
+	/** When set, the card is a non-interactive "Coming soon" placeholder. */
+	comingSoon?: boolean;
 }
 
 export interface IntegrationCategory {
@@ -68,11 +94,26 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 	cli: { label: "Spectron CLI", connect: "Connect via CLI", img: pictoSpectronGradient },
 	"claude-code": { label: "Claude Code", connect: "Connect via MCP", img: brandClaude },
 	codex: { label: "OpenAI Codex", connect: "Connect via MCP", img: brandCodex },
+	cursor: { label: "Cursor", connect: "Connect via MCP", img: brandCursor },
+	openclaw: { label: "OpenClaw", connect: "Connect via MCP", img: pictoBotGradient },
+	hermes: { label: "Hermes", connect: "Connect via MCP", img: pictoSidekickGradient },
+	vscode: { label: "VS Code", connect: "Connect via MCP", img: brandVSCode },
+	zed: { label: "Zed", connect: "Connect via MCP", img: pictoZedGradient },
 	mcp: { label: "MCP", connect: "Connect via MCP", img: pictoMCPGradient },
 	n8n: { label: "n8n", connect: "Connect via node", img: brandN8N },
+	zapier: { label: "Zapier", connect: "Connect via MCP", img: pictoZapierGradient },
 	langchain: { label: "LangChain", connect: "Connect via package", img: brandLangchain },
 	"openai-agents": { label: "OpenAI Agents", connect: "Connect via package", img: brandOpenAi },
 	eve: { label: "EveJS", connect: "Connect via package", img: brandVercel },
+	surrealdb: { label: "SurrealDB", img: brandSurrealDB, comingSoon: true },
+	slack: { label: "Slack", img: pictoConnectGradient, comingSoon: true },
+	notion: { label: "Notion", img: pictoConnectGradient, comingSoon: true },
+	"google-drive": { label: "Google Drive", img: pictoConnectGradient, comingSoon: true },
+	github: { label: "GitHub", img: brandGithub, comingSoon: true },
+	linear: { label: "Linear", img: pictoConnectGradient, comingSoon: true },
+	confluence: { label: "Confluence", img: pictoConnectGradient, comingSoon: true },
+	databricks: { label: "Databricks", img: pictoConnectGradient, comingSoon: true },
+	snowflake: { label: "Snowflake", img: pictoConnectGradient, comingSoon: true },
 };
 
 /**
@@ -100,7 +141,16 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 		title: "Agents & coding tools",
 		description:
 			"Connect your AI agents and coding assistants to this context for persistent memory.",
-		integrations: ["claude-code", "codex", "mcp"],
+		integrations: [
+			"claude-code",
+			"codex",
+			"cursor",
+			"openclaw",
+			"hermes",
+			"vscode",
+			"zed",
+			"mcp",
+		],
 	},
 	{
 		title: "Frameworks",
@@ -110,7 +160,22 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 	{
 		title: "Automation platforms",
 		description: "Give your automation workflows access to this context's memory.",
-		integrations: ["n8n"],
+		integrations: ["n8n", "zapier"],
+	},
+	{
+		title: "Connectors",
+		description: "Sync memory to and from the tools and data platforms your team already uses.",
+		integrations: [
+			"surrealdb",
+			"slack",
+			"notion",
+			"google-drive",
+			"github",
+			"linear",
+			"confluence",
+			"databricks",
+			"snowflake",
+		],
 	},
 ];
 
