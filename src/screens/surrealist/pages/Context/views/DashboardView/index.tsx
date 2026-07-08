@@ -24,6 +24,7 @@ import {
 	iconFile,
 	iconFolderSecure,
 	iconHistory,
+	iconIntegration,
 	iconMemory,
 	iconOpen,
 	iconPackageClosed,
@@ -75,10 +76,10 @@ export default function DashboardView({ context }: ContextViewProps) {
 				</Button>
 				<Button
 					variant="light"
-					rightSection={<Icon path={iconPackageClosed} />}
+					leftSection={<Icon path={iconIntegration} />}
 					onClick={() => goToPage("integration")}
 				>
-					Integrate
+					Explore integrations
 				</Button>
 				<Button
 					variant="subtle"
