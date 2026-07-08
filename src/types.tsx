@@ -784,12 +784,20 @@ export interface CloudInstanceCapabilities {
 	denied_arbitrary_query: string[];
 }
 
+export type ContextState = "creating" | "ready";
+
 export interface CloudContext {
 	id: string;
 	organization_id: string;
 	name: string;
 	region: string;
 	host: string;
+	/**
+	 * Provisioning state: contexts are bootstrapped asynchronously and stay
+	 * "creating" until ready. Optional so responses from an older cloud-api
+	 * (predating the field) are treated as ready.
+	 */
+	state?: ContextState;
 }
 
 export interface ContextApiKey {
