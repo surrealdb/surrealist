@@ -87,22 +87,10 @@ export function PricingCard({
 					</Text>
 
 					{isHourly ? (
-						<Group
-							gap={8}
-							align="center"
-							wrap="nowrap"
+						<Stack
+							gap={2}
 							className="selectable"
 						>
-							<Title
-								order={2}
-								c="bright"
-								fz={40}
-								lh={1.1}
-							>
-								{typeof displayPrice === "number"
-									? `$${displayPrice.toFixed(3)}`
-									: displayPrice}
-							</Title>
 							{showFromPerHour && (
 								<Text
 									c="obsidian.4"
@@ -111,11 +99,36 @@ export function PricingCard({
 									lh={1.1}
 								>
 									From
-									<br />
-									{priceSuffix}
 								</Text>
 							)}
-						</Group>
+							<Group
+								gap={8}
+								align="center"
+								wrap="nowrap"
+								className="selectable"
+							>
+								<Title
+									order={2}
+									c="bright"
+									fz={40}
+									lh={1.1}
+								>
+									{typeof displayPrice === "number"
+										? `$${displayPrice.toFixed(3)}`
+										: displayPrice}
+								</Title>
+								{showFromPerHour && (
+									<Text
+										c="obsidian.4"
+										fz="xs"
+										className={clsx(classes.priceSuffix, "selectable")}
+										lh={1.1}
+									>
+										{priceSuffix}
+									</Text>
+								)}
+							</Group>
+						</Stack>
 					) : (
 						<Text
 							fw={600}
