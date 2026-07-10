@@ -6,12 +6,12 @@ import {
 	Box,
 	Button,
 	CloseButton,
-	Divider,
 	Drawer,
 	Group,
 	Loader,
 	Pagination,
 	Paper,
+	SegmentedControl,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -57,10 +57,45 @@ import classes from "./style.module.scss";
 type DocumentEntry = Awaited<ReturnType<Spectron["documents"]["list"]>>["documents"][number];
 type DocumentStatus = DocumentEntry["status"];
 type QueryHit = Awaited<ReturnType<Spectron["documents"]["query"]>>["results"][number];
+type ChunkEntry = Awaited<ReturnType<Spectron["documents"]["chunks"]>>["chunks"][number];
 
 const PAGE_SIZE = 24;
 const CHUNK_PAGE_SIZE = 10;
 const POLL_INTERVAL = 3000;
+
+/**
+ * Upper bound on how many chunks the reconstructed "Document" view pulls in one
+ * request, so an enormous document can't stall the drawer. Beyond this the user
+ * is nudged to the paginated "Chunks" view.
+ */
+const DOCUMENT_VIEW_CHUNK_CAP = 2000;
+
+/**
+ * Stitches chunk text back into a single continuous document. Chunks carry
+ * `charStart`/`charEnd` offsets into the original extracted text, so we sort by
+ * offset and trim overlaps (retrieval chunking usually overlaps neighbours)
+ * rather than naively concatenating, which would duplicate the shared spans.
+ */
+function reconstructDocument(chunks: ChunkEntry[]): string {
+	const sorted = [...chunks].sort((a, b) => a.charStart - b.charStart);
+	let text = "";
+	let cursor = 0; // Highest original offset already written.
+
+	for (const chunk of sorted) {
+		if (chunk.charEnd <= cursor) continue; // Fully covered by an earlier chunk.
+
+		if (chunk.charStart >= cursor) {
+			text += chunk.text;
+		} else {
+			// Overlaps the tail of what we've written — skip the shared prefix.
+			text += chunk.text.slice(cursor - chunk.charStart);
+		}
+
+		cursor = Math.max(cursor, chunk.charEnd);
+	}
+
+	return text;
+}
 
 /** Statuses that mean the ingestion pipeline has finished (success or failure). */
 const TERMINAL_STATUSES: ReadonlySet<DocumentStatus> = new Set(["ready", "failed"]);
@@ -921,6 +956,9 @@ function InspectorBody({
 	onRenamed: (document: DocumentEntry) => void;
 }) {
 	const [chunkPage, setChunkPage] = useState(1);
+	// Default to the readable, reconstructed document; the raw chunk view is
+	// opt-in for when the retrieval boundaries themselves matter. (#16)
+	const [view, setView] = useState<"document" | "chunks">("document");
 
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
@@ -931,6 +969,24 @@ function InspectorBody({
 		placeholderData: (prev) => prev,
 		enabled: doc.status === "ready",
 	});
+
+	const totalChunks = chunksQuery.data?.total ?? 0;
+	const documentChunkCount = Math.min(totalChunks, DOCUMENT_VIEW_CHUNK_CAP);
+
+	// The reconstructed view needs every chunk, so it pulls them in one page
+	// (capped) rather than reusing the small paginated request above. Only runs
+	// when that view is actually shown.
+	const documentQuery = useQuery({
+		queryKey: ["spectron", client.contextId, "documents", "full", doc.id, documentChunkCount],
+		queryFn: () => client.documents.chunks(doc.id, { page: 0, pageSize: documentChunkCount }),
+		retry: false,
+		enabled: doc.status === "ready" && view === "document" && totalChunks > 0,
+	});
+
+	const documentText = useMemo(
+		() => (documentQuery.data ? reconstructDocument(documentQuery.data.chunks) : ""),
+		[documentQuery.data],
+	);
 
 	const chunkPageCount = chunksQuery.data
 		? Math.max(1, Math.ceil(chunksQuery.data.total / CHUNK_PAGE_SIZE))
@@ -991,18 +1047,63 @@ function InspectorBody({
 				/>
 			)}
 
-			<Divider
-				label="Chunks"
-				labelPosition="left"
-			/>
+			<Group
+				justify="space-between"
+				align="center"
+				gap="sm"
+				wrap="nowrap"
+			>
+				<Text
+					fw={600}
+					c="bright"
+					fz="sm"
+				>
+					Content
+				</Text>
+				{doc.status === "ready" && totalChunks > 0 && (
+					<SegmentedControl
+						size="xs"
+						value={view}
+						onChange={(value) => setView(value as "document" | "chunks")}
+						data={[
+							{ label: "Document", value: "document" },
+							{ label: "Chunks", value: "chunks" },
+						]}
+					/>
+				)}
+			</Group>
 
 			{doc.status !== "ready" ? (
 				<Text
 					fz="sm"
 					c="slate"
 				>
-					Chunks become available once processing completes.
+					Content becomes available once processing completes.
 				</Text>
+			) : view === "document" ? (
+				<DocumentContent
+					// Combine both queries: the chunk count comes from chunksQuery,
+					// then documentQuery pulls the full text. Treat either loading
+					// or failing as the document view's state so the count isn't
+					// momentarily read as zero ("no chunks") before it resolves.
+					isLoading={chunksQuery.isPending || documentQuery.isLoading}
+					isError={chunksQuery.isError || documentQuery.isError}
+					errorMessage={
+						chunksQuery.error instanceof Error
+							? chunksQuery.error.message
+							: documentQuery.error instanceof Error
+								? documentQuery.error.message
+								: undefined
+					}
+					onRetry={() => {
+						chunksQuery.refetch();
+						documentQuery.refetch();
+					}}
+					text={documentText}
+					totalChunks={totalChunks}
+					shownChunks={documentChunkCount}
+					onViewChunks={() => setView("chunks")}
+				/>
 			) : chunksQuery.isPending ? (
 				<Stack gap="sm">
 					{Array.from({ length: 3 }).map((_, i) => (
@@ -1085,6 +1186,99 @@ function InspectorBody({
 						</Group>
 					)}
 				</Stack>
+			)}
+		</Stack>
+	);
+}
+
+/** Renders the reconstructed, continuous document text for the "Document" view. */
+function DocumentContent({
+	isLoading,
+	isError,
+	errorMessage,
+	onRetry,
+	text,
+	totalChunks,
+	shownChunks,
+	onViewChunks,
+}: {
+	isLoading: boolean;
+	isError: boolean;
+	errorMessage?: string;
+	onRetry: () => void;
+	text: string;
+	totalChunks: number;
+	shownChunks: number;
+	onViewChunks: () => void;
+}) {
+	if (isLoading) {
+		return (
+			<Stack gap="sm">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<Skeleton
+						key={i}
+						h={20}
+						radius="sm"
+					/>
+				))}
+			</Stack>
+		);
+	}
+
+	if (isError) {
+		return (
+			<PageError
+				title="Couldn't load document"
+				message={errorMessage}
+				onRetry={onRetry}
+			/>
+		);
+	}
+
+	if (totalChunks === 0) {
+		return (
+			<Text
+				fz="sm"
+				c="slate"
+			>
+				This document has no chunks.
+			</Text>
+		);
+	}
+
+	const truncated = shownChunks < totalChunks;
+
+	return (
+		<Stack gap="xs">
+			<Paper
+				p="md"
+				radius="sm"
+				withBorder
+			>
+				<Text
+					fz="sm"
+					className="selectable"
+					style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+				>
+					{text}
+				</Text>
+			</Paper>
+			{truncated && (
+				<Text
+					fz="xs"
+					c="slate"
+				>
+					Showing the first {shownChunks.toLocaleString()} of{" "}
+					{totalChunks.toLocaleString()} chunks.{" "}
+					<UnstyledButton
+						component="span"
+						onClick={onViewChunks}
+						style={{ textDecoration: "underline", fontSize: "inherit" }}
+					>
+						Switch to Chunks
+					</UnstyledButton>{" "}
+					to browse the rest.
+				</Text>
 			)}
 		</Stack>
 	);
