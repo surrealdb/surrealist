@@ -101,21 +101,21 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
+					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
 
 					~~~python
 					from surrealdb import SpectronTurnRole
 
 					session = client.sessions.create(scopes=["user/alex"])
 					session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
-					session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")
+					session.turn(SpectronTurnRole.ASSISTANT, "Got it Alex, noted.")
 					~~~
 				`),
 			},
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~python
 					results = client.query("What are the user's preferences?", k=10)
@@ -128,7 +128,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -166,7 +166,7 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
+					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
 
 					~~~javascript
 					import { TurnRole } from "@surrealdb/spectron";
@@ -176,14 +176,14 @@ function buildIntegrationSteps(
 					});
 
 					await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
-					await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });
+					await session.turn({ role: TurnRole.assistant, content: "Got it Alex, noted." });
 					~~~
 				`),
 			},
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~javascript
 					const results = await client.query({
@@ -196,7 +196,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -240,7 +240,7 @@ function buildIntegrationSteps(
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.
+					Issue a natural-language query against your stored memories. The hybrid retrieval pipeline combines vector similarity with graph traversal behind one endpoint.
 
 					~~~bash
 					curl -X POST ${restRoot}/query \\
@@ -253,7 +253,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -582,7 +582,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Quick start"
 				title="Connect to your context"
-				description="Wire this context into your agent — through the Python, JavaScript, Go, Swift, Kotlin, Haskell, Elixir, and Dart SDKs, the REST API and CLI, MCP-native coding tools, or a framework like LangChain, n8n, and the OpenAI Agents SDK."
+				description="Wire this context into your agent, whether that's through our SDKs, the REST API and CLI, MCP-native coding tools, or the framework and automation platform of your choice."
 				art={pictoIntegrationsGradient}
 			/>
 

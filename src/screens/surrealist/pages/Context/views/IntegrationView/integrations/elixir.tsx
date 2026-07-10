@@ -41,7 +41,7 @@ export function buildElixirSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Capture a memory",
 			description: dedent(`
-				Record a fact. Spectron extracts entities, attributes, and relations server-side so the memory graph grows automatically.
+				Record a fact. Spectron pulls out entities, attributes, and relations server-side, so the memory graph fills in on its own.
 
 				~~~elixir
 				{:ok, _} =
@@ -52,7 +52,7 @@ export function buildElixirSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Recall with hybrid search",
 			description: dedent(`
-				Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+				Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 				~~~elixir
 				{:ok, hits} =
@@ -63,7 +63,7 @@ export function buildElixirSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Discover the full potential of Spectron with the official documentation.
+				The official documentation covers the rest of what Spectron can do.
 
 				<Documentation />
 			`),

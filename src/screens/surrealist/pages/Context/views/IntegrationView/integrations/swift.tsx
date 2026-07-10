@@ -38,7 +38,7 @@ export function buildSwiftSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Capture a memory",
 			description: dedent(`
-				Record a memory. Spectron extracts entities, attributes, and relations so the memory graph grows automatically.
+				Record a memory. Spectron pulls out entities, attributes, and relations, so the memory graph fills in on its own.
 
 				~~~swift
 				_ = try await memory.remember("Hi, I'm Alex. I prefer dark mode.", role: .user)
@@ -48,7 +48,7 @@ export function buildSwiftSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Recall with hybrid search",
 			description: dedent(`
-				Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+				Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 				~~~swift
 				let hits = try await memory.recall("What are the user's preferences?", k: 10)
@@ -58,7 +58,7 @@ export function buildSwiftSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Discover the full potential of Spectron with the official documentation.
+				The official documentation covers the rest of what Spectron can do.
 
 				<Documentation />
 			`),

@@ -46,7 +46,7 @@ export function buildEveSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Enable auto-memory",
 			description: dedent(`
-				Drop in two resolver files and your agent gains persistent memory automatically — recalling relevant context before each turn and remembering new facts after it.
+				Drop in two resolver files and your agent gains persistent memory. It recalls relevant context before each turn, and remembers new facts after it.
 
 				~~~typescript
 				// agent/instructions/memory.ts
@@ -64,7 +64,7 @@ export function buildEveSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Discover the full potential of Spectron with the official documentation.
+				The official documentation covers the rest of what Spectron can do.
 
 				<Documentation />
 			`),

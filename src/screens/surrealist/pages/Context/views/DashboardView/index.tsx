@@ -64,7 +64,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Context"
 				title={context.name}
-				description="Your agent's memory and knowledge layer. Connect an SDK, ground it in documents, and watch its memory grow."
+				description="This is where your agent keeps its memory and knowledge. Connect an SDK, ground it in your documents, and its memory grows as you use it."
 				art={pictoSpectronGradient}
 			>
 				<Button

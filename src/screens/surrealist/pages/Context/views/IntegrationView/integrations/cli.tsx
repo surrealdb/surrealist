@@ -41,7 +41,7 @@ export function buildCliSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Capture a memory",
 			description: dedent(`
-				Remember a piece of text. Spectron extracts entities, attributes, and relations so the memory graph grows automatically.
+				Remember a piece of text. Spectron pulls out entities, attributes, and relations, so the memory graph fills in on its own.
 
 				~~~bash
 				spectron remember "Hi, I'm Alex. I prefer dark mode."
@@ -51,7 +51,7 @@ export function buildCliSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Recall with hybrid search",
 			description: dedent(`
-				Query your stored memories and let the hybrid retrieval pipeline blend graph traversal, vector similarity, and structured filters behind a single command.
+				Query your stored memories. The hybrid retrieval pipeline blends graph traversal, vector similarity, and structured filters behind one command.
 
 				~~~bash
 				spectron recall "What are the user's preferences?" --limit 10
@@ -72,7 +72,7 @@ export function buildCliSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Full command reference — remember, recall, context, reflect, consolidate, and the interactive terminal surfaces.
+				Full command reference: remember, recall, context, reflect, consolidate, and the interactive terminal surfaces.
 
 				<Documentation href="https://surrealdb.com/docs/spectron/integrations/cli" />
 			`),

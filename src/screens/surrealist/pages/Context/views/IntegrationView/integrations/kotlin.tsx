@@ -22,7 +22,7 @@ export function buildKotlinSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Initialise the client",
 			description: dedent(`
-				Create a client for this context. The endpoint and context id are pre-filled from your selection. Every method is a suspend function — wrap in runBlocking for synchronous callers.
+				Create a client for this context. The endpoint and context id are pre-filled from your selection. Every method is a suspend function, so wrap it in runBlocking for synchronous callers.
 
 				~~~kotlin
 				import com.surrealdb.kotlin.spectron.Spectron
@@ -40,7 +40,7 @@ export function buildKotlinSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Capture a memory",
 			description: dedent(`
-				Record a fact. Spectron extracts entities, attributes, and relations server-side so the memory graph grows automatically.
+				Record a fact. Spectron pulls out entities, attributes, and relations server-side, so the memory graph fills in on its own.
 
 				~~~kotlin
 				import com.surrealdb.kotlin.spectron.model.InferMode
@@ -52,7 +52,7 @@ export function buildKotlinSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Recall with hybrid search",
 			description: dedent(`
-				Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+				Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 				~~~kotlin
 				val result = memory.recall("What are the user's preferences?", k = 10, mode = "hybrid")
@@ -64,7 +64,7 @@ export function buildKotlinSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Discover the full potential of Spectron with the official documentation.
+				The official documentation covers the rest of what Spectron can do.
 
 				<Documentation />
 			`),

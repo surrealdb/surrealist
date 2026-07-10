@@ -10,7 +10,7 @@ export function buildLangChainSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Install packages",
 			description: dedent(`
-				Add Spectron, the LangChain adapter, and your chosen model provider. The adapter does not bundle LangChain—install the stack you already use.
+				Add Spectron, the LangChain adapter, and your chosen model provider. The adapter does not bundle LangChain, so install the stack you already use.
 
 				~~~bash
 				pip install spectron spectron-langchain langchain langchain-openai

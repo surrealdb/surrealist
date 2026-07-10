@@ -232,7 +232,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 						mb="xs"
 						className="selectable"
 					>
-						Copy your API key now, as it will no longer be visible after this point.
+						Copy your API key now, you won't be able to see it again.
 					</Text>
 					<Group
 						mt="md"
@@ -551,9 +551,9 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 									fz="xs"
 									c="slate"
 								>
-									A scoped key can only narrow (attenuate) your own access — it
-									can never grant more than you already have. Leave a verb empty
-									to inherit your full access for it.
+									A scoped key can only narrow (attenuate) your own access, it can
+									never grant more than you already have. Leave a verb empty to
+									inherit your full access for it.
 								</Text>
 								{SPECTRON_VERBS.map((verb) => (
 									<Group

@@ -402,7 +402,8 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 									>
 										Tell it about yourself, then ask what it remembers. Each
 										reply is grounded in recalled memory and any documents
-										you've uploaded — and may teach it something new.
+										you've uploaded, and it may pick up something new along the
+										way.
 									</Text>
 									<Stack
 										mt={36}
@@ -621,7 +622,7 @@ function ChatBubble({
 								fz="xs"
 								c="red"
 							>
-								No reply — this turn failed.
+								No reply, this turn failed.
 							</Text>
 						</Group>
 						<Button

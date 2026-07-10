@@ -144,7 +144,7 @@ export function SpectronGate({ children, loadingMessage }: SpectronGateProps) {
 				title="Couldn't connect to this context"
 				message={
 					error?.message ??
-					"The access token for this context could not be issued. Check that you have a principal in this context, then try again."
+					"We couldn't issue an access token for this context. Check that you have a principal here, then try again."
 				}
 				onRetry={refresh}
 			/>

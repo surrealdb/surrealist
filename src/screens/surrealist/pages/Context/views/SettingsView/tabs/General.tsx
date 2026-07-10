@@ -33,12 +33,12 @@ export function GeneralTab({ context }: ContextViewProps) {
 			if (res) {
 				showInfo({
 					title: "Context updated",
-					subtitle: "The details of your context has been updated",
+					subtitle: "Your context details have been saved",
 				});
 			} else {
 				showErrorNotification({
 					title: "Failed to update context",
-					content: "An error occurred while updating the context",
+					content: "Something went wrong while updating the context",
 				});
 			}
 		} catch (err) {
@@ -56,7 +56,7 @@ export function GeneralTab({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Settings"
 				title="General"
-				description="Metadata for this context and destructive actions. Update the display name or copy the identifiers your tooling needs."
+				description="The basic details for this context, plus the destructive actions. Update the display name, or copy the identifiers your tooling needs."
 				art={pictoSettingsGradient}
 			/>
 

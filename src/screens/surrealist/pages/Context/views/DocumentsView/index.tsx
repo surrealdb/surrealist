@@ -82,7 +82,7 @@ export default function DocumentsView({ context: _context }: ContextViewProps) {
 			<ContextHero
 				kicker="Documents"
 				title="Knowledge & documents"
-				description="Ground your agent in real source material. Upload files and Spectron parses, chunks, embeds, and links them so retrieval can cite the exact passage it came from."
+				description="Ground your agent in your own source material. Upload your files, and Spectron parses, chunks, embeds, and links them, so retrieval can point back to the exact passage an answer came from."
 				art={pictoDocumentGradient}
 			/>
 
@@ -1620,8 +1620,8 @@ function UploadModal({
 							c="slate"
 							ta="center"
 						>
-							PDF, Markdown, JSON, HTML, plain text, and more. Multiple files are
-							supported.
+							PDF, Markdown, JSON, HTML, plain text, and more. You can add several at
+							once.
 						</Text>
 					</Stack>
 				</UnstyledButton>
