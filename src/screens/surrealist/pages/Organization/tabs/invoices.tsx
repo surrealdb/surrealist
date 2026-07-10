@@ -1,5 +1,18 @@
-import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
-import { Icon, iconHelp, iconOpen } from "@surrealdb/ui";
+import {
+	ActionIcon,
+	Alert,
+	Anchor,
+	Box,
+	Group,
+	Paper,
+	Skeleton,
+	Stack,
+	Table,
+	Text,
+	ThemeIcon,
+} from "@mantine/core";
+import { Icon, iconChart, iconChevronRight, iconHelp, iconOpen } from "@surrealdb/ui";
+import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -20,6 +33,50 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 	return (
 		<>
 			<PrimaryTitle fz={32}>Invoices</PrimaryTitle>
+
+			<Anchor
+				component={Link}
+				href={`/o/${organization.id}/usage`}
+				variant="glow"
+				c="var(--mantine-color-text)"
+			>
+				<Paper p="lg">
+					<Group
+						gap="md"
+						wrap="nowrap"
+					>
+						<ThemeIcon
+							color="violet"
+							variant="light"
+							size={44}
+							radius="md"
+						>
+							<Icon
+								path={iconChart}
+								size="lg"
+							/>
+						</ThemeIcon>
+						<Box style={{ flex: 1 }}>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								View your usage breakdown
+							</Text>
+							<Text fz="sm">
+								Head to the usage page for a detailed breakdown of compute, storage,
+								and spend across your instances for any month in the past year.
+							</Text>
+						</Box>
+						<Icon
+							path={iconChevronRight}
+							c="slate"
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
+
 			<Section
 				title="Invoices"
 				description="View and download invoices of service charges"

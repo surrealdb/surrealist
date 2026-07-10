@@ -2,7 +2,7 @@ import {
 	Group,
 	LoadingOverlay,
 	Paper,
-	SegmentedControl,
+	Select,
 	SimpleGrid,
 	Stack,
 	Table,
@@ -20,12 +20,13 @@ import { formatBytesUsage, formatMillcents, formatMinutesAsHours } from "~/util/
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
-type SpendPeriod = "current" | "previous";
-
-function computePeriod(selection: SpendPeriod) {
-	const base = selection === "current" ? dayjs() : dayjs().subtract(1, "month");
-	return base.format("MM-YYYY");
-}
+const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => {
+	const month = dayjs().subtract(i, "month");
+	return {
+		value: month.format("MM-YYYY"),
+		label: month.format("MMMM YYYY"),
+	};
+});
 
 function spendTextProps(millcents: number): TextProps {
 	if (millcents > 0) return { c: "bright", fw: 500, ff: "monospace" };
@@ -34,10 +35,9 @@ function spendTextProps(millcents: number): TextProps {
 }
 
 export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
-	const [period, setPeriod] = useState<SpendPeriod>("current");
+	const [period, setPeriod] = useState(() => MONTH_OPTIONS[0].value);
 
-	const periodString = computePeriod(period);
-	const spendQuery = useCloudOrgSpendQuery(organization.id, periodString);
+	const spendQuery = useCloudOrgSpendQuery(organization.id, period);
 	const entries = spendQuery.data ?? [];
 
 	const totalMillcents = useMemo(
@@ -73,13 +73,12 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 				align="center"
 			>
 				<PrimaryTitle fz={32}>Usage</PrimaryTitle>
-				<SegmentedControl
+				<Select
 					value={period}
-					onChange={(v) => setPeriod(v as SpendPeriod)}
-					data={[
-						{ label: "Previous month", value: "previous" },
-						{ label: "Current month", value: "current" },
-					]}
+					onChange={(value) => value && setPeriod(value)}
+					data={MONTH_OPTIONS}
+					allowDeselect={false}
+					w={180}
 				/>
 			</Group>
 
