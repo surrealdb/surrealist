@@ -12,6 +12,7 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import { Icon, iconChart, iconChevronRight, iconHelp, iconOpen } from "@surrealdb/ui";
+import { format } from "date-fns";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
@@ -98,7 +99,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 									return (
 										<Table.Tr key={invoice.id}>
 											<Table.Td c="bright">
-												{new Date(invoice.date).toLocaleDateString()}
+												{format(new Date(invoice.date), "MMM d, yyyy")}
 											</Table.Td>
 											<Table.Td
 												c={status?.color ?? "obsidian"}

@@ -11,7 +11,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { Icon, iconClock, iconDatabase, iconDollar, iconServer } from "@surrealdb/ui";
-import dayjs from "dayjs";
+import { format, subMonths } from "date-fns";
 import { useMemo, useState } from "react";
 import { useCloudOrgSpendQuery } from "~/cloud/queries/usage";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -21,10 +21,10 @@ import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
 const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => {
-	const month = dayjs().subtract(i, "month");
+	const month = subMonths(new Date(), i);
 	return {
-		value: month.format("MM-YYYY"),
-		label: month.format("MMMM YYYY"),
+		value: format(month, "MM-yyyy"),
+		label: format(month, "MMMM yyyy"),
 	};
 });
 
@@ -220,8 +220,9 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 											<Table.Td ta="right">
 												<Text fz="sm">
 													{entry.effective_at
-														? dayjs(entry.effective_at).format(
-																"MMM DD, YYYY",
+														? format(
+																new Date(entry.effective_at),
+																"MMM d, yyyy",
 															)
 														: "\u2014"}
 												</Text>
