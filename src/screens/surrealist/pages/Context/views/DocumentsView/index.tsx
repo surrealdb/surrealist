@@ -25,6 +25,7 @@ import { useDisclosure } from "@mantine/hooks";
 import type { Spectron } from "@surrealdb/spectron";
 import {
 	Icon,
+	iconArrowLeft,
 	iconBraces,
 	iconCheck,
 	iconClose,
@@ -234,6 +235,7 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 					client={client}
 					term={searchTerm}
 					onInspect={setInspecting}
+					onClear={clearSearch}
 				/>
 			) : documents.length === 0 ? (
 				<EmptyState
@@ -525,10 +527,12 @@ function SearchResults({
 	client,
 	term,
 	onInspect,
+	onClear,
 }: {
 	client: Spectron;
 	term: string;
 	onInspect: (document: DocumentEntry) => void;
+	onClear: () => void;
 }) {
 	const searchQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "search", term],
@@ -570,19 +574,44 @@ function SearchResults({
 				icon={iconSearch}
 				title="No matches"
 				description={`Nothing in this context matched "${term}".`}
+				action={
+					<Button
+						mt="sm"
+						variant="light"
+						leftSection={<Icon path={iconArrowLeft} />}
+						onClick={onClear}
+					>
+						Back to all documents
+					</Button>
+				}
 			/>
 		);
 	}
 
 	return (
 		<Stack gap="sm">
-			<Text
-				fz="sm"
-				c="slate"
+			<Group
+				justify="space-between"
+				gap="sm"
+				wrap="nowrap"
 			>
-				{results.length} result{results.length === 1 ? "" : "s"} ·{" "}
-				{searchQuery.data.queryMs}ms
-			</Text>
+				<Text
+					fz="sm"
+					c="slate"
+				>
+					{results.length} result{results.length === 1 ? "" : "s"} for "{term}" ·{" "}
+					{searchQuery.data.queryMs}ms
+				</Text>
+				<Button
+					size="compact-sm"
+					variant="subtle"
+					color="slate"
+					leftSection={<Icon path={iconArrowLeft} />}
+					onClick={onClear}
+				>
+					Back to all documents
+				</Button>
+			</Group>
 			{results.map((hit, index) => (
 				<SearchHit
 					key={`${hit.document.id}-${hit.chunk.id}-${index}`}
