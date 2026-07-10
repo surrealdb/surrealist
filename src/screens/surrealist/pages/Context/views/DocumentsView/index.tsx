@@ -690,8 +690,6 @@ function InspectorDrawer({
 	onClose: () => void;
 	onRenamed: (document: DocumentEntry) => void;
 }) {
-	const [chunkPage, setChunkPage] = useState(1);
-
 	return (
 		<Drawer
 			opened={doc !== null}
@@ -724,11 +722,14 @@ function InspectorDrawer({
 			}
 		>
 			{doc && (
+				// Key by document id so switching documents remounts the body and
+				// resets its local state (e.g. chunk pagination). Without this a
+				// small document opened after paging deep into a large one would
+				// request an out-of-range page and show a misleading "no chunks".
 				<InspectorBody
+					key={doc.id}
 					client={client}
 					document={doc}
-					chunkPage={chunkPage}
-					onChunkPageChange={setChunkPage}
 					onRenamed={onRenamed}
 				/>
 			)}
@@ -884,16 +885,14 @@ function DocumentNameField({
 function InspectorBody({
 	client,
 	document: doc,
-	chunkPage,
-	onChunkPageChange,
 	onRenamed,
 }: {
 	client: Spectron;
 	document: DocumentEntry;
-	chunkPage: number;
-	onChunkPageChange: (page: number) => void;
 	onRenamed: (document: DocumentEntry) => void;
 }) {
+	const [chunkPage, setChunkPage] = useState(1);
+
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
 		queryFn: () =>
@@ -1052,7 +1051,7 @@ function InspectorBody({
 								size="sm"
 								total={chunkPageCount}
 								value={chunkPage}
-								onChange={onChunkPageChange}
+								onChange={setChunkPage}
 							/>
 						</Group>
 					)}
