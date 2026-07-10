@@ -16,6 +16,7 @@ import {
 	Skeleton,
 	Stack,
 	Text,
+	Textarea,
 	TextInput,
 	ThemeIcon,
 	Tooltip,
@@ -1605,6 +1606,9 @@ function UploadModal({
 	const [items, setItems] = useState<UploadItem[]>([]);
 	const [busy, setBusy] = useState(false);
 	const [dragging, setDragging] = useState(false);
+	const [source, setSource] = useState<"files" | "text">("files");
+	const [textName, setTextName] = useState("");
+	const [textContent, setTextContent] = useState("");
 	const [scopes, setScopes] = useState<SpectronScopeSets>([]);
 	const [scopeDraft, setScopeDraft] = useState("");
 	const [scopeError, setScopeError] = useState<string | null>(null);
@@ -1661,6 +1665,9 @@ function UploadModal({
 		setItems([]);
 		setBusy(false);
 		setDragging(false);
+		setSource("files");
+		setTextName("");
+		setTextContent("");
 		setScopes([]);
 		setScopeDraft("");
 		setScopeError(null);
@@ -1680,6 +1687,19 @@ function UploadModal({
 			...prev,
 			...files.map((file): UploadItem => ({ file, state: "pending" })),
 		]);
+	};
+
+	// Stages pasted text as a named text/plain document, reusing the same upload
+	// queue (and scope selection) as file uploads. (#12)
+	const stageText = () => {
+		const name = textName.trim();
+		if (name.length === 0 || textContent.trim().length === 0) return;
+		// The explicit contentType drives parsing, so the filename is just a label
+		// and doesn't need a forced extension.
+		const file = new File([textContent], name, { type: "text/plain" });
+		stageFiles([file]);
+		setTextName("");
+		setTextContent("");
 	};
 
 	const removeItem = (index: number) => {
@@ -1805,48 +1825,95 @@ function UploadModal({
 					}}
 				/>
 
-				<UnstyledButton
-					onClick={() => inputRef.current?.click()}
-					onDragOver={(event) => {
-						event.preventDefault();
-						setDragging(true);
-					}}
-					onDragLeave={() => setDragging(false)}
-					onDrop={onDrop}
-					className={classes.dropZone}
-					data-dragging={dragging || undefined}
-				>
-					<Stack
-						gap="xs"
-						align="center"
+				<SegmentedControl
+					fullWidth
+					value={source}
+					onChange={(value) => setSource(value as "files" | "text")}
+					disabled={busy}
+					data={[
+						{ label: "Upload files", value: "files" },
+						{ label: "Paste text", value: "text" },
+					]}
+				/>
+
+				{source === "files" ? (
+					<UnstyledButton
+						onClick={() => inputRef.current?.click()}
+						onDragOver={(event) => {
+							event.preventDefault();
+							setDragging(true);
+						}}
+						onDragLeave={() => setDragging(false)}
+						onDrop={onDrop}
+						className={classes.dropZone}
+						data-dragging={dragging || undefined}
 					>
-						<ThemeIcon
-							size={48}
-							radius="xl"
-							variant="light"
-							color="violet"
+						<Stack
+							gap="xs"
+							align="center"
 						>
-							<Icon
-								path={iconUpload}
-								size="xl"
-							/>
-						</ThemeIcon>
-						<Text
-							fw={600}
-							c="bright"
-						>
-							Drop files here or click to choose
-						</Text>
-						<Text
-							fz="sm"
-							c="slate"
-							ta="center"
-						>
-							PDF, Markdown, JSON, HTML, plain text, and more. You can add several at
-							once.
-						</Text>
+							<ThemeIcon
+								size={48}
+								radius="xl"
+								variant="light"
+								color="violet"
+							>
+								<Icon
+									path={iconUpload}
+									size="xl"
+								/>
+							</ThemeIcon>
+							<Text
+								fw={600}
+								c="bright"
+							>
+								Drop files here or click to choose
+							</Text>
+							<Text
+								fz="sm"
+								c="slate"
+								ta="center"
+							>
+								PDF, Markdown, JSON, HTML, plain text, and more. You can add several
+								at once.
+							</Text>
+						</Stack>
+					</UnstyledButton>
+				) : (
+					<Stack gap="xs">
+						<TextInput
+							label="Name"
+							placeholder="e.g. meeting-notes"
+							value={textName}
+							disabled={busy}
+							onChange={(event) => setTextName(event.currentTarget.value)}
+						/>
+						<Textarea
+							label="Text"
+							placeholder="Paste or type the document text…"
+							value={textContent}
+							disabled={busy}
+							autosize
+							minRows={6}
+							maxRows={16}
+							onChange={(event) => setTextContent(event.currentTarget.value)}
+						/>
+						<Group justify="flex-end">
+							<Button
+								variant="light"
+								leftSection={<Icon path={iconText} />}
+								onClick={stageText}
+								disabled={
+									busy ||
+									textName.trim().length === 0 ||
+									textContent.trim().length === 0
+								}
+							>
+								Add text document
+							</Button>
+						</Group>
 					</Stack>
-				</UnstyledButton>
+				)}
 
 				{items.length > 0 && (
 					<Stack gap="xs">
@@ -1909,13 +1976,15 @@ function UploadModal({
 					>
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
-					<Button
-						leftSection={<Icon path={iconUpload} />}
-						onClick={() => inputRef.current?.click()}
-						disabled={busy}
-					>
-						Add files
-					</Button>
+					{source === "files" && (
+						<Button
+							leftSection={<Icon path={iconUpload} />}
+							onClick={() => inputRef.current?.click()}
+							disabled={busy}
+						>
+							Add files
+						</Button>
+					)}
 					<Button
 						variant="gradient"
 						onClick={runUploads}
