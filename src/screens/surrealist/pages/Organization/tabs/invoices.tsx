@@ -39,6 +39,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 				href={`/o/${organization.id}/usage`}
 				variant="glow"
 				c="var(--mantine-color-text)"
+				mb="xl"
 			>
 				<Paper p="lg">
 					<Group
