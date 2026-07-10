@@ -11,14 +11,16 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconChart, iconChevronRight, iconHelp, iconOpen } from "@surrealdb/ui";
+import { Icon, iconChart, iconChevronRight, iconDownload, iconHelp } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import { InvoiceStatus } from "~/types";
+import { PDF_FILTER } from "~/constants";
+import { useStable } from "~/hooks/stable";
+import { CloudInvoice, InvoiceStatus } from "~/types";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
@@ -30,6 +32,14 @@ const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> =
 
 export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) {
 	const invoiceQuery = useCloudInvoicesQuery(organization.id);
+
+	const downloadInvoice = useStable(async (invoice: CloudInvoice) => {
+		const filename = `surrealdb-invoice-${format(new Date(invoice.date), "yyyy-MM-dd")}.pdf`;
+
+		await adapter.saveFile("Save invoice", filename, [PDF_FILTER], () =>
+			fetch(invoice.url).then((res) => res.blob()),
+		);
+	});
 
 	return (
 		<>
@@ -116,9 +126,10 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 												style={{ textWrap: "nowrap" }}
 											>
 												<ActionIcon
-													onClick={() => adapter.openUrl(invoice.url)}
+													aria-label="Download invoice PDF"
+													onClick={() => downloadInvoice(invoice)}
 												>
-													<Icon path={iconOpen} />
+													<Icon path={iconDownload} />
 												</ActionIcon>
 											</Table.Td>
 										</Table.Tr>
