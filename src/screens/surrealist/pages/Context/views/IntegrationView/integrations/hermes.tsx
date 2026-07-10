@@ -4,59 +4,58 @@ import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildHermesSteps(context: CloudContext): IntegrationStep[] {
-	const { mcpUrl } = getSpectronUrls(context);
+	const { endpoint } = getSpectronUrls(context);
 
 	return [
 		{
+			title: "Install the provider",
+			description: dedent(`
+				The Spectron memory provider gives a Hermes Agent long-term memory: it recalls relevant memories before every turn, writes each completed turn back to Spectron, and consolidates memory when a session ends. Requires Python 3.10+.
+
+				~~~bash
+				pip install spectron-integration-hermes-agent
+				~~~
+
+				This pulls in the Spectron SDK (\`surrealdb[spectron]\`) and registers the provider with Hermes.
+			`),
+		},
+		{
 			title: "Create an API key",
 			description: dedent(`
-				Hermes authenticates with a scoped API key bound to your principal. Create one for this context.
+				The provider authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Config location",
+			title: "Provide credentials",
 			description: dedent(`
-				Hermes reads MCP servers from \`~/.hermes/mcp.json\`. Create the file if it does not exist yet.
+				Supply the connection details via the environment. The endpoint and context id are pre-filled from your selection; keep the API key in your \`.env\`.
 
 				~~~bash
-				~/.hermes/mcp.json
+				export SPECTRON_ENDPOINT="${endpoint}"
+				export SPECTRON_CONTEXT="${context.id}"
+				export SPECTRON_API_KEY="your-api-key"
 				~~~
 			`),
 		},
 		{
-			title: "Configuration reference",
+			title: "Activate the provider",
 			description: dedent(`
-				Add Spectron as a custom server. Point it at your context host, send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
+				Select Spectron as the memory provider, then confirm it is active. Hermes prompts for any missing settings and writes the non-secret ones to \`$HERMES_HOME/spectron.json\`.
 
-				~~~json
-				{
-				  "mcpServers": {
-				    "spectron": {
-				      "url": "${mcpUrl}",
-				      "headers": {
-				        "Authorization": "Bearer your-api-key",
-				        "X-Spectron-Context": "${context.id}"
-				      }
-				    }
-				  }
-				}
+				~~~bash
+				hermes memory setup      # choose "spectron"
+				hermes memory status     # confirm it is active
 				~~~
-			`),
-		},
-		{
-			title: "Verify",
-			description: dedent(`
-				Restart Hermes and confirm the Spectron memory and knowledge tools are listed for the session.
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+				The agent can also call the \`spectron_recall\`, \`spectron_remember\`, \`spectron_context\`, \`spectron_forget\`, \`spectron_reflect\`, and \`spectron_upload\` tools directly. See the documentation for the full provider reference.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server" />
+				<Documentation />
 			`),
 		},
 	];

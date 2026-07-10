@@ -10,82 +10,83 @@ export function buildLangChainSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Install packages",
 			description: dedent(`
-				Add Spectron, the LangChain adapter, and your chosen model provider. The adapter does not bundle LangChain, so install the stack you already use.
+				The official SurrealDB integration for the LangChain.js and LangGraph.js ecosystems wraps the \`@surrealdb/spectron\` client. Requires Node.js ≥ 22 or Bun ≥ 1.
 
 				~~~bash
-				pip install spectron spectron-langchain langchain langchain-openai
+				bun add @surrealdb/langchain @surrealdb/langchain-core surrealdb
 				~~~
 			`),
 		},
 		{
-			title: "Create API credentials",
+			title: "Create an API key",
 			description: dedent(`
-				SpectronMemory authenticates with an agent API key for this context. Create one here if you have not already.
+				The adapter authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Wire SpectronMemory",
+			title: "Configure the client",
 			description: dedent(`
-				Point memory at this context’s endpoint and scope. Each save_context call records user and assistant turns; load_memory_variables recalls relevant graph and vector context.
+				Construct a Spectron client for this context. The endpoint and context id are pre-filled from your selection.
 
-				~~~python
-				from langchain_openai import ChatOpenAI
-				from langchain.chains import ConversationChain
-				from spectron_langchain import SpectronMemory
+				~~~typescript
+				import { Spectron } from "@surrealdb/langchain-core";
 
-				memory = SpectronMemory(
-				    api_key="your-api-key",
-				    endpoint="${endpoint}",
-				    scopes=[["user/alex", "org/acme"]],
-				)
+				const spectron = new Spectron({
+				    context: "${context.id}",
+				    endpoint: "${endpoint}",
+				    apiKey: "your-api-key",
+				});
+				~~~
 
-				chain = ConversationChain(
-				    llm=ChatOpenAI(model="gpt-4o"),
-				    memory=memory,
-				)
+				Or call \`resolveSpectron({})\` to build the client from the \`SPECTRON_ENDPOINT\`, \`SPECTRON_API_KEY\`, and \`SPECTRON_CONTEXT\` environment variables.
+			`),
+		},
+		{
+			title: "Retrieve and add tools",
+			description: dedent(`
+				\`SpectronRetriever\` turns memory hits into LangChain \`Document\`s, and \`SpectronQueryTool\` / \`SpectronReflectTool\` wire Spectron into your agents.
 
-				response = chain.invoke({"input": "I'm Alex and I prefer dark mode."})
-				print(response["response"])
+				~~~typescript
+				import { SpectronRetriever } from "@surrealdb/langchain/retrievers";
+				import { SpectronQueryTool, SpectronReflectTool } from "@surrealdb/langchain/tools";
+
+				const retriever = new SpectronRetriever({
+				    client: spectron,
+				    mode: "hybrid_graph",
+				    k: 8,
+				});
+
+				const docs = await retriever.invoke("what is the return policy?");
+
+				const tools = [
+				    new SpectronQueryTool({ client: spectron }),
+				    new SpectronReflectTool({ client: spectron }),
+				];
 				~~~
 			`),
 		},
 		{
-			title: "Optional: retrieval + memory",
+			title: "Persist state with LangGraph",
 			description: dedent(`
-				Combine SpectronMemory with SpectronRetriever so ConversationalRetrievalChain blends experiential memory and authoritative knowledge.
+				Add \`@surrealdb/langgraph\` for a \`SpectronStore\` that reads entities and recall through Spectron from your LangGraph nodes.
 
-				~~~python
-				from langchain.chains import ConversationalRetrievalChain
-				from langchain_openai import ChatOpenAI
-				from spectron_langchain import SpectronMemory, SpectronRetriever
+				~~~typescript
+				import { SpectronStore } from "@surrealdb/langgraph/spectron_store";
 
-				llm = ChatOpenAI(model="gpt-4o")
-				memory = SpectronMemory(
-				    api_key="your-api-key",
-				    endpoint="${endpoint}",
-				    scopes=[["user/alex", "org/acme"]],
-				)
-				retriever = SpectronRetriever(
-				    api_key="your-api-key",
-				    context_id="${context.id}",
-				)
-
-				chain = ConversationalRetrievalChain.from_llm(
-				    llm=llm,
-				    retriever=retriever,
-				    memory=memory,
-				)
+				const store = new SpectronStore({ spectron });
+				await store.get(["Person"], "alex");
+				await store.search(["Person"], { query: "who is alex?", limit: 5 });
 				~~~
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				Full adapter reference, session lifetime, tool-call capture, and LangChain message mapping.
+				The official documentation covers the rest of what Spectron can do.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/frameworks/langchain" />
+				<Documentation />
 			`),
 		},
 	];
