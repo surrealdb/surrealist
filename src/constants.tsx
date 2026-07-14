@@ -352,8 +352,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		id: "migrations",
 		name: "3.0 Migration",
 		icon: iconTransfer,
-		disabled: ({ flags, version }) =>
-			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.6.1 <3.0.0-0"),
+		disabled: ({ flags, version, instanceVersion }) => {
+			// Prefer the live database version, but fall back to the Cloud instance
+			// version so the view remains reachable before the connection is
+			// established (e.g. when opening the migration flow from the dashboard).
+			const target = version || instanceVersion;
+			return !flags.v3_migration_tooling || !target || !satisfies(target, ">=2.6.1 <3.0.0-0");
+		},
 	},
 	"settings/general": {
 		id: "settings/general",
