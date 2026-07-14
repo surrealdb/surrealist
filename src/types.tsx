@@ -621,6 +621,7 @@ export interface ViewCondition {
 	flags: FeatureFlagMap;
 	connection: string;
 	version: string | null;
+	instanceVersion: string | null;
 	isCloud: boolean;
 }
 

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudInstanceList } from "~/cloud/hooks/instances";
+import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { GLOBAL_PAGES, SANDBOX, VIEW_PAGES } from "~/constants";
 import { openRequiredDatabaseModal } from "~/modals/require-database";
 import { useConfigStore } from "~/stores/config";
@@ -147,10 +148,13 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 	const [flags] = useFeatureFlags();
 	const version = useDatabaseStore((s) => s.version) || null;
 
-	const [connection, isCloud] = useConnection((c) => [
+	const [connection, isCloud, instanceId] = useConnection((c) => [
 		c?.id ?? "",
 		c?.authentication.mode === "cloud",
+		c?.authentication.cloudInstance,
 	]);
+
+	const instanceVersion = useCloudInstanceQuery(instanceId).data?.version || null;
 
 	return useMemo(() => {
 		const draft = { ...VIEW_PAGES } as const;
@@ -159,6 +163,7 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 			flags,
 			isCloud,
 			version,
+			instanceVersion,
 		};
 
 		for (const { id, disabled } of Object.values(draft)) {
@@ -168,7 +173,7 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 		}
 
 		return draft;
-	}, [flags, connection, isCloud, version]);
+	}, [flags, connection, isCloud, version, instanceVersion]);
 }
 
 /**
