@@ -156,7 +156,7 @@ export default function ScopesView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Scopes"
 				title="Scope hierarchy"
-				description="Scopes are hierarchical slash-path folders that partition your memory and gate which principals can see which facts. Register the folders you need, then grant principals access to the branches they should reach."
+				description="Scopes are slash-path folders that partition your memory and control which principals can see which facts. Register the folders you need, then grant principals access to the branches they should reach."
 				art={pictoBadgeAccessGradient}
 			/>
 
@@ -171,9 +171,9 @@ export default function ScopesView({ context }: ContextViewProps) {
 					className="selectable"
 				>
 					A fact stored at a node is visible only to principals explicitly granted that
-					node — access is deny-by-default, with no implicit access to ancestor or
-					descendant scopes. Tombstoning a scope is reversible; forgetting one erases its
-					facts permanently.
+					node. Access is deny-by-default, so there is no implicit access to ancestor or
+					descendant scopes. Tombstoning a scope is reversible, but forgetting one erases
+					its facts permanently.
 				</Text>
 			</Alert>
 
@@ -438,7 +438,7 @@ function ScopeRow({
 							</Badge>
 						)}
 						{!node.registered && (
-							<Tooltip label="Implied ancestor — not registered on its own">
+							<Tooltip label="Implied ancestor, not registered on its own">
 								<Badge
 									size="xs"
 									color="slate"
@@ -633,7 +633,7 @@ function RegisterModal({
 				<TextInput
 					label="Display name"
 					description="Optional label for the UI"
-					placeholder="Apple — Product"
+					placeholder="Apple Product"
 					value={displayName}
 					onChange={(e) => setDisplayName(e.currentTarget.value)}
 				/>

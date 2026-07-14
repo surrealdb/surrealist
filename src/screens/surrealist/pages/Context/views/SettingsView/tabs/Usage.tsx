@@ -169,7 +169,7 @@ export function UsageTab({ context }: ContextViewProps) {
 												fw={500}
 												c="bright"
 											>
-												{formatDate(usage?.period_start)} –{" "}
+												{formatDate(usage?.period_start)} to{" "}
 												{formatDate(usage?.period_end)}
 											</Text>
 										</Box>

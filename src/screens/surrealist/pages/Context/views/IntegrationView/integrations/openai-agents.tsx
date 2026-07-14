@@ -8,67 +8,70 @@ export function buildOpenAiAgentsSteps(context: CloudContext): IntegrationStep[]
 
 	return [
 		{
-			title: "Install dependencies",
+			title: "Install the package",
 			description: dedent(`
-				Use the OpenAI Agents SDK for the run loop and the Spectron Python client for durable memory on this context.
+				Give agents built with the OpenAI Agents SDK a durable, shared memory backed by this context.
 
 				~~~bash
-				pip install openai-agents spectron
+				pip install spectron-openai-agents
+
+				# During the Spectron preview, install the SDK extra too:
+				pip install "spectron-openai-agents[spectron]"
 				~~~
 			`),
 		},
 		{
-			title: "Configure credentials",
+			title: "Create an API key",
 			description: dedent(`
-				Export OPENAI_API_KEY for the Agents SDK and create a Spectron API key for this context. The example below reads both from the environment.
+				The integration authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Retrieve memory before each run",
+			title: "Configure credentials",
 			description: dedent(`
-				Use Spectron’s context call to fetch ranked memory, inject it into the agent instructions, then run the agent on the user message.
+				Export your model key and the Spectron connection details. The endpoint is pre-filled from your selection.
+
+				~~~bash
+				export OPENAI_API_KEY="your-openai-api-key"
+				export SPECTRON_URL="${endpoint}"
+				export SPECTRON_CONTEXT="${context.id}"
+				export SPECTRON_TOKEN="your-api-key"
+				~~~
+			`),
+		},
+		{
+			title: "Add memory",
+			description: dedent(`
+				Hand the agent memory tools it calls itself, or let \`run_with_memory\` recall, inject, and store around each run with no tools on the agent.
 
 				~~~python
-				import os
-				import asyncio
 				from agents import Agent, Runner
-				from spectron import Spectron
+				from spectron_openai_agents import get_spectron_tools
 
-				memory = Spectron(
-				    context="${context.id}",
-				    base_url="${endpoint}",
-				    api_key=os.environ["SPECTRON_API_KEY"],
+				agent = Agent(
+				    name="assistant",
+				    instructions=(
+				        "You are a helpful assistant. Use recall to check memory before "
+				        "you answer, and use remember to store anything worth keeping."
+				    ),
+				    tools=get_spectron_tools(session_id="user-123"),
 				)
 
-				async def main() -> None:
-				    session = await memory.sessions.create(scopes=["user/alex"])
-				    ctx = await memory.context(
-				        query="What should the assistant know about this user?",
-				        k=10,
-				        scopes=session.scopes,
-				    )
-				    agent = Agent(
-				        name="Assistant",
-				        instructions=f"You are a helpful assistant.\\n\\n## Memory\\n{ctx.context}",
-				    )
-				    user_message = "What are my UI preferences?"
-				    result = await Runner.run(agent, user_message)
-				    await session.turns.add(role="user", content=user_message)
-				    await session.turns.add(role="assistant", content=result.final_output)
-				    await session.close()
+				Runner.run_sync(agent, "My name is Ada and I work on databases.")
 
-				asyncio.run(main())
+				result = Runner.run_sync(agent, "What do you know about me?")
+				print(result.final_output)
 				~~~
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				See session lifecycle, chat loops, and the Python SDK patterns that pair cleanly with external agent frameworks.
+				The official documentation covers the rest of what Spectron can do.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/sdks/python" />
+				<Documentation />
 			`),
 		},
 	];

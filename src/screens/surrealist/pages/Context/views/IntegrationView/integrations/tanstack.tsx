@@ -28,7 +28,7 @@ export function buildTanStackSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Connect the MCP server",
 			description: dedent(`
-				In a server route — MCP tool execution is server-side only — create a client for Spectron over the streamable HTTP transport. The endpoint is pre-filled from your selection; send your API key as a Bearer token and select this context with the X-Spectron-Context header.
+				In a server route (MCP tool execution is server-side only), create a client for Spectron over the streamable HTTP transport. The endpoint is pre-filled from your selection. Send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
 
 				~~~typescript
 				import { createMCPClient } from "@tanstack/ai-mcp";

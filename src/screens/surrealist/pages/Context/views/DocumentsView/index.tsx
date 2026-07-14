@@ -6,16 +6,17 @@ import {
 	Box,
 	Button,
 	CloseButton,
-	Divider,
 	Drawer,
 	Group,
 	Loader,
 	Pagination,
 	Paper,
+	SegmentedControl,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
+	Textarea,
 	TextInput,
 	ThemeIcon,
 	Tooltip,
@@ -25,6 +26,7 @@ import { useDisclosure } from "@mantine/hooks";
 import type { Spectron } from "@surrealdb/spectron";
 import {
 	Icon,
+	iconArrowLeft,
 	iconBraces,
 	iconCheck,
 	iconClose,
@@ -56,10 +58,45 @@ import classes from "./style.module.scss";
 type DocumentEntry = Awaited<ReturnType<Spectron["documents"]["list"]>>["documents"][number];
 type DocumentStatus = DocumentEntry["status"];
 type QueryHit = Awaited<ReturnType<Spectron["documents"]["query"]>>["results"][number];
+type ChunkEntry = Awaited<ReturnType<Spectron["documents"]["chunks"]>>["chunks"][number];
 
 const PAGE_SIZE = 24;
 const CHUNK_PAGE_SIZE = 10;
 const POLL_INTERVAL = 3000;
+
+/**
+ * Upper bound on how many chunks the reconstructed "Document" view pulls in one
+ * request, so an enormous document can't stall the drawer. Beyond this the user
+ * is nudged to the paginated "Chunks" view.
+ */
+const DOCUMENT_VIEW_CHUNK_CAP = 2000;
+
+/**
+ * Stitches chunk text back into a single continuous document. Chunks carry
+ * `charStart`/`charEnd` offsets into the original extracted text, so we sort by
+ * offset and trim overlaps (retrieval chunking usually overlaps neighbours)
+ * rather than naively concatenating, which would duplicate the shared spans.
+ */
+function reconstructDocument(chunks: ChunkEntry[]): string {
+	const sorted = [...chunks].sort((a, b) => a.charStart - b.charStart);
+	let text = "";
+	let cursor = 0; // Highest original offset already written.
+
+	for (const chunk of sorted) {
+		if (chunk.charEnd <= cursor) continue; // Fully covered by an earlier chunk.
+
+		if (chunk.charStart >= cursor) {
+			text += chunk.text;
+		} else {
+			// Overlaps the tail of what we've written — skip the shared prefix.
+			text += chunk.text.slice(cursor - chunk.charStart);
+		}
+
+		cursor = Math.max(cursor, chunk.charEnd);
+	}
+
+	return text;
+}
 
 /** Statuses that mean the ingestion pipeline has finished (success or failure). */
 const TERMINAL_STATUSES: ReadonlySet<DocumentStatus> = new Set(["ready", "failed"]);
@@ -82,7 +119,7 @@ export default function DocumentsView({ context: _context }: ContextViewProps) {
 			<ContextHero
 				kicker="Documents"
 				title="Knowledge & documents"
-				description="Ground your agent in real source material. Upload files and Spectron parses, chunks, embeds, and links them so retrieval can cite the exact passage it came from."
+				description="Ground your agent in your own source material. Upload your files, and Spectron parses, chunks, embeds, and links them, so retrieval can point back to the exact passage an answer came from."
 				art={pictoDocumentGradient}
 			/>
 
@@ -234,6 +271,7 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 					client={client}
 					term={searchTerm}
 					onInspect={setInspecting}
+					onClear={clearSearch}
 				/>
 			) : documents.length === 0 ? (
 				<EmptyState
@@ -525,10 +563,12 @@ function SearchResults({
 	client,
 	term,
 	onInspect,
+	onClear,
 }: {
 	client: Spectron;
 	term: string;
 	onInspect: (document: DocumentEntry) => void;
+	onClear: () => void;
 }) {
 	const searchQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "search", term],
@@ -570,19 +610,44 @@ function SearchResults({
 				icon={iconSearch}
 				title="No matches"
 				description={`Nothing in this context matched "${term}".`}
+				action={
+					<Button
+						mt="sm"
+						variant="light"
+						leftSection={<Icon path={iconArrowLeft} />}
+						onClick={onClear}
+					>
+						Back to all documents
+					</Button>
+				}
 			/>
 		);
 	}
 
 	return (
 		<Stack gap="sm">
-			<Text
-				fz="sm"
-				c="slate"
+			<Group
+				justify="space-between"
+				gap="sm"
+				wrap="nowrap"
 			>
-				{results.length} result{results.length === 1 ? "" : "s"} ·{" "}
-				{searchQuery.data.queryMs}ms
-			</Text>
+				<Text
+					fz="sm"
+					c="slate"
+				>
+					{results.length} result{results.length === 1 ? "" : "s"} for "{term}" ·{" "}
+					{searchQuery.data.queryMs}ms
+				</Text>
+				<Button
+					size="compact-sm"
+					variant="subtle"
+					color="slate"
+					leftSection={<Icon path={iconArrowLeft} />}
+					onClick={onClear}
+				>
+					Back to all documents
+				</Button>
+			</Group>
 			{results.map((hit, index) => (
 				<SearchHit
 					key={`${hit.document.id}-${hit.chunk.id}-${index}`}
@@ -690,8 +755,6 @@ function InspectorDrawer({
 	onClose: () => void;
 	onRenamed: (document: DocumentEntry) => void;
 }) {
-	const [chunkPage, setChunkPage] = useState(1);
-
 	return (
 		<Drawer
 			opened={doc !== null}
@@ -724,11 +787,14 @@ function InspectorDrawer({
 			}
 		>
 			{doc && (
+				// Key by document id so switching documents remounts the body and
+				// resets its local state (e.g. chunk pagination). Without this a
+				// small document opened after paging deep into a large one would
+				// request an out-of-range page and show a misleading "no chunks".
 				<InspectorBody
+					key={doc.id}
 					client={client}
 					document={doc}
-					chunkPage={chunkPage}
-					onChunkPageChange={setChunkPage}
 					onRenamed={onRenamed}
 				/>
 			)}
@@ -884,16 +950,17 @@ function DocumentNameField({
 function InspectorBody({
 	client,
 	document: doc,
-	chunkPage,
-	onChunkPageChange,
 	onRenamed,
 }: {
 	client: Spectron;
 	document: DocumentEntry;
-	chunkPage: number;
-	onChunkPageChange: (page: number) => void;
 	onRenamed: (document: DocumentEntry) => void;
 }) {
+	const [chunkPage, setChunkPage] = useState(1);
+	// Default to the readable, reconstructed document; the raw chunk view is
+	// opt-in for when the retrieval boundaries themselves matter. (#16)
+	const [view, setView] = useState<"document" | "chunks">("document");
+
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
 		queryFn: () =>
@@ -903,6 +970,24 @@ function InspectorBody({
 		placeholderData: (prev) => prev,
 		enabled: doc.status === "ready",
 	});
+
+	const totalChunks = chunksQuery.data?.total ?? 0;
+	const documentChunkCount = Math.min(totalChunks, DOCUMENT_VIEW_CHUNK_CAP);
+
+	// The reconstructed view needs every chunk, so it pulls them in one page
+	// (capped) rather than reusing the small paginated request above. Only runs
+	// when that view is actually shown.
+	const documentQuery = useQuery({
+		queryKey: ["spectron", client.contextId, "documents", "full", doc.id, documentChunkCount],
+		queryFn: () => client.documents.chunks(doc.id, { page: 0, pageSize: documentChunkCount }),
+		retry: false,
+		enabled: doc.status === "ready" && view === "document" && totalChunks > 0,
+	});
+
+	const documentText = useMemo(
+		() => (documentQuery.data ? reconstructDocument(documentQuery.data.chunks) : ""),
+		[documentQuery.data],
+	);
 
 	const chunkPageCount = chunksQuery.data
 		? Math.max(1, Math.ceil(chunksQuery.data.total / CHUNK_PAGE_SIZE))
@@ -963,18 +1048,63 @@ function InspectorBody({
 				/>
 			)}
 
-			<Divider
-				label="Chunks"
-				labelPosition="left"
-			/>
+			<Group
+				justify="space-between"
+				align="center"
+				gap="sm"
+				wrap="nowrap"
+			>
+				<Text
+					fw={600}
+					c="bright"
+					fz="sm"
+				>
+					Content
+				</Text>
+				{doc.status === "ready" && totalChunks > 0 && (
+					<SegmentedControl
+						size="xs"
+						value={view}
+						onChange={(value) => setView(value as "document" | "chunks")}
+						data={[
+							{ label: "Document", value: "document" },
+							{ label: "Chunks", value: "chunks" },
+						]}
+					/>
+				)}
+			</Group>
 
 			{doc.status !== "ready" ? (
 				<Text
 					fz="sm"
 					c="slate"
 				>
-					Chunks become available once processing completes.
+					Content becomes available once processing completes.
 				</Text>
+			) : view === "document" ? (
+				<DocumentContent
+					// Combine both queries: the chunk count comes from chunksQuery,
+					// then documentQuery pulls the full text. Treat either loading
+					// or failing as the document view's state so the count isn't
+					// momentarily read as zero ("no chunks") before it resolves.
+					isLoading={chunksQuery.isPending || documentQuery.isLoading}
+					isError={chunksQuery.isError || documentQuery.isError}
+					errorMessage={
+						chunksQuery.error instanceof Error
+							? chunksQuery.error.message
+							: documentQuery.error instanceof Error
+								? documentQuery.error.message
+								: undefined
+					}
+					onRetry={() => {
+						chunksQuery.refetch();
+						documentQuery.refetch();
+					}}
+					text={documentText}
+					totalChunks={totalChunks}
+					shownChunks={documentChunkCount}
+					onViewChunks={() => setView("chunks")}
+				/>
 			) : chunksQuery.isPending ? (
 				<Stack gap="sm">
 					{Array.from({ length: 3 }).map((_, i) => (
@@ -1052,11 +1182,104 @@ function InspectorBody({
 								size="sm"
 								total={chunkPageCount}
 								value={chunkPage}
-								onChange={onChunkPageChange}
+								onChange={setChunkPage}
 							/>
 						</Group>
 					)}
 				</Stack>
+			)}
+		</Stack>
+	);
+}
+
+/** Renders the reconstructed, continuous document text for the "Document" view. */
+function DocumentContent({
+	isLoading,
+	isError,
+	errorMessage,
+	onRetry,
+	text,
+	totalChunks,
+	shownChunks,
+	onViewChunks,
+}: {
+	isLoading: boolean;
+	isError: boolean;
+	errorMessage?: string;
+	onRetry: () => void;
+	text: string;
+	totalChunks: number;
+	shownChunks: number;
+	onViewChunks: () => void;
+}) {
+	if (isLoading) {
+		return (
+			<Stack gap="sm">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<Skeleton
+						key={i}
+						h={20}
+						radius="sm"
+					/>
+				))}
+			</Stack>
+		);
+	}
+
+	if (isError) {
+		return (
+			<PageError
+				title="Couldn't load document"
+				message={errorMessage}
+				onRetry={onRetry}
+			/>
+		);
+	}
+
+	if (totalChunks === 0) {
+		return (
+			<Text
+				fz="sm"
+				c="slate"
+			>
+				This document has no chunks.
+			</Text>
+		);
+	}
+
+	const truncated = shownChunks < totalChunks;
+
+	return (
+		<Stack gap="xs">
+			<Paper
+				p="md"
+				radius="sm"
+				withBorder
+			>
+				<Text
+					fz="sm"
+					className="selectable"
+					style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+				>
+					{text}
+				</Text>
+			</Paper>
+			{truncated && (
+				<Text
+					fz="xs"
+					c="slate"
+				>
+					Showing the first {shownChunks.toLocaleString()} of{" "}
+					{totalChunks.toLocaleString()} chunks.{" "}
+					<UnstyledButton
+						component="span"
+						onClick={onViewChunks}
+						style={{ textDecoration: "underline", fontSize: "inherit" }}
+					>
+						Switch to Chunks
+					</UnstyledButton>{" "}
+					to browse the rest.
+				</Text>
 			)}
 		</Stack>
 	);
@@ -1383,6 +1606,9 @@ function UploadModal({
 	const [items, setItems] = useState<UploadItem[]>([]);
 	const [busy, setBusy] = useState(false);
 	const [dragging, setDragging] = useState(false);
+	const [source, setSource] = useState<"files" | "text">("files");
+	const [textName, setTextName] = useState("");
+	const [textContent, setTextContent] = useState("");
 	const [scopes, setScopes] = useState<SpectronScopeSets>([]);
 	const [scopeDraft, setScopeDraft] = useState("");
 	const [scopeError, setScopeError] = useState<string | null>(null);
@@ -1439,6 +1665,9 @@ function UploadModal({
 		setItems([]);
 		setBusy(false);
 		setDragging(false);
+		setSource("files");
+		setTextName("");
+		setTextContent("");
 		setScopes([]);
 		setScopeDraft("");
 		setScopeError(null);
@@ -1458,6 +1687,19 @@ function UploadModal({
 			...prev,
 			...files.map((file): UploadItem => ({ file, state: "pending" })),
 		]);
+	};
+
+	// Stages pasted text as a named text/plain document, reusing the same upload
+	// queue (and scope selection) as file uploads. (#12)
+	const stageText = () => {
+		const name = textName.trim();
+		if (name.length === 0 || textContent.trim().length === 0) return;
+		// The explicit contentType drives parsing, so the filename is just a label
+		// and doesn't need a forced extension.
+		const file = new File([textContent], name, { type: "text/plain" });
+		stageFiles([file]);
+		setTextName("");
+		setTextContent("");
 	};
 
 	const removeItem = (index: number) => {
@@ -1583,48 +1825,95 @@ function UploadModal({
 					}}
 				/>
 
-				<UnstyledButton
-					onClick={() => inputRef.current?.click()}
-					onDragOver={(event) => {
-						event.preventDefault();
-						setDragging(true);
-					}}
-					onDragLeave={() => setDragging(false)}
-					onDrop={onDrop}
-					className={classes.dropZone}
-					data-dragging={dragging || undefined}
-				>
-					<Stack
-						gap="xs"
-						align="center"
+				<SegmentedControl
+					fullWidth
+					value={source}
+					onChange={(value) => setSource(value as "files" | "text")}
+					disabled={busy}
+					data={[
+						{ label: "Upload files", value: "files" },
+						{ label: "Paste text", value: "text" },
+					]}
+				/>
+
+				{source === "files" ? (
+					<UnstyledButton
+						onClick={() => inputRef.current?.click()}
+						onDragOver={(event) => {
+							event.preventDefault();
+							setDragging(true);
+						}}
+						onDragLeave={() => setDragging(false)}
+						onDrop={onDrop}
+						className={classes.dropZone}
+						data-dragging={dragging || undefined}
 					>
-						<ThemeIcon
-							size={48}
-							radius="xl"
-							variant="light"
-							color="violet"
+						<Stack
+							gap="xs"
+							align="center"
 						>
-							<Icon
-								path={iconUpload}
-								size="xl"
-							/>
-						</ThemeIcon>
-						<Text
-							fw={600}
-							c="bright"
-						>
-							Drop files here or click to choose
-						</Text>
-						<Text
-							fz="sm"
-							c="slate"
-							ta="center"
-						>
-							PDF, Markdown, JSON, HTML, plain text, and more. Multiple files are
-							supported.
-						</Text>
+							<ThemeIcon
+								size={48}
+								radius="xl"
+								variant="light"
+								color="violet"
+							>
+								<Icon
+									path={iconUpload}
+									size="xl"
+								/>
+							</ThemeIcon>
+							<Text
+								fw={600}
+								c="bright"
+							>
+								Drop files here or click to choose
+							</Text>
+							<Text
+								fz="sm"
+								c="slate"
+								ta="center"
+							>
+								PDF, Markdown, JSON, HTML, plain text, and more. You can add several
+								at once.
+							</Text>
+						</Stack>
+					</UnstyledButton>
+				) : (
+					<Stack gap="xs">
+						<TextInput
+							label="Name"
+							placeholder="e.g. meeting-notes"
+							value={textName}
+							disabled={busy}
+							onChange={(event) => setTextName(event.currentTarget.value)}
+						/>
+						<Textarea
+							label="Text"
+							placeholder="Paste or type the document text…"
+							value={textContent}
+							disabled={busy}
+							autosize
+							minRows={6}
+							maxRows={16}
+							onChange={(event) => setTextContent(event.currentTarget.value)}
+						/>
+						<Group justify="flex-end">
+							<Button
+								variant="light"
+								leftSection={<Icon path={iconText} />}
+								onClick={stageText}
+								disabled={
+									busy ||
+									textName.trim().length === 0 ||
+									textContent.trim().length === 0
+								}
+							>
+								Add text document
+							</Button>
+						</Group>
 					</Stack>
-				</UnstyledButton>
+				)}
 
 				{items.length > 0 && (
 					<Stack gap="xs">
@@ -1687,13 +1976,15 @@ function UploadModal({
 					>
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
-					<Button
-						leftSection={<Icon path={iconUpload} />}
-						onClick={() => inputRef.current?.click()}
-						disabled={busy}
-					>
-						Add files
-					</Button>
+					{source === "files" && (
+						<Button
+							leftSection={<Icon path={iconUpload} />}
+							onClick={() => inputRef.current?.click()}
+							disabled={busy}
+						>
+							Add files
+						</Button>
+					)}
 					<Button
 						variant="gradient"
 						onClick={runUploads}

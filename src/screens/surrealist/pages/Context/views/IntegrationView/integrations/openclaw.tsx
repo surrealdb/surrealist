@@ -4,40 +4,51 @@ import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildOpenClawSteps(context: CloudContext): IntegrationStep[] {
-	const { mcpUrl } = getSpectronUrls(context);
+	const { endpoint } = getSpectronUrls(context);
 
 	return [
 		{
+			title: "Install the plugin",
+			description: dedent(`
+				The Spectron plugin backs OpenClaw's agent memory with this context: relevant memory is recalled before each turn, every turn is persisted afterwards, and the agent gains deliberate memory tools. Requires OpenClaw \`>= 2026.4.27\`.
+
+				~~~bash
+				openclaw plugins install @surrealdb/spectron-openclaw
+				openclaw spectron setup
+				openclaw gateway restart
+				~~~
+
+				\`openclaw spectron setup\` prints the config block and the hook flags to add.
+			`),
+		},
+		{
 			title: "Create an API key",
 			description: dedent(`
-				OpenClaw authenticates with a scoped API key bound to your principal. Create one for this context.
+				The plugin authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Config location",
-			description: dedent(`
-				OpenClaw reads MCP servers from \`~/.openclaw/mcp.json\`. Create the file if it does not exist yet.
-
-				~~~bash
-				~/.openclaw/mcp.json
-				~~~
-			`),
-		},
-		{
 			title: "Configuration reference",
 			description: dedent(`
-				Add Spectron as a custom server. Point it at your context host, send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
+				Configuration lives in \`~/.openclaw/openclaw.json\` under \`plugins.entries.spectron\`. Point it at this context, and enable both hook flags — \`allowConversationAccess\` lets the plugin persist each turn, \`allowPromptInjection\` lets it inject recalled memory.
 
 				~~~json
 				{
-				  "mcpServers": {
-				    "spectron": {
-				      "url": "${mcpUrl}",
-				      "headers": {
-				        "Authorization": "Bearer your-api-key",
-				        "X-Spectron-Context": "${context.id}"
+				  "plugins": {
+				    "entries": {
+				      "spectron": {
+				        "enabled": true,
+				        "hooks": {
+				          "allowConversationAccess": true,
+				          "allowPromptInjection": true
+				        },
+				        "config": {
+				          "endpoint": "${endpoint}",
+				          "apiKey": "your-api-key",
+				          "context": "${context.id}"
+				        }
 				      }
 				    }
 				  }
@@ -48,15 +59,20 @@ export function buildOpenClawSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Verify",
 			description: dedent(`
-				Restart OpenClaw and confirm the Spectron memory and knowledge tools are listed for the session.
+				Restart the gateway, then confirm the connection is healthy and the plugin is active.
+
+				~~~bash
+				openclaw spectron health
+				openclaw spectron status
+				~~~
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+				The agent can also call the \`spectron_recall\`, \`spectron_remember\`, \`spectron_context\`, \`spectron_reflect\`, \`spectron_forget\`, \`spectron_upload\`, and \`spectron_inspect\` tools directly. See the documentation for the full plugin reference.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server" />
+				<Documentation />
 			`),
 		},
 	];

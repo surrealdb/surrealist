@@ -98,7 +98,7 @@ function QueryError({ error, onRetry }: { error: unknown; onRetry: () => void })
 		return (
 			<PageError
 				title="You don't have access to this"
-				message="Your principal isn't permitted to read this part of the context's memory. Ask a context owner to widen your scope, then try again."
+				message="Your principal isn't allowed to read this part of the context's memory. Ask a context owner to widen your scope, then try again."
 				onRetry={onRetry}
 			/>
 		);
@@ -108,7 +108,7 @@ function QueryError({ error, onRetry }: { error: unknown; onRetry: () => void })
 		<PageError
 			message={
 				(error as Error)?.message ??
-				"The request failed. Check your connection and try again."
+				"The request failed. Check your connection, then try again."
 			}
 			onRetry={onRetry}
 		/>
@@ -125,7 +125,7 @@ export default function MemoryView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Memory"
 				title="Memory graph"
-				description={`Everything ${context.name} remembers — its structured state, the entities and facts it has learned, and the queries it has resolved.`}
+				description={`Everything ${context.name} remembers, including its structured state, the entities and facts it has learned, and the queries it has resolved.`}
 				art={pictoSpectronGradient}
 			/>
 
@@ -234,7 +234,7 @@ function StateTab({ client }: { client: Spectron }) {
 			<EmptyState
 				icon={iconMemory}
 				title="No memories yet"
-				description="Chat in the Playground or ingest documents, and this context's structured memory will appear here."
+				description="Chat in the Playground or upload some documents, and this context's structured memory will show up here."
 			/>
 		);
 	}
@@ -1389,7 +1389,7 @@ function TracesTab({ client }: { client: Spectron }) {
 			<EmptyState
 				icon={iconHistory}
 				title="No queries traced yet"
-				description="Once this context resolves a query — from the Playground or an integrated agent — its retrieval decisions will appear here."
+				description="Once this context resolves a query, whether from the Playground or an integrated agent, its retrieval decisions will show up here."
 			/>
 		);
 	}

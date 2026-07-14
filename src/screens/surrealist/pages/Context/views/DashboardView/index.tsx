@@ -24,6 +24,7 @@ import {
 	iconFile,
 	iconFolderSecure,
 	iconHistory,
+	iconIntegration,
 	iconMemory,
 	iconOpen,
 	iconPackageClosed,
@@ -63,7 +64,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Context"
 				title={context.name}
-				description="Your agent's memory and knowledge layer. Connect an SDK, ground it in documents, and watch its memory grow."
+				description="This is where your agent keeps its memory and knowledge. Connect an SDK, ground it in your documents, and its memory grows as you use it."
 				art={pictoSpectronGradient}
 			>
 				<Button
@@ -75,10 +76,10 @@ export default function DashboardView({ context }: ContextViewProps) {
 				</Button>
 				<Button
 					variant="light"
-					rightSection={<Icon path={iconPackageClosed} />}
+					leftSection={<Icon path={iconIntegration} />}
 					onClick={() => goToPage("integration")}
 				>
-					Integrate
+					Explore integrations
 				</Button>
 				<Button
 					variant="subtle"

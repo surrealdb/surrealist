@@ -2,13 +2,16 @@ import {
 	brandClaude,
 	brandCloudflare,
 	brandCodex,
+	brandCrewAI,
 	brandCursorDark,
 	brandCursorLight,
 	brandDart,
 	brandElixir,
-	brandGithubDark,
-	brandGithubLight,
+	brandEveDark,
+	brandEveLight,
+	brandFacebookMessenger,
 	brandGo,
+	brandGoogleAgent,
 	brandHaskell,
 	brandHermesDark,
 	brandHermesLight,
@@ -21,18 +24,21 @@ import {
 	brandOpenAiDark,
 	brandOpenAiLight,
 	brandOpenClaw,
+	brandPydantic,
 	brandPython,
-	brandSurrealDB,
+	brandSMS,
+	brandStrands,
 	brandSwift,
 	brandTanStackDark,
 	brandTanStackLight,
+	brandTelegram,
 	brandVercelDark,
 	brandVercelLight,
 	brandVSCode,
+	brandWhatsApp,
 	brandZapier,
 	brandZedDark,
 	brandZedLight,
-	pictoConnectGradient,
 	pictoEmbeddinggGradient,
 	pictoMCPGradient,
 	pictoSpectronGradient,
@@ -62,6 +68,11 @@ export type IntegrationId =
 	| "zapier"
 	| "langchain"
 	| "openai-agents"
+	| "crew-ai"
+	| "google-adk"
+	| "pydantic-ai"
+	| "strands"
+	| "vercel-ai"
 	| "eve"
 	| "cloudflare"
 	| "tanstack-ai"
@@ -120,10 +131,10 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 		connect: "Connect via MCP",
 		img: { light: brandCursorLight, dark: brandCursorDark },
 	},
-	openclaw: { label: "OpenClaw", connect: "Connect via MCP", img: brandOpenClaw },
+	openclaw: { label: "OpenClaw", connect: "Connect via plugin", img: brandOpenClaw },
 	hermes: {
 		label: "Hermes",
-		connect: "Connect via MCP",
+		connect: "Connect via plugin",
 		img: { light: brandHermesLight, dark: brandHermesDark },
 	},
 	vscode: { label: "VS Code", connect: "Connect via MCP", img: brandVSCode },
@@ -141,10 +152,19 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 		connect: "Connect via package",
 		img: { light: brandOpenAiLight, dark: brandOpenAiDark },
 	},
+	"crew-ai": { label: "CrewAI", connect: "Connect via package", img: brandCrewAI },
+	"google-adk": { label: "Google ADK", connect: "Connect via package", img: brandGoogleAgent },
+	"pydantic-ai": { label: "Pydantic AI", connect: "Connect via package", img: brandPydantic },
+	strands: { label: "Strands Agents", connect: "Connect via package", img: brandStrands },
+	"vercel-ai": {
+		label: "Vercel AI SDK",
+		connect: "Connect via package",
+		img: { light: brandVercelLight, dark: brandVercelDark },
+	},
 	eve: {
 		label: "EveJS",
 		connect: "Connect via package",
-		img: { light: brandVercelLight, dark: brandVercelDark },
+		img: { light: brandEveLight, dark: brandEveDark },
 	},
 	cloudflare: { label: "Cloudflare", connect: "Connect via MCP", img: brandCloudflare },
 	"tanstack-ai": {
@@ -157,23 +177,23 @@ export const INTEGRATION_META: Record<IntegrationId, IntegrationMeta> = {
 		connect: "Connect via package",
 		img: { light: brandMastraLight, dark: brandMastraDark },
 	},
-	whatsapp: { label: "WhatsApp", comingSoon: true },
-	telegram: { label: "Telegram", comingSoon: true },
-	"facebook-messenger": { label: "Facebook Messenger", comingSoon: true },
-	"sms-rcs": { label: "SMS / RCS", comingSoon: true },
-	surrealdb: { label: "SurrealDB", img: brandSurrealDB, comingSoon: true },
-	slack: { label: "Slack", img: pictoConnectGradient, comingSoon: true },
-	notion: { label: "Notion", img: pictoConnectGradient, comingSoon: true },
-	"google-drive": { label: "Google Drive", img: pictoConnectGradient, comingSoon: true },
-	github: {
-		label: "GitHub",
-		img: { light: brandGithubLight, dark: brandGithubDark },
+	whatsapp: { label: "WhatsApp", img: brandWhatsApp, comingSoon: true },
+	telegram: { label: "Telegram", img: brandTelegram, comingSoon: true },
+	"facebook-messenger": {
+		label: "Facebook Messenger",
+		img: brandFacebookMessenger,
 		comingSoon: true,
 	},
-	linear: { label: "Linear", img: pictoConnectGradient, comingSoon: true },
-	confluence: { label: "Confluence", img: pictoConnectGradient, comingSoon: true },
-	databricks: { label: "Databricks", img: pictoConnectGradient, comingSoon: true },
-	snowflake: { label: "Snowflake", img: pictoConnectGradient, comingSoon: true },
+	"sms-rcs": { label: "SMS / RCS", img: brandSMS, comingSoon: true },
+	surrealdb: { label: "SurrealDB", comingSoon: true },
+	slack: { label: "Slack", comingSoon: true },
+	notion: { label: "Notion", comingSoon: true },
+	"google-drive": { label: "Google Drive", comingSoon: true },
+	github: { label: "GitHub", comingSoon: true },
+	linear: { label: "Linear", comingSoon: true },
+	confluence: { label: "Confluence", comingSoon: true },
+	databricks: { label: "Databricks", comingSoon: true },
+	snowflake: { label: "Snowflake", comingSoon: true },
 };
 
 /**
@@ -215,7 +235,19 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
 	{
 		title: "Frameworks",
 		description: "Wire this context into your agent framework of choice.",
-		integrations: ["langchain", "openai-agents", "eve", "cloudflare", "tanstack-ai", "mastra"],
+		integrations: [
+			"langchain",
+			"openai-agents",
+			"crew-ai",
+			"google-adk",
+			"pydantic-ai",
+			"strands",
+			"eve",
+			"vercel-ai",
+			"cloudflare",
+			"tanstack-ai",
+			"mastra",
+		],
 	},
 	{
 		title: "Automation platforms",

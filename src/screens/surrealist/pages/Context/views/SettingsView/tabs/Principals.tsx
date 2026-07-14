@@ -1278,7 +1278,7 @@ function MintedKeyModal({
 							variant="light"
 							icon={<Icon path={iconKey} />}
 						>
-							Copy this secret now — it will not be shown again.
+							Copy this secret now, it will not be shown again.
 						</Alert>
 						<CopyButton value={apiKey.key}>
 							{({ copied, copy }) => (

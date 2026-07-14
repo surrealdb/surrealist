@@ -42,11 +42,13 @@ import { buildClaudeCodeSteps } from "./integrations/claude-code";
 import { buildCliSteps } from "./integrations/cli";
 import { buildCloudflareSteps } from "./integrations/cloudflare";
 import { buildCodexSteps } from "./integrations/codex";
+import { buildCrewAiSteps } from "./integrations/crew-ai";
 import { buildCursorSteps } from "./integrations/cursor";
 import { buildDartSteps } from "./integrations/dart";
 import { buildElixirSteps } from "./integrations/elixir";
 import { buildEveSteps } from "./integrations/eve";
 import { buildGolangSteps } from "./integrations/golang";
+import { buildGoogleAdkSteps } from "./integrations/google-adk";
 import { buildHaskellSteps } from "./integrations/haskell";
 import { buildHermesSteps } from "./integrations/hermes";
 import { buildKotlinSteps } from "./integrations/kotlin";
@@ -55,9 +57,12 @@ import { buildMcpSteps } from "./integrations/mcp";
 import { buildN8nSteps } from "./integrations/n8n";
 import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
 import { buildOpenClawSteps } from "./integrations/openclaw";
+import { buildPydanticAiSteps } from "./integrations/pydantic-ai";
+import { buildStrandsSteps } from "./integrations/strands";
 import { buildSwiftSteps } from "./integrations/swift";
 import { buildTanStackSteps } from "./integrations/tanstack";
 import type { IntegrationStep } from "./integrations/types";
+import { buildVercelAiSteps } from "./integrations/vercel-ai";
 import { buildVsCodeSteps } from "./integrations/vscode";
 import { buildZapierSteps } from "./integrations/zapier";
 import { buildZedSteps } from "./integrations/zed";
@@ -101,21 +106,21 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
+					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
 
 					~~~python
 					from surrealdb import SpectronTurnRole
 
 					session = client.sessions.create(scopes=["user/alex"])
 					session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
-					session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")
+					session.turn(SpectronTurnRole.ASSISTANT, "Got it Alex, noted.")
 					~~~
 				`),
 			},
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~python
 					results = client.query("What are the user's preferences?", k=10)
@@ -128,7 +133,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -166,7 +171,7 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.
+					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
 
 					~~~javascript
 					import { TurnRole } from "@surrealdb/spectron";
@@ -176,14 +181,14 @@ function buildIntegrationSteps(
 					});
 
 					await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
-					await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });
+					await session.turn({ role: TurnRole.assistant, content: "Got it Alex, noted." });
 					~~~
 				`),
 			},
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.
+					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~javascript
 					const results = await client.query({
@@ -196,7 +201,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -240,7 +245,7 @@ function buildIntegrationSteps(
 			{
 				title: "Recall with hybrid search",
 				description: dedent(`
-					Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.
+					Issue a natural-language query against your stored memories. The hybrid retrieval pipeline combines vector similarity with graph traversal behind one endpoint.
 
 					~~~bash
 					curl -X POST ${restRoot}/query \\
@@ -253,7 +258,7 @@ function buildIntegrationSteps(
 			{
 				title: "Explore Spectron",
 				description: dedent(`
-					Discover the full potential of Spectron with the official documentation.
+					The official documentation covers the rest of what Spectron can do.
 
 					<Documentation />
 				`),
@@ -278,7 +283,12 @@ function buildIntegrationSteps(
 		zapier: buildZapierSteps(context),
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
+		"crew-ai": buildCrewAiSteps(context),
+		"google-adk": buildGoogleAdkSteps(context),
+		"pydantic-ai": buildPydanticAiSteps(context),
+		strands: buildStrandsSteps(context),
 		eve: buildEveSteps(context),
+		"vercel-ai": buildVercelAiSteps(context),
 		cloudflare: buildCloudflareSteps(context),
 		"tanstack-ai": buildTanStackSteps(context),
 	};
@@ -335,6 +345,17 @@ function IntegrationCard({ id, hasSteps, onSelect }: IntegrationCardProps) {
 				style={{ pointerEvents: "none", opacity: 0.6 }}
 				withBorder
 			>
+				{meta.img && (
+					<Box
+						className={classes.cardIcon}
+						aria-hidden
+					>
+						<IntegrationGlyph
+							meta={meta}
+							size={74}
+						/>
+					</Box>
+				)}
 				<Stack
 					h="100%"
 					justify="space-between"
@@ -582,7 +603,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Quick start"
 				title="Connect to your context"
-				description="Wire this context into your agent — through the Python, JavaScript, Go, Swift, Kotlin, Haskell, Elixir, and Dart SDKs, the REST API and CLI, MCP-native coding tools, or a framework like LangChain, n8n, and the OpenAI Agents SDK."
+				description="Wire this context into your agent, whether that's through our SDKs, the REST API and CLI, MCP-native coding tools, or the framework and automation platform of your choice."
 				art={pictoIntegrationsGradient}
 			/>
 
