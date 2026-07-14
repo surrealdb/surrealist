@@ -557,6 +557,11 @@ export const CSV_FILTER = {
 	extensions: ["csv"],
 };
 
+export const PDF_FILTER = {
+	name: "PDF Document",
+	extensions: ["pdf"],
+};
+
 export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Horizontal", value: "horizontal" },
 	{ label: "Vertical", value: "vertical" },

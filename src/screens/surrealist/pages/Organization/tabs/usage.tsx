@@ -2,7 +2,7 @@ import {
 	Group,
 	LoadingOverlay,
 	Paper,
-	SegmentedControl,
+	Select,
 	SimpleGrid,
 	Stack,
 	Table,
@@ -11,7 +11,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { Icon, iconClock, iconDatabase, iconDollar, iconServer } from "@surrealdb/ui";
-import dayjs from "dayjs";
+import { format, subMonths } from "date-fns";
 import { useMemo, useState } from "react";
 import { useCloudOrgSpendQuery } from "~/cloud/queries/usage";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -20,12 +20,13 @@ import { formatBytesUsage, formatMillcents, formatMinutesAsHours } from "~/util/
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
-type SpendPeriod = "current" | "previous";
-
-function computePeriod(selection: SpendPeriod) {
-	const base = selection === "current" ? dayjs() : dayjs().subtract(1, "month");
-	return base.format("MM-YYYY");
-}
+const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => {
+	const month = subMonths(new Date(), i);
+	return {
+		value: format(month, "MM-yyyy"),
+		label: format(month, "MMMM yyyy"),
+	};
+});
 
 function spendTextProps(millcents: number): TextProps {
 	if (millcents > 0) return { c: "bright", fw: 500, ff: "monospace" };
@@ -34,10 +35,9 @@ function spendTextProps(millcents: number): TextProps {
 }
 
 export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
-	const [period, setPeriod] = useState<SpendPeriod>("current");
+	const [period, setPeriod] = useState(() => MONTH_OPTIONS[0].value);
 
-	const periodString = computePeriod(period);
-	const spendQuery = useCloudOrgSpendQuery(organization.id, periodString);
+	const spendQuery = useCloudOrgSpendQuery(organization.id, period);
 	const entries = spendQuery.data ?? [];
 
 	const totalMillcents = useMemo(
@@ -73,13 +73,12 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 				align="center"
 			>
 				<PrimaryTitle fz={32}>Usage</PrimaryTitle>
-				<SegmentedControl
+				<Select
 					value={period}
-					onChange={(v) => setPeriod(v as SpendPeriod)}
-					data={[
-						{ label: "Previous month", value: "previous" },
-						{ label: "Current month", value: "current" },
-					]}
+					onChange={(value) => value && setPeriod(value)}
+					data={MONTH_OPTIONS}
+					allowDeselect={false}
+					w={180}
 				/>
 			</Group>
 
@@ -221,8 +220,9 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 											<Table.Td ta="right">
 												<Text fz="sm">
 													{entry.effective_at
-														? dayjs(entry.effective_at).format(
-																"MMM DD, YYYY",
+														? format(
+																new Date(entry.effective_at),
+																"MMM d, yyyy",
 															)
 														: "\u2014"}
 												</Text>
