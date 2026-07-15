@@ -18,10 +18,9 @@ import { isOrganisationRestricted, isOrganisationTerminated } from "~/cloud/help
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { Spacer } from "~/components/Spacer";
-import { useCloudProfile } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useCloud } from "~/providers/Cloud";
+import { useCloud, useCloudProfile } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";

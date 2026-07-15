@@ -1,9 +1,8 @@
 import { Intercom, update } from "@intercom/messenger-js-sdk";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
-import { useCloudProfile } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
-import { useCloud } from "~/providers/Cloud";
+import { useCloud, useCloudProfile } from "~/providers/Cloud";
 import { isProduction } from "~/util/environment";
 
 export function useIntercom() {

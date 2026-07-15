@@ -66,6 +66,22 @@ export function useCloud(): CloudContext {
 	return ctx;
 }
 
+/**
+ * Returns whether the user has a cloud session active. When used outside a
+ * CloudProvider (e.g. Surrealist mini), returns false.
+ */
+export function useHasCloudSession() {
+	return useContext(CloudSessionContext)?.isActive ?? false;
+}
+
+/**
+ * Returns the current cloud user profile. When used outside a CloudProvider,
+ * returns an empty profile.
+ */
+export function useCloudProfile() {
+	return useContext(CloudSessionContext)?.profile ?? EMPTY_PROFILE;
+}
+
 export function CloudProvider({ children }: PropsWithChildren) {
 	const {
 		user,
