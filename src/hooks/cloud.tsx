@@ -2,7 +2,7 @@ import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
 import { useDeleteContextMutation } from "~/cloud/mutations/spectron";
-import { useCloud } from "~/providers/Cloud";
+import { useCloudProfile } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -17,24 +17,6 @@ import { useAbsoluteLocation } from "./routing";
  */
 export function useIsCloudEnabled() {
 	return useFeatureFlags()[0].cloud_enabled;
-}
-
-/**
- * Returns whether the user has a cloud session active
- *
- * @deprecated Use `const { isActive } = useCloud()` instead
- */
-export function useHasCloudSession() {
-	return useCloud().isActive;
-}
-
-/**
- * Returns the current user profile
- *
- * @deprecated Use `const { profile } = useCloud()` instead
- */
-export function useCloudProfile() {
-	return useCloud().profile;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isEmpty } from "radash";
-import { useHasCloudSession } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
+import { useHasCloudSession } from "~/providers/Cloud";
 import type { CloudBanner } from "~/types";
 import { fetchAPI } from "../api";
 

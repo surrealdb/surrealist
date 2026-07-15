@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useHasCloudSession } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
+import { useHasCloudSession } from "~/providers/Cloud";
 import { CloudMetrics, MetricsDuration } from "~/types";
 import { withSearchParams } from "~/util/helpers";
 import { fetchAPI } from "../api";

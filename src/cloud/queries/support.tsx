@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useHasCloudSession } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
+import { useHasCloudSession } from "~/providers/Cloud";
 import { CloudOrganization, CloudSupportPlanResult } from "~/types";
 import { fetchAPI } from "../api";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "../helpers";

@@ -67,17 +67,23 @@ export function getUserSnapshot(): User | undefined {
 	return _user;
 }
 
+const unauthenticatedContext: AuthContext = {
+	user: undefined,
+	isAuthenticated: false,
+	isLoading: false,
+	getAccessToken: (async () => {
+		throw new Error("AuthProvider has not been initialised");
+	}) as AccessTokenFn,
+	signIn: () => Promise.resolve(),
+	signOut: () => Promise.resolve(),
+};
+
 /**
- * Returns the current authentication context
+ * Returns the current authentication context. When used outside an
+ * AuthProvider (e.g. Surrealist mini), returns an unauthenticated context.
  */
 export function useAuthentication(): AuthContext {
-	const ctx = useContext(AuthContext);
-
-	if (!ctx) {
-		throw new Error("useAuthentication must be used within an AuthProvider");
-	}
-
-	return ctx;
+	return useContext(AuthContext) ?? unauthenticatedContext;
 }
 
 function TokenBridge({ children }: PropsWithChildren) {
