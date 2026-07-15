@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { showNotification } from "@mantine/notifications";
 import { Icon, iconCheck, useStable } from "@surrealdb/ui";
 import {
@@ -22,6 +23,7 @@ import type {
 	CloudSignin,
 } from "~/types";
 import { tagEvent } from "~/util/analytics";
+import { getAuthProvider } from "~/util/auth";
 import { exposeDebug, showErrorNotification } from "~/util/helpers";
 import { AWS_MARKETPLACE_KEY, INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 import { useAuthentication } from "../Auth";
@@ -90,6 +92,8 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		getAccessToken,
 		signOut,
 	} = useAuthentication();
+
+	const auth0 = useAuth0();
 
 	const { setTermsAcceptancePending, setIsSupported, setFailedConnected, setCloudValues } =
 		useCloudStore.getState();
@@ -203,6 +207,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 					cloud_id: result.id,
 					referred: !!referralCode,
 					open_terms: promptTerms,
+					provider: getAuthProvider(auth0.user),
 				});
 			}
 

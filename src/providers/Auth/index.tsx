@@ -13,6 +13,7 @@ import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
 import { tagEvent } from "~/util/analytics";
+import { getAuthProvider } from "~/util/auth";
 import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { showErrorNotification } from "~/util/helpers";
 import { identifyReoUser } from "~/util/reo";
@@ -148,7 +149,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 
 	const handleSignIn = useStable((user: User) => {
 		tagEvent("auth_signin", {
-			provider: user.sub?.split("|")[0] ?? "unknown",
+			provider: getAuthProvider(user),
 			verified: user.email_verified,
 			email: user.email,
 		});
