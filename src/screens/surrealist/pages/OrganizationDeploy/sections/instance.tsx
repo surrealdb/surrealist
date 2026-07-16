@@ -78,8 +78,6 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 		}
 	}, [details.version, details.plan, backupVersions, versions, setDetails]);
 
-	console.log(regionList);
-
 	return (
 		<Stack gap="lg">
 			<PrimaryTitle>Instance details</PrimaryTitle>
