@@ -41,6 +41,7 @@ import {
 	iconXml,
 } from "@surrealdb/ui";
 import { satisfies } from "compare-versions";
+import flagDE from "flag-icons/flags/4x3/de.svg";
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
@@ -599,6 +600,7 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-use2": flagUS,
 	"aws-usw2": flagUS,
 	"aws-aps1": flagIN,
+	"az-euc1": flagDE,
 };
 
 export const TABLE_VARIANT_ICONS: Record<TableVariant, string> = {

@@ -15,7 +15,9 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	const versions = useAvailableInstanceVersions();
 	const allRegions = useCloudStore((s) => s.instanceRegions);
 	const regionSet = new Set(organisation?.plan.regions ?? []);
-	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
+	const supportedRegions = allRegions
+		.filter((region) => regionSet.has(region.slug))
+		.sort((a, b) => a.description.localeCompare(b.description));
 
 	const backupVersions = details.startingData.backupOptions?.backup?.valid_versions;
 	const rawVersionSource = backupVersions ?? versions;
@@ -75,6 +77,8 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 			});
 		}
 	}, [details.version, details.plan, backupVersions, versions, setDetails]);
+
+	console.log(regionList);
 
 	return (
 		<Stack gap="lg">
