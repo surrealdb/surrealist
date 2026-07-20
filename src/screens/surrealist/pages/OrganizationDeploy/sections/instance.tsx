@@ -1,9 +1,8 @@
 import { Badge, Group, Image, Select, Stack, TextInput } from "@mantine/core";
-import { Icon, iconCheck } from "@surrealdb/ui";
+import { getCDNImageURL, Icon, iconCheck } from "@surrealdb/ui";
 import { ChangeEvent, useLayoutEffect } from "react";
 import { isScalePlan } from "~/cloud/helpers";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -30,6 +29,10 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 		value: region.slug,
 		label: region.description,
 	}));
+
+	const regionFlags = Object.fromEntries(
+		supportedRegions.map((region) => [region.slug, getCDNImageURL(region.flag)]),
+	);
 
 	const versionList = versionSource.map((ver) => ({
 		value: ver,
@@ -103,7 +106,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 				leftSection={
 					details.region && (
 						<Image
-							src={REGION_FLAGS[details.region]}
+							src={regionFlags[details.region]}
 							w={18}
 						/>
 					)
@@ -111,7 +114,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 				renderOption={(org) => (
 					<Group>
 						<Image
-							src={REGION_FLAGS[org.option.value]}
+							src={regionFlags[org.option.value]}
 							w={24}
 						/>
 						{org.option.label}

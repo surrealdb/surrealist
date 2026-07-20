@@ -11,6 +11,7 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import {
+	getCDNImageURL,
 	Icon,
 	iconCheck,
 	iconCircleFilled,
@@ -26,7 +27,7 @@ import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
-import { REGION_FLAGS, SANDBOX } from "~/constants";
+import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
@@ -95,6 +96,9 @@ export function ConnectionToolbarActions() {
 
 	const regionSet = new Set(organization?.plan?.regions ?? []);
 	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
+	const regionFlags = Object.fromEntries(
+		supportedRegions.map((region) => [region.slug, getCDNImageURL(region.flag)]),
+	);
 	const regionList = supportedRegions.map((region) => ({
 		value: region.slug,
 		label: region.description,
@@ -389,7 +393,7 @@ export function ConnectionToolbarActions() {
 								leftSection={
 									region && (
 										<Image
-											src={REGION_FLAGS[region.slug]}
+											src={regionFlags[region.slug]}
 											w={18}
 										/>
 									)
@@ -398,7 +402,7 @@ export function ConnectionToolbarActions() {
 								renderOption={(org) => (
 									<Group>
 										<Image
-											src={REGION_FLAGS[org.option.value]}
+											src={regionFlags[org.option.value]}
 											w={24}
 										/>
 										{org.option.label}

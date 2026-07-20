@@ -13,6 +13,7 @@ import {
 	Title,
 } from "@mantine/core";
 import {
+	getCDNImageURL,
 	Icon,
 	iconArrowUpRight,
 	iconAuth,
@@ -38,7 +39,6 @@ import { Label } from "~/components/Label";
 import { Option } from "~/components/Option";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { Spacer } from "~/components/Spacer";
-import { REGION_FLAGS } from "~/constants";
 import { useAbsoluteLocation, useContextNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -299,7 +299,7 @@ function PageContent({ organisation }: PageContentProps) {
 													py="md"
 													icon={
 														<Image
-															src={REGION_FLAGS[r.slug]}
+															src={getCDNImageURL(r.flag)}
 															w={18}
 														/>
 													}

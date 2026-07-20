@@ -16,6 +16,7 @@ import {
 } from "@mantine/core";
 import type { Spectron } from "@surrealdb/spectron";
 import {
+	getCDNImageURL,
 	HoverGlow,
 	Icon,
 	iconArrowUpRight,
@@ -34,7 +35,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
-import { CONTEXT_VIEW_PAGES, REGION_FLAGS } from "~/constants";
+import { CONTEXT_VIEW_PAGES } from "~/constants";
 import { useContextNavigator } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
 import type { ContextViewPage } from "~/types";
@@ -100,9 +101,9 @@ export default function DashboardView({ context }: ContextViewProps) {
 						gap="xs"
 						wrap="nowrap"
 					>
-						{REGION_FLAGS[context.region] && (
+						{region?.flag && (
 							<Image
-								src={REGION_FLAGS[context.region]}
+								src={getCDNImageURL(region.flag)}
 								w={18}
 								alt=""
 							/>

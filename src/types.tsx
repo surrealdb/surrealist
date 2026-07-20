@@ -981,6 +981,7 @@ export interface CloudInstanceType {
 export interface CloudRegion {
 	slug: string;
 	description: string;
+	flag: string;
 }
 
 export interface CloudPlan {
