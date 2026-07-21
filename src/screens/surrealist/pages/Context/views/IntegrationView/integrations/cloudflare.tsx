@@ -4,80 +4,99 @@ import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildCloudflareSteps(context: CloudContext): IntegrationStep[] {
-	const { mcpUrl } = getSpectronUrls(context);
+	const { endpoint } = getSpectronUrls(context);
 
 	return [
 		{
-			title: "Install the packages",
+			title: "Install the package",
 			description: dedent(`
-				The Cloudflare Agents SDK ships a built-in MCP client. Add it alongside the AI SDK and the Workers AI provider.
+				Spectron runs inside a Cloudflare Worker through the \`@surrealdb/spectron\` SDK — no MCP client required. Add it to your Worker project.
 
 				~~~bash
-				npm install agents ai workers-ai-provider
+				npm install @surrealdb/spectron
 				~~~
 			`),
 		},
 		{
-			title: "Create API credentials",
+			title: "Create an API key",
 			description: dedent(`
-				The MCP client authenticates with an agent API key for this context. Create one here if you have not already.
+				The Worker authenticates with a scoped API key bound to your principal. Create one for this context, then store it as a secret with \`npx wrangler secret put SPECTRON_API_KEY\`.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Connect the MCP server",
+			title: "Configure the Worker",
 			description: dedent(`
-				From your Agent, connect Spectron as a streamable HTTP server. The endpoint is pre-filled from your selection; send your API key as a Bearer token and select this context with the X-Spectron-Context header.
+				Bind Workers AI and expose the Spectron connection details. The endpoint and context id are pre-filled from your selection; the API key comes from the secret you set.
+
+				~~~toml
+				[ai]
+				binding = "AI"
+
+				[vars]
+				SPECTRON_ENDPOINT = "${endpoint}"
+				SPECTRON_CONTEXT = "${context.id}"
+				~~~
 
 				~~~typescript
-				import { Agent } from "agents";
-
-				export class MemoryAgent extends Agent<Env> {
-				    async onStart() {
-				        await this.addMcpServer("spectron", "${mcpUrl}", {
-				            transport: {
-				                type: "streamable-http",
-				                headers: {
-				                    Authorization: "Bearer your-api-key",
-				                    "X-Spectron-Context": "${context.id}",
-				                },
-				            },
-				        });
-				    }
+				interface Env {
+				    AI: Ai;
+				    SPECTRON_ENDPOINT: string;
+				    SPECTRON_CONTEXT: string;
+				    SPECTRON_API_KEY: string;
 				}
 				~~~
 			`),
 		},
 		{
-			title: "Call the tools from your model",
+			title: "Recall, generate, and remember",
 			description: dedent(`
-				The connected server's memory and knowledge tools are exposed as AI SDK tools through \`this.mcp.getAITools()\`. Pass them to any model call so the agent can recall and remember.
+				Construct a client from the environment, recall relevant memory into the system prompt, run a Workers AI model, then persist the exchange with \`rememberMany\`.
 
 				~~~typescript
-				import { streamText } from "ai";
-				import { createWorkersAI } from "workers-ai-provider";
+				import { Spectron } from "@surrealdb/spectron";
 
-				async onRequest(request: Request) {
-				    const workersai = createWorkersAI({ binding: this.env.AI });
+				export default {
+				    async fetch(request: Request, env: Env): Promise<Response> {
+				        const { userId, message } = await request.json();
+				        const scope = [\`user/\${userId}\`];
 
-				    const result = await streamText({
-				        model: workersai("@cf/meta/llama-3.3-70b-instruct-fp8-fast"),
-				        prompt: "What are the user's preferences?",
-				        tools: this.mcp.getAITools(),
-				    });
+				        const spectron = new Spectron({
+				            endpoint: env.SPECTRON_ENDPOINT,
+				            context: env.SPECTRON_CONTEXT,
+				            apiKey: env.SPECTRON_API_KEY,
+				        });
 
-				    return result.toTextStreamResponse();
-				}
+				        const memory = await spectron.context(message, { scope, k: 8 });
+
+				        const result = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+				            messages: [
+				                { role: "system", content: \`You are a helpful assistant.\\n\\n## Memory\\n\${memory}\` },
+				                { role: "user", content: message },
+				            ],
+				        });
+
+				        await spectron.rememberMany(
+				            [
+				                { role: "user", content: message },
+				                { role: "assistant", content: result.response },
+				            ],
+				            { scope },
+				        );
+
+				        return Response.json({ text: result.response });
+				    },
+				};
 				~~~
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+				See the full Cloudflare Workers AI guide for streaming, tool-based recall, and background writes.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/frameworks/cloudflare" />
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/ai-sdks/cloudflare-workers-ai" />
 			`),
 		},
 	];

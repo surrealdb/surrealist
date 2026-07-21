@@ -74,7 +74,7 @@ export function buildCliSteps(context: CloudContext): IntegrationStep[] {
 			description: dedent(`
 				Full command reference: remember, recall, context, reflect, consolidate, and the interactive terminal surfaces.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/cli" />
+				<Documentation />
 			`),
 		},
 	];

@@ -106,14 +106,14 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
+					Record a fact scoped to a user. Spectron pulls out entities, attributes, and relations server-side, so the memory graph fills in on its own.
 
 					~~~python
-					from surrealdb import SpectronTurnRole
-
-					session = client.sessions.create(scopes=["user/alex"])
-					session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
-					session.turn(SpectronTurnRole.ASSISTANT, "Got it Alex, noted.")
+					client.remember(
+					    "Hi, I'm Alex. I prefer dark mode.",
+					    infer="full",
+					    scope=["user/alex"],
+					)
 					~~~
 				`),
 			},
@@ -123,7 +123,7 @@ function buildIntegrationSteps(
 					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~python
-					results = client.query("What are the user's preferences?", k=10)
+					results = client.recall("What are the user's preferences?", k=10)
 
 					for hit in results.hits:
 					    print(hit.score, hit.text)
@@ -171,17 +171,13 @@ function buildIntegrationSteps(
 			{
 				title: "Capture a memory",
 				description: dedent(`
-					Open a session scoped to a user and record conversation turns. Spectron pulls out entities, attributes, and relations on every turn, so the memory graph fills in on its own.
+					Record a fact scoped to a user. Spectron pulls out entities, attributes, and relations server-side, so the memory graph fills in on its own.
 
 					~~~javascript
-					import { TurnRole } from "@surrealdb/spectron";
-
-					const session = await client.sessions.create({
-					    scopes: ["user/alex"],
+					await client.remember("Hi, I'm Alex. I prefer dark mode.", {
+					    infer: "full",
+					    scope: ["user/alex"],
 					});
-
-					await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
-					await session.turn({ role: TurnRole.assistant, content: "Got it Alex, noted." });
 					~~~
 				`),
 			},
@@ -191,10 +187,7 @@ function buildIntegrationSteps(
 					Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 					~~~javascript
-					const results = await client.query({
-					    query: "What are the user's preferences?",
-					    k: 10,
-					});
+					const hits = await client.recall("What are the user's preferences?", { k: 10 });
 					~~~
 				`),
 			},
@@ -217,29 +210,18 @@ function buildIntegrationSteps(
 				`),
 			},
 			{
-				title: "Open a session",
-				description: dedent(`
-					Create a session scoped to a user. The response includes an \`id\` you'll pass to subsequent calls when recording turns.
-
-					~~~bash
-					curl -X POST ${restRoot}/sessions \\
-					    -H "API-KEY: your-api-key" \\
-					    -H "Content-Type: application/json" \\
-					    -d '{"scopes":["user/alex"]}'
-					~~~
-				`),
-			},
-			{
 				title: "Capture a memory",
 				description: dedent(`
-					Record a conversation turn against the session you just created. Replace \`$SESSION_ID\` with the \`id\` returned from the previous call.
+					Record a fact against this context. Spectron extracts entities, attributes, and relations server-side, so the memory graph fills in on its own.
 
 					~~~bash
-					curl -X POST ${restRoot}/sessions/$SESSION_ID/turns \\
-					    -H "API-KEY: your-api-key" \\
+					curl -X POST ${restRoot}/facts \\
+					    -H "Authorization: Bearer your-api-key" \\
 					    -H "Content-Type: application/json" \\
-					    -d '{"role":"user","content":"Hi, I am Alex. I prefer dark mode."}'
+					    -d '{"text":"Hi, I am Alex. I prefer dark mode.","infer":"full","scope":["user/alex"]}'
 					~~~
+
+					To ingest a whole conversation at once, POST a \`turns\` array to \`${restRoot}/facts/batch\` instead.
 				`),
 			},
 			{
@@ -249,9 +231,9 @@ function buildIntegrationSteps(
 
 					~~~bash
 					curl -X POST ${restRoot}/query \\
-					    -H "API-KEY: your-api-key" \\
+					    -H "Authorization: Bearer your-api-key" \\
 					    -H "Content-Type: application/json" \\
-					    -d '{"query":"What are the user preferences?","k":10}'
+					    -d '{"query":"What are the user preferences?","limit":10,"scope":["user/alex"]}'
 					~~~
 				`),
 			},

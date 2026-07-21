@@ -13,7 +13,7 @@ export function buildStrandsSteps(context: CloudContext): IntegrationStep[] {
 				Expose this context's memory operations as tools for any Strands agent. Requires Python 3.10+.
 
 				~~~bash
-				pip install spectron-strands
+				pip install spectron-strands-agents
 				~~~
 
 				This pulls in \`strands-agents\` and \`surrealdb\` (which provides the Spectron client).
@@ -42,7 +42,7 @@ export function buildStrandsSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Attach the tools",
 			description: dedent(`
-				With the environment set, \`spectron_tools()\` builds the client for you and returns seven memory tools — \`remember\`, \`recall\`, \`context\`, \`reflect\`, \`forget\`, \`upload\`, and \`inspect\`.
+				With the environment set, \`spectron_tools()\` builds the client for you and returns seven memory tools — \`spectron_remember\`, \`spectron_recall\`, \`spectron_context\`, \`spectron_reflect\`, \`spectron_forget\`, \`spectron_upload\`, and \`spectron_inspect\`.
 
 				~~~python
 				from strands import Agent
@@ -54,7 +54,7 @@ export function buildStrandsSteps(context: CloudContext): IntegrationStep[] {
 				print(agent("What is the value of the Meditech Solutions contract?"))
 				~~~
 
-				Narrow the set with \`include=[...]\` or \`exclude=[...]\`.
+				Narrow the set with \`include=[...]\` or \`exclude=[...]\`, using the bare names (\`remember\`, \`recall\`, …) as filter values.
 			`),
 		},
 		{

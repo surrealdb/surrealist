@@ -51,7 +51,7 @@ export function buildSwiftSteps(context: CloudContext): IntegrationStep[] {
 				Run one query that blends graph traversal, vector similarity, and structured filters, then get the most relevant memories back in a single call.
 
 				~~~swift
-				let hits = try await memory.recall("What are the user's preferences?", k: 10)
+				let hits = try await memory.query("What are the user's preferences?", k: 10)
 				~~~
 			`),
 		},
