@@ -13,10 +13,10 @@ export function buildHermesSteps(context: CloudContext): IntegrationStep[] {
 				The Spectron memory provider gives a Hermes Agent long-term memory: it recalls relevant memories before every turn, writes each completed turn back to Spectron, and consolidates memory when a session ends. Requires Python 3.10+.
 
 				~~~bash
-				pip install spectron-integration-hermes-agent
+				pip install spectron-hermes
 				~~~
 
-				This pulls in the Spectron SDK (\`surrealdb[spectron]\`) and registers the provider with Hermes.
+				This pulls in the SurrealDB SDK (\`surrealdb\` v3, which bundles Spectron) and registers the provider with Hermes through the \`hermes_agent.plugins\` entry point.
 			`),
 		},
 		{

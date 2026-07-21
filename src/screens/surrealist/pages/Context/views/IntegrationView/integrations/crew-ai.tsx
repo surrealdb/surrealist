@@ -13,7 +13,7 @@ export function buildCrewAiSteps(context: CloudContext): IntegrationStep[] {
 				Give your CrewAI agents provenance-first memory backed by this context. Requires Python 3.10+ and CrewAI 1.5+.
 
 				~~~bash
-				pip install spectron-integration-crewai
+				pip install spectron-crew-ai
 				~~~
 
 				This pulls in CrewAI and the Spectron SDK (\`surrealdb[spectron]\`).

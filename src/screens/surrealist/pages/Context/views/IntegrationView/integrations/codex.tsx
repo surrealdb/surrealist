@@ -8,13 +8,9 @@ export function buildCodexSteps(context: CloudContext): IntegrationStep[] {
 
 	return [
 		{
-			title: "Install the MCP server",
+			title: "Add the MCP server",
 			description: dedent(`
-				Run the installer once. It prompts for your API key and adds Spectron to Codex's MCP configuration for this context.
-
-				~~~bash
-				npx install-mcp spectron --client codex --context ${context.id}
-				~~~
+				Codex has no dedicated installer — add Spectron to Codex's MCP configuration manually, as shown in the next steps. Create your API key first.
 
 				<ApiKey />
 			`),

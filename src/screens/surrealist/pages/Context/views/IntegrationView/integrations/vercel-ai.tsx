@@ -13,7 +13,7 @@ export function buildVercelAiSteps(context: CloudContext): IntegrationStep[] {
 				Add the Spectron integration for the Vercel AI SDK, alongside \`ai\` (v7) and the Spectron client. Keep using your own model provider.
 
 				~~~bash
-				npm i @surrealdb/vercel-ai ai @surrealdb/spectron
+				npm i @surrealdb/spectron-vercel-ai ai @surrealdb/spectron
 				# plus your model provider, e.g.
 				npm i @ai-sdk/openai
 				~~~
@@ -33,7 +33,7 @@ export function buildVercelAiSteps(context: CloudContext): IntegrationStep[] {
 				Construct a Spectron instance pointed at this context. The endpoint and context id are pre-filled from your selection, and \`defaultScopes\` binds reads and writes to a region of memory.
 
 				~~~typescript
-				import { createSpectron, Spectron } from "@surrealdb/vercel-ai";
+				import { createSpectron, Spectron } from "@surrealdb/spectron-vercel-ai";
 
 				const spectron = createSpectron({
 				    client: new Spectron({

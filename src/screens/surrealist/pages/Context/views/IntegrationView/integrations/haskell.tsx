@@ -16,7 +16,7 @@ export function buildHaskellSteps(context: CloudContext): IntegrationStep[] {
 				source-repository-package
 				  type: git
 				  location: https://github.com/surrealdb/surrealdb.haskell
-				  subdir: surrealdb surrealdb-spectron
+				  subdir: surrealdb-spectron
 				~~~
 
 				Then add \`surrealdb-spectron\` to your component's \`build-depends\`.

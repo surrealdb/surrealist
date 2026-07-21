@@ -13,10 +13,7 @@ export function buildOpenAiAgentsSteps(context: CloudContext): IntegrationStep[]
 				Give agents built with the OpenAI Agents SDK a durable, shared memory backed by this context.
 
 				~~~bash
-				pip install spectron-openai-agents
-
-				# During the Spectron preview, install the SDK extra too:
-				pip install "spectron-openai-agents[spectron]"
+				pip install spectron-openai-agents-sdk
 				~~~
 			`),
 		},
@@ -48,7 +45,7 @@ export function buildOpenAiAgentsSteps(context: CloudContext): IntegrationStep[]
 
 				~~~python
 				from agents import Agent, Runner
-				from spectron_openai_agents import get_spectron_tools
+				from spectron_openai_agents_sdk import get_spectron_tools
 
 				agent = Agent(
 				    name="assistant",

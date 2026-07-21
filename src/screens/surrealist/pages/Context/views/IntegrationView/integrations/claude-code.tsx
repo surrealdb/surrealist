@@ -10,10 +10,10 @@ export function buildClaudeCodeSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Install the MCP server",
 			description: dedent(`
-				Run the installer once. It prompts for your API key and merges Spectron into your Claude Code configuration for this context.
+				Install the Spectron plugin from the SurrealDB marketplace, running the command inside Claude Code. Provide your API key when prompted, or configure it manually as shown below.
 
 				~~~bash
-				npx install-mcp spectron --client claude-code --context ${context.id}
+				/plugin install spectron@surrealdb
 				~~~
 
 				<ApiKey />
@@ -38,6 +38,7 @@ export function buildClaudeCodeSteps(context: CloudContext): IntegrationStep[] {
 				{
 				  "mcpServers": {
 				    "spectron": {
+				      "type": "http",
 				      "url": "${mcpUrl}",
 				      "headers": {
 				        "Authorization": "Bearer your-api-key",

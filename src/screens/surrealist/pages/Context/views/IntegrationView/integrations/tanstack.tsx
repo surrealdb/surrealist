@@ -4,71 +4,73 @@ import { getSpectronUrls } from "../helpers/spectron-urls";
 import type { IntegrationStep } from "./types";
 
 export function buildTanStackSteps(context: CloudContext): IntegrationStep[] {
-	const { mcpUrl } = getSpectronUrls(context);
+	const { endpoint } = getSpectronUrls(context);
 
 	return [
 		{
 			title: "Install the packages",
 			description: dedent(`
-				TanStack AI ships a first-party MCP host client. Add it alongside the core package, the MCP SDK peer dependency, and your chosen provider adapter.
+				TanStack AI works with Spectron through the \`@surrealdb/spectron\` SDK directly — there is no dedicated MCP adapter. Add it alongside the core package and your provider adapter.
 
 				~~~bash
-				npm install @tanstack/ai @tanstack/ai-mcp @modelcontextprotocol/sdk @tanstack/ai-openai
+				npm install @surrealdb/spectron @tanstack/ai @tanstack/ai-openai
 				~~~
 			`),
 		},
 		{
-			title: "Create API credentials",
+			title: "Create an API key",
 			description: dedent(`
-				The MCP client authenticates with an agent API key for this context. Create one here if you have not already.
+				The SDK authenticates with a scoped API key bound to your principal. Create one for this context.
 
 				<ApiKey />
 			`),
 		},
 		{
-			title: "Connect the MCP server",
+			title: "Configure the client",
 			description: dedent(`
-				In a server route (MCP tool execution is server-side only), create a client for Spectron over the streamable HTTP transport. The endpoint is pre-filled from your selection. Send your API key as a Bearer token, and select this context with the X-Spectron-Context header.
+				In a server handler (Spectron runs server-side, wherever you call \`chat()\`), construct a client for this context. The endpoint and context id are pre-filled from your selection.
 
 				~~~typescript
-				import { createMCPClient } from "@tanstack/ai-mcp";
+				import { Spectron } from "@surrealdb/spectron";
+				import { chat, toServerSentEventsResponse } from "@tanstack/ai";
+				import { openaiText } from "@tanstack/ai-openai";
 
-				const spectron = await createMCPClient({
-				    transport: {
-				        type: "http",
-				        url: "${mcpUrl}",
-				        headers: {
-				            Authorization: "Bearer your-api-key",
-				            "X-Spectron-Context": "${context.id}",
-				        },
-				    },
+				const spectron = new Spectron({
+				    endpoint: "${endpoint}",
+				    context: "${context.id}",
+				    apiKey: "your-api-key",
 				});
 				~~~
 			`),
 		},
 		{
-			title: "Pass the tools to chat",
+			title: "Recall memory into chat",
 			description: dedent(`
-				Hand the client to \`chat\` under \`mcp.clients\`. TanStack AI discovers Spectron's memory and knowledge tools, exposes them to the model, and closes the client when the run finishes.
+				Recall relevant memory with \`spectron.context\`, inject it into the system prompt for \`chat()\`, and stream the response back.
 
 				~~~typescript
-				import { chat } from "@tanstack/ai";
-				import { openaiText } from "@tanstack/ai-openai";
+				const memory = await spectron.context(message, { scope, k: 8 });
 
 				const stream = chat({
 				    adapter: openaiText("gpt-4o"),
-				    messages,
-				    mcp: { clients: [spectron] },
+				    messages: [
+				        { role: "system", content: \`You are a helpful assistant.\\n\\n## Memory\\n\${memory}\` },
+				        { role: "user", content: message },
+				    ],
 				});
+
+				return toServerSentEventsResponse(stream);
 				~~~
+
+				To persist the exchange, collect the reply with \`streamToText\` and call \`spectron.rememberMany([...], { scope })\`. Prefer the model to decide when to recall? Expose it as a \`toolDefinition\` whose \`.server()\` handler calls \`spectron.context\`, and pass it via \`tools: [recall]\`.
 			`),
 		},
 		{
 			title: "Explore Spectron",
 			description: dedent(`
-				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
+				See the full TanStack AI guide for tool-based recall, streaming, and scope handling.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/frameworks/tanstack-ai" />
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/ai-sdks/tanstack-ai" />
 			`),
 		},
 	];

@@ -52,7 +52,7 @@ export function buildZapierSteps(context: CloudContext): IntegrationStep[] {
 			description: dedent(`
 				See the full MCP server reference for the available memory and knowledge tools, scope headers, and authentication.
 
-				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server" />
+				<Documentation href="https://surrealdb.com/docs/spectron/integrations/mcp-server/install" />
 			`),
 		},
 	];

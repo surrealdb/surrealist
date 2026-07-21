@@ -13,7 +13,7 @@ export function buildLangChainSteps(context: CloudContext): IntegrationStep[] {
 				The official SurrealDB integration for the LangChain.js and LangGraph.js ecosystems wraps the \`@surrealdb/spectron\` client. Requires Node.js ≥ 22 or Bun ≥ 1.
 
 				~~~bash
-				bun add @surrealdb/langchain @surrealdb/langchain-core surrealdb
+				bun add @surrealdb/langchain @surrealdb/langgraph @surrealdb/spectron
 				~~~
 			`),
 		},
