@@ -126,8 +126,9 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 												style={{ textWrap: "nowrap" }}
 											>
 												<ActionIcon
-													aria-label="Download invoice PDF"
-													onClick={() => downloadInvoice(invoice)}
+													// aria-label="Download invoice PDF"
+													// onClick={() => downloadInvoice(invoice)}
+													onClick={() => adapter.openUrl(invoice.url)}
 												>
 													<Icon path={iconDownload} />
 												</ActionIcon>
