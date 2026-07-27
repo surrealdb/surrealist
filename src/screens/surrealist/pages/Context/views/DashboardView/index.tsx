@@ -27,7 +27,6 @@ import {
 	iconIntegration,
 	iconMemory,
 	iconOpen,
-	iconPackageClosed,
 	iconPlay,
 	pictoSpectronGradient,
 	SectionTitle,
