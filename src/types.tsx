@@ -1330,8 +1330,8 @@ export interface IntercomConversation {
 	open: boolean;
 	read: boolean;
 	priority: boolean;
-	hasTicket: boolean;
-	ticketData?: IntercomTicket;
+	has_ticket: boolean;
+	ticket_data?: IntercomTicket;
 }
 
 export interface IntercomSupportArticle {

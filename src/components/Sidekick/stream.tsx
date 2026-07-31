@@ -41,7 +41,7 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 				},
 				body: JSON.stringify({
 					message,
-					chatId,
+					chat_id: chatId,
 				}),
 			});
 

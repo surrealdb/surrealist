@@ -48,14 +48,14 @@ export function ConversationRow({ conversation }: ConversationRowProps) {
 	const isConversation = isIntercomConversation(conversation);
 
 	const ticketOrganization = isConversation
-		? conversation.ticketData?.attributes?.Organisation
+		? conversation.ticket_data?.attributes?.Organisation
 		: (conversation as IntercomTicket).attributes?.Organisation;
 
 	const { data: organization } = useCloudOrganizationQuery(ticketOrganization);
 
-	const hasTicket = isConversation ? conversation.hasTicket : true;
+	const hasTicket = isConversation ? conversation.has_ticket : true;
 	const ticketState = isConversation
-		? SUPPORT_STATES.find((it) => it.value === conversation.ticketData?.state.category)
+		? SUPPORT_STATES.find((it) => it.value === conversation.ticket_data?.state.category)
 		: undefined;
 
 	const color = hasTicket ? "violet" : "pink";

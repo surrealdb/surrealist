@@ -292,7 +292,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 	const isClosed = conversation?.state === "closed" || !conversation?.open;
 
 	const state = SUPPORT_STATES.find(
-		(state) => state.value === conversation?.ticketData?.state.category,
+		(state) => state.value === conversation?.ticket_data?.state.category,
 	);
 
 	const sendReply = async () => {
@@ -411,7 +411,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 							</Group>
 						</Box>
 
-						{conversation.hasTicket && (
+						{conversation.has_ticket && (
 							<Stack
 								gap="md"
 								mb="lg"
@@ -445,7 +445,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 											/>
 										</Stack>
 
-										{Object.entries(conversation.ticketData?.attributes ?? {})
+										{Object.entries(conversation.ticket_data?.attributes ?? {})
 											.filter(([name, value]) => {
 												const irrelevantNames = ["Organisation"];
 
@@ -513,7 +513,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 												title="State"
 												subtitle={
 													state?.label ??
-													conversation.ticketData?.state.label ??
+													conversation.ticket_data?.state.label ??
 													"Unknown"
 												}
 												color={state?.color ?? "white"}
@@ -523,7 +523,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 											<TicketData
 												title="Type"
 												subtitle={
-													conversation.ticketData?.type.name ?? "Unknown"
+													conversation.ticket_data?.type.name ?? "Unknown"
 												}
 												color="violet"
 												icon={iconBullhorn}
@@ -552,7 +552,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 								userSelect: "text",
 							}}
 						>
-							{!conversation.hasTicket && (
+							{!conversation.has_ticket && (
 								<ConversationPart
 									conversation={conversation}
 									part={conversation.initial_part}

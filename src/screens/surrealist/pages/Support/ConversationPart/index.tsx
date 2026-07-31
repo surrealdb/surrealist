@@ -89,7 +89,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 		part.part_type === "ticket_state_updated_by_admin" ||
 		part.part_type === "ticket_state_updated_by_user"
 	) {
-		const ticketPart = conversation.ticketData?.parts.find((it) => it.id === part.id);
+		const ticketPart = conversation.ticket_data?.parts.find((it) => it.id === part.id);
 
 		if (!ticketPart) {
 			return undefined;
