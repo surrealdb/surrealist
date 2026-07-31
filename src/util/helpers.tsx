@@ -527,11 +527,9 @@ export function formatMemory(amountInMB: number, rounded = false) {
 		return `${Number.parseFloat(amountInMB.toFixed(2))} MB`;
 	}
 
-	if (amountInMB < factor * factor) {
-		return `${Number.parseFloat((amountInMB / factor).toFixed(2))} GB`;
-	}
-
-	return `${Number.parseFloat((amountInMB / (factor * factor)).toFixed(2))} TB`;
+	// Large amounts stay in GB. Cloud provisions storage in GB, and 1 TB is not
+	// 1000 GB, so a TB label would misreport the size.
+	return `${Number.parseFloat((amountInMB / factor).toFixed(2))} GB`;
 }
 
 /**

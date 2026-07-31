@@ -35,7 +35,9 @@ export function measureStorageUsage(measurements: CloudMeasurement[]) {
 	return (entry?.disk_used_bytes ?? 0) / 1024 / 1024;
 }
 
-const BYTE_SIZES = ["B", "KB", "MB", "GB", "TB"] as const;
+// GB is the largest unit. Storage is billed and provisioned in GB, and 1 TB is
+// not 1000 GB, so a TB label would misreport the amount.
+const BYTE_SIZES = ["B", "KB", "MB", "GB"] as const;
 
 /**
  * Format a millcent value as a USD currency string
@@ -53,7 +55,7 @@ export function formatMillcents(millcents: number) {
 export function formatBytesUsage(bytes: number) {
 	if (bytes === 0) return "0 B";
 
-	const i = Math.floor(Math.log(bytes) / Math.log(1024));
+	const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), BYTE_SIZES.length - 1);
 
 	return `${Math.round((bytes / 1024 ** i) * 100) / 100} ${BYTE_SIZES[i]}`;
 }

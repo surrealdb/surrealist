@@ -35,7 +35,7 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 
 		return values.map((value) => ({
 			value,
-			label: value >= 1000 && value % 1000 === 0 ? `${value / 1000} TB` : `${value} GB`,
+			label: `${value} GB`,
 		}));
 	}, [storageMin, storageMax]);
 
@@ -45,9 +45,9 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
-	// Wide ranges, such as clusters, move in 100 GB steps. Smaller single-node
+	// Wide ranges, such as clusters, move in 10 GB steps. Smaller single-node
 	// ranges keep 1 GB steps.
-	const sliderStep = storageMax - storageMin > 1000 ? 100 : 1;
+	const sliderStep = storageMax - storageMin > 1000 ? 10 : 1;
 
 	return (
 		<Box>
