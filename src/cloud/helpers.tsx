@@ -22,7 +22,7 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	computeUnits: 1,
 	storageType: "",
 	storageUnits: 3,
-	storageAmount: 100,
+	storageAmount: 0,
 	version: "",
 	plan: "free",
 	public_traffic: true,

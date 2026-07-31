@@ -1,6 +1,5 @@
 import { Box, Slider, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
-import { isScalePlan } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -9,11 +8,11 @@ import { DeploySectionProps } from "../types";
 
 export function StorageOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const isScale = isScalePlan(details.plan);
 
 	const instanceType = instanceTypes.get(details.computeType);
-	const storageMin = isScale ? 100 : (instanceType?.default_storage_size ?? 0);
-	const storageMax = isScale ? 6000 : (instanceType?.max_storage_size ?? 0);
+	const storageMin = instanceType?.default_storage_size ?? 0;
+	const storageMax = instanceType?.max_storage_size ?? 0;
+	const hasRange = storageMax > storageMin;
 	const marks = useMemo(() => {
 		if (storageMin >= storageMax) {
 			return [];
@@ -46,7 +45,9 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
-	const sliderStep = isScale ? 100 : 1;
+	// Wide ranges, such as clusters, move in 100 GB steps. Smaller single-node
+	// ranges keep 1 GB steps.
+	const sliderStep = storageMax - storageMin > 1000 ? 100 : 1;
 
 	return (
 		<Box>
@@ -65,7 +66,7 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 					min={storageMin}
 					max={storageMax}
 					step={sliderStep}
-					disabled={!details.computeType}
+					disabled={!details.computeType || !hasRange}
 					value={details.storageAmount}
 					onChange={updateAmount}
 					marks={marks}
