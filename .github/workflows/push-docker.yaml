@@ -7,7 +7,7 @@ env:
   AUTH0_CALLBACK_HOST: "https://app.surrealdb.com"
   AUTH0_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   AUTH0_DOMAIN: https://auth.surrealdb.com
-  AUTH0_AUDIENCE: https://surrealdb.us.auth0.com/api/v2/
+  AUTH0_AUDIENCE: https://api.surrealdb.com/api
   CLOUD_API_BASE: https://api.cloud.surrealdb.com/api/v1
   CLOUD_API_TICKETS_BASE: https://nlsmye6spqokxdxevwqramvqri0dtbto.lambda-url.us-east-1.on.aws
   SURREALIST_WEBSITE_BASE: https://surrealdb.com
