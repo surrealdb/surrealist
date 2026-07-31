@@ -81,7 +81,7 @@ export const schema = {
 	gtm_debug: {
 		options: [false, true],
 	},
-	sidekick_ai: {
+	ai_integrations: {
 		options: [false, true],
 	},
 	v3_migration_tooling: {
@@ -114,7 +114,7 @@ export const featureFlags = new FeatureFlags({
 			syntax_themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			sidekick_ai: true,
+			ai_integrations: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
 			sandbox_deploy: true,
@@ -136,7 +136,7 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			sidekick_ai: true,
+			ai_integrations: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
 			sandbox_deploy: true,
@@ -157,7 +157,7 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			themes: true,
 			gtm_debug: false,
-			sidekick_ai: true,
+			ai_integrations: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
 			sandbox_deploy: true,

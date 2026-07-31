@@ -1,32 +1,25 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Icon, iconClose } from "@surrealdb/ui";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
+import { AiIntegrations } from "~/components/AiIntegrations";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Sidekick, SidekickHandle } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 
-export function SidekickDrawer() {
-	const sidekickRef = useRef<SidekickHandle>(null);
+export function AiIntegrationsDrawer() {
 	const [isOpen, openHandle] = useDisclosure();
 	const [width, setWidth] = useState(650);
 	const handleClose = useStable(() => {
 		openHandle.close();
 	});
 
-	useIntent("open-sidekick", ({ search }) => {
+	useIntent("open-ai-integrations", () => {
 		openHandle.open();
-
-		if (search) {
-			setTimeout(() => {
-				sidekickRef.current?.sendMessage(search);
-			}, 100);
-		}
 	});
 
-	useIntent("close-sidekick", () => {
+	useIntent("close-ai-integrations", () => {
 		openHandle.close();
 	});
 
@@ -53,11 +46,10 @@ export function SidekickDrawer() {
 				onResize={setWidth}
 				style={{ zIndex: 1000 }}
 			/>
-			<Sidekick
-				ref={sidekickRef}
+			<AiIntegrations
 				rightSection={
 					<ActionButton
-						label="Hide Sidekick"
+						label="Close"
 						icon={iconClose}
 						onClick={handleClose}
 						size="lg"

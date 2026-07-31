@@ -6,7 +6,6 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
@@ -177,7 +176,6 @@ export function DesignerView() {
 						</Introduction>
 					)}
 				</Panel>
-				<SidekickPanel />
 			</PanelGroup>
 		</Box>
 	);

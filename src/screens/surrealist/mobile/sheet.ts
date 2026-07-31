@@ -1,7 +1,7 @@
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from "react";
 
 /** Which panel the bottom card is currently showing (null = collapsed dock). */
-export type CardPanel = "nav" | "account" | "sidekick" | "news";
+export type CardPanel = "nav" | "account" | "ai" | "news";
 
 /** Height of the collapsed dock, in pixels. */
 export const DOCK_HEIGHT = 72;

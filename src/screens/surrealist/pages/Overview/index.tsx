@@ -5,8 +5,8 @@ import {
 	iconPlus,
 	pictoCloudGradient,
 	pictoHandsOnGradient,
-	pictoSidekickGradient,
 	pictoSurrealDBGradient,
+	pictoSurrealMCPGradient,
 	pictoUniversityGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
@@ -268,10 +268,12 @@ export function OverviewPage() {
 								onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 							/>
 							<StartResource
-								title="Sidekick"
-								subtitle="Get support from your personal Surreal AI assistant"
-								image={pictoSidekickGradient}
-								onClick={() => dispatchIntent("open-sidekick")}
+								title="AI agents"
+								subtitle="Connect SurrealDB to the AI tools you already use"
+								image={pictoSurrealMCPGradient}
+								onClick={() =>
+									adapter.openUrl("https://surrealdb.com/docs/build/ai-agents")
+								}
 							/>
 						</SimpleGrid>
 

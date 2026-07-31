@@ -32,7 +32,6 @@ import {
 	iconSearch,
 	iconServer,
 	iconServerSecure,
-	iconSidekick,
 	iconStar,
 	iconStarPlus,
 	iconStop,
@@ -716,14 +715,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			{
 				name: "Search",
 				commands: [
-					{
-						id: "ask-sidekick",
-						name: "Ask Sidekick:",
-						icon: iconSidekick,
-						binding: ["mod", "b"],
-						action: intent("open-sidekick"),
-						forward: true,
-					},
 					{
 						id: "open-docs",
 						name: "Search documentation for:",

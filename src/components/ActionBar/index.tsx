@@ -4,10 +4,10 @@ import { adapter } from "~/adapter";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { AiIntegrationsAction } from "./ai-integrations";
 import { AccountMenu } from "./menu";
 import { NewsFeed } from "./newsfeed";
 import { DatabaseServing } from "./serving";
-import { SidekickAction } from "./sidekick";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
@@ -16,7 +16,7 @@ export function ActionBar() {
 
 	return (
 		<>
-			{flags.sidekick_ai && <SidekickAction />}
+			{flags.ai_integrations && <AiIntegrationsAction />}
 
 			{adapter.isServeSupported && <DatabaseServing />}
 

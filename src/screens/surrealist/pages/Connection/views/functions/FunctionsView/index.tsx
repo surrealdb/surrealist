@@ -9,7 +9,6 @@ import { Form } from "~/components/Form";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useFormatter } from "~/hooks/formatter";
 import { usePanelMinSize } from "~/hooks/panels";
@@ -363,7 +362,6 @@ export function FunctionsView() {
 							</Panel>
 						</>
 					)}
-					<SidekickPanel />
 				</PanelGroup>
 			</Box>
 

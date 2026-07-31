@@ -4,8 +4,8 @@
 		{
 			"name": "surrealist",
 			"runtimeExecutable": "bun",
-			"runtimeArgs": ["run", "dev"],
-			"port": 1420
+			"runtimeArgs": ["run", "dev", "--port", "1425"],
+			"port": 1425
 		}
 	]
 }

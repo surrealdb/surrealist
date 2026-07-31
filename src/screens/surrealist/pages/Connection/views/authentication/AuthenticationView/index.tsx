@@ -3,7 +3,6 @@ import { iconDatabaseSecure, iconFolderSecure, iconServerSecure } from "@surreal
 import { memo, useMemo } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useConnection } from "~/hooks/connection";
 import { useViewFocus } from "~/hooks/routing";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
@@ -85,7 +84,6 @@ export function AuthenticationView() {
 						}
 					/>
 				</Panel>
-				<SidekickPanel />
 			</PanelGroup>
 		</Box>
 	);

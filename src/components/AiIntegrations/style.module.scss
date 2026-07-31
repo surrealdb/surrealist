@@ -1,0 +1,39 @@
+.notice {
+	animation: notice-enter 0.4s ease-out both;
+	animation-delay: var(--notice-delay, 0ms);
+}
+
+.route-arrow {
+	opacity: 0;
+	transform: translate(-4px, 4px);
+	transition:
+		opacity 0.15s ease,
+		transform 0.15s ease;
+
+	a:hover &,
+	a:focus-visible & {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes notice-enter {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.notice {
+		animation: none;
+	}
+
+	.route-arrow {
+		transition: none;
+	}
+}

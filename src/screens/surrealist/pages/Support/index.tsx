@@ -23,10 +23,10 @@ import {
 	pictoHealthChatGradient,
 	pictoPlayGradient,
 	pictoRedditGradient,
-	pictoSidekickGradient,
 	pictoSpectronGradient,
 	pictoSurrealDBGradient,
 	pictoSurrealistGradient,
+	pictoSurrealMCPGradient,
 	pictoUniversityGradient,
 } from "@surrealdb/ui";
 import { useEffect } from "react";
@@ -296,10 +296,12 @@ export function SupportPage() {
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
 							<ResourceTile
-								name="Sidekick"
-								description="Chat with Sidekick to get quick and personalized answers to your questions"
-								image={pictoSidekickGradient}
-								onClick={() => dispatchIntent("open-sidekick")}
+								name="AI agents"
+								description="Connect Claude, Cursor, and other AI tools to SurrealDB with MCP and agent skills"
+								image={pictoSurrealMCPGradient}
+								onClick={() =>
+									adapter.openUrl("https://surrealdb.com/docs/build/ai-agents")
+								}
 							/>
 							<ResourceTile
 								name="Contact: Account Support"

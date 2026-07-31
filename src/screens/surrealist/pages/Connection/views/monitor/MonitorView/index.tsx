@@ -4,7 +4,6 @@ import { memo, useEffect, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { MONITORS } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
@@ -149,7 +148,6 @@ export default function MonitorView() {
 						}}
 					/>
 				</Panel>
-				<SidekickPanel />
 			</PanelGroup>
 		</Box>
 	);

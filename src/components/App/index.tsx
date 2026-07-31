@@ -5,6 +5,7 @@ import { InspectorProvider } from "~/providers/Inspector";
 import { SurrealistScreen } from "~/screens/surrealist";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
+import { AiIntegrationsDrawer } from "./modals/ai-integrations";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 import { CommandPaletteModal } from "./modals/commands";
@@ -19,7 +20,6 @@ import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
-import { SidekickDrawer } from "./modals/sidekick";
 import { AccessSignupModal } from "./modals/signup";
 import { HelpSearchModal } from "./modals/support-center";
 import { TableCreatorModal } from "./modals/table";
@@ -61,7 +61,7 @@ export function App() {
 			<RegisterUserModal />
 			<ConsoleDrawer />
 			{isDesktop && <NewsFeedDrawer />}
-			{isDesktop && <SidekickDrawer />}
+			{isDesktop && <AiIntegrationsDrawer />}
 			<CreateMessageModal />
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />

@@ -50,7 +50,6 @@ export function createBaseSettings(): SurrealistSettings {
 			versionCheckTimeout: 5,
 			queryQuickClose: true,
 			strictSandbox: false,
-			sidekickPanel: false,
 			recordDiagnostics: false,
 			diagnosticsHistorySize: 300,
 			editorKeymap: "default",

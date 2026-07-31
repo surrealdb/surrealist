@@ -241,7 +241,6 @@ export interface SurrealistBehaviorSettings {
 	versionCheckTimeout: number;
 	queryQuickClose: boolean;
 	strictSandbox: boolean;
-	sidekickPanel: boolean;
 	recordDiagnostics: boolean;
 	diagnosticsHistorySize: number;
 	editorKeymap: EditorKeymap;
@@ -643,28 +642,6 @@ export interface Driver {
 	name: string;
 	icon: React.FC<{ active?: boolean } & ElementProps<"svg">>;
 	link: string;
-}
-
-export interface SidekickChatMessage {
-	id: string | null;
-	sent_at: Date;
-	content: string;
-	role: "user" | "assistant";
-	sources?: {
-		header: string;
-		links: {
-			url: string;
-			title: string;
-			img_url: string | null;
-		}[];
-	};
-}
-
-export interface SidekickChat {
-	id: string;
-	author: string;
-	title: string;
-	last_activity: Date;
 }
 
 export interface CloudSignin {

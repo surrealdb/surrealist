@@ -16,7 +16,6 @@ import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
@@ -208,7 +207,6 @@ export function ExplorerView() {
 						</Introduction>
 					)}
 				</Panel>
-				<SidekickPanel />
 			</PanelGroup>
 		</Box>
 	);

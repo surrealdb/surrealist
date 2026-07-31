@@ -7,7 +7,6 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { SidekickPanel } from "~/components/Sidekick/panel";
 import { GQL_SUPPORTED } from "~/constants";
 import { executeGraphqlEditorQuery } from "~/editor/query";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -181,7 +180,6 @@ export function GraphqlView() {
 				<Panel minSize={15}>
 					<ResultPaneLazy />
 				</Panel>
-				<SidekickPanel />
 			</PanelGroup>
 		</Stack>
 	) : (
