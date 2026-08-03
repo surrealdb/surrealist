@@ -4,9 +4,29 @@
 .start-creator,
 .start-instance,
 .start-placeholder,
-.start-resource {
+.start-resource,
+.studio-cta {
 	position: relative;
 	overflow: hidden;
+}
+
+.studio-cta {
+	border-color: rgb(from var(--mantine-color-surreal-6) r g b / 0.4);
+}
+
+.studio-glow {
+	width: 700px;
+	height: 700px;
+	position: absolute;
+	right: -300px;
+	top: -350px;
+	z-index: 0;
+	opacity: 0.35;
+	pointer-events: none;
+
+	@include light {
+		opacity: 0.2;
+	}
 }
 
 .start-creator,

@@ -98,6 +98,7 @@ export const MAX_HISTORY_QUERY_LENGTH = 7500;
 export const MAX_LIVE_MESSAGES = 50;
 export const SALES_ENQUIRY_TAG = "11403616";
 export const INSTANCE_CONFIG = "instance.json";
+export const STUDIO_URL = "https://studio.surrealdb.com";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);

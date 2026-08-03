@@ -1,0 +1,17 @@
+.actions {
+	flex-direction: column;
+	align-self: stretch;
+
+	> * {
+		width: 100%;
+	}
+
+	@include sm-and-up {
+		flex-direction: row;
+		align-self: center;
+
+		> * {
+			width: auto;
+		}
+	}
+}

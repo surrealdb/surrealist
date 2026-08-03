@@ -66,6 +66,64 @@ const REWRITES: Record<string, string> = {
 	"/v4migrate": "/tools/v4migrate.html",
 };
 
+/**
+ * The Surrealist web app has been sunset in favour of SurrealDB Studio. Keep in
+ * sync with `STUDIO_URL` in `src/constants.tsx`, which the desktop app uses.
+ */
+const STUDIO_URL = "https://studio.surrealdb.com";
+
+/**
+ * Only the hosted web app is sunset. The desktop app is built through the Tauri
+ * CLI, and self-hosted Docker deployments keep serving the app as normal.
+ */
+const isSunsetWeb = !isTauri && !isDocker;
+
+/**
+ * Replaces the main entrypoint of the web build with a redirect to SurrealDB
+ * Studio, forwarding the path, query and hash.
+ *
+ * The document is replaced wholesale rather than having a script redirect on
+ * boot, so the app bundle is never referenced and React is never mounted. Only
+ * `/index.html` is touched — the mini embed and the other tool entrypoints are
+ * emitted unchanged.
+ */
+const studioRedirect: PluginOption = {
+	name: "studio-redirect",
+	// Build only, so the app can still be run in a browser during development
+	apply: "build",
+	transformIndexHtml: {
+		order: "post",
+		handler(html, ctx) {
+			if (!isSunsetWeb || ctx.path !== "/index.html") {
+				return html;
+			}
+
+			const target = JSON.stringify(STUDIO_URL);
+
+			return `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Surrealist is now SurrealDB Studio</title>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+	<meta name="robots" content="noindex" />
+	<script>location.replace(${target} + location.pathname + location.search + location.hash)</script>
+	<noscript>
+		<meta http-equiv="refresh" content="0; url=${STUDIO_URL}" />
+	</noscript>
+</head>
+
+<body>
+	<p>Surrealist is now SurrealDB Studio. Redirecting to <a href="${STUDIO_URL}">${STUDIO_URL}</a>.</p>
+</body>
+
+</html>
+`;
+		},
+	},
+};
+
 export default defineConfig(({ mode }) => {
 	// Required because we cannot pass a custom mode to tauri build
 	mode = isPreview ? "preview" : mode;
@@ -77,6 +135,7 @@ export default defineConfig(({ mode }) => {
 		markdown({
 			mode: [Mode.HTML],
 		}),
+		studioRedirect,
 		{
 			name: "rename-html",
 			enforce: "post",

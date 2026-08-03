@@ -37,6 +37,7 @@ import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { OrganizationTile } from "./content/organization";
 import { StartResource } from "./content/resource";
+import { StudioCallToAction } from "./content/studio";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -105,6 +106,9 @@ export function OverviewPage() {
 				{(style) => (
 					<PageContainer style={style}>
 						<SectionTitle>Overview</SectionTitle>
+
+						{/* Permanent notice about the move to SurrealDB Studio */}
+						<StudioCallToAction mb={36} />
 
 						{bannerQuery.isSuccess &&
 							bannerQuery.data.length > 0 &&
