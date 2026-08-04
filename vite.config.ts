@@ -47,6 +47,7 @@ const ENTRYPOINTS: Record<string, string> = {
 	auth_launch: "/tools/auth-launch.html",
 	cloud_callback: "/tools/cloud-callback.html",
 	cloud_referral: "/tools/cloud-referral.html",
+	v4_migrate: "/tools/v4migrate.html",
 };
 
 const TOOLS: Record<string, string> = {
@@ -55,12 +56,14 @@ const TOOLS: Record<string, string> = {
 	"tools/auth-launch.html": "auth/launch/index.html",
 	"tools/cloud-callback.html": "cloud/callback/index.html",
 	"tools/cloud-referral.html": "cloud/referral/index.html",
+	"tools/v4migrate.html": "v4migrate/index.html",
 };
 
 const REWRITES: Record<string, string> = {
 	"/auth/return": "/tools/auth-return.html",
 	"/auth/launch": "/tools/auth-launch.html",
 	"/cloud/callback": "/tools/cloud-callback.html",
+	"/v4migrate": "/tools/v4migrate.html",
 };
 
 export default defineConfig(({ mode }) => {

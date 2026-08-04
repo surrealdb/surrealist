@@ -2,6 +2,13 @@
 command = "bash ./netlify.sh"
 publish = "dist"
 
+# Above the catch-all below, which would otherwise serve the application shell
+# here and answer 200 without ever loading the page.
+[[redirects]]
+  from = "/v4migrate"
+  to = "/v4migrate/index.html"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

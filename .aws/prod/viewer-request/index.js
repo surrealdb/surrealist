@@ -68,6 +68,12 @@ function handler(event) {
 			request.uri = '/mini/run/index.html';
 			break;
 
+		// Must stay above the extensionless catch-all below, which would otherwise
+		// serve the application shell here with a 200 and look perfectly healthy.
+		case request.uri === '/v4migrate':
+			request.uri = '/v4migrate/index.html';
+			break;
+
 		case request.uri === '/auth/return':
 			request.uri = '/auth/return/index.html';
 			break;
