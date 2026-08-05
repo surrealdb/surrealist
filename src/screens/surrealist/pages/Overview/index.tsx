@@ -110,7 +110,7 @@ export function OverviewPage() {
 						{/* Permanent notice about the move to SurrealDB Studio */}
 						<StudioCallToAction mb={36} />
 
-						{bannerQuery.isSuccess &&
+						{/*{bannerQuery.isSuccess &&
 							bannerQuery.data.length > 0 &&
 							(() => {
 								const visibleBanners = bannerQuery.data.filter(
@@ -129,7 +129,7 @@ export function OverviewPage() {
 										</Box>
 									)
 								);
-							})()}
+							})()}*/}
 
 						{showCloud && (
 							<>

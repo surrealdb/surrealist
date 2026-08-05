@@ -14,7 +14,22 @@
 	border-color: rgb(from var(--mantine-color-surreal-6) r g b / 0.4);
 }
 
-.studio-glow {
+.studio-glow1 {
+	width: 700px;
+	height: 700px;
+	position: absolute;
+	left: -300px;
+	bottom: -350px;
+	z-index: 0;
+	opacity: 0.35;
+	pointer-events: none;
+
+	@include light {
+		opacity: 0.2;
+	}
+}
+
+.studio-glow2 {
 	width: 700px;
 	height: 700px;
 	position: absolute;
@@ -59,7 +74,8 @@
 .start-blog-header {
 	background-position: center;
 	background-size: cover;
-	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-obsidian-9)), var(--image-url);
+	background-image:
+		linear-gradient(to bottom, transparent, var(--mantine-color-obsidian-9)), var(--image-url);
 }
 
 .start-blog:hover .start-blog-arrow {
