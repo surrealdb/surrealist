@@ -1,9 +1,9 @@
 import { Box, type BoxProps, Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { Icon, iconChevronRight } from "@surrealdb/ui";
 import glow from "~/assets/images/radial-glow.png";
+import studioAppIcon from "~/assets/images/studio.png";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import classes from "../style.module.scss";
-import studioAppIcon from "~/assets/images/studio.png";
 
 /**
  * A permanent call to action informing users that Surrealist has been succeeded
