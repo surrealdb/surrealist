@@ -6,6 +6,7 @@ import {
 	Code,
 	Group,
 	InputLabel,
+	Paper,
 	Progress,
 	ScrollArea,
 	Select,
@@ -20,11 +21,11 @@ import { capitalize } from "radash";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CSV_FILTER } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { EMAIL_REGEX, showInfo } from "~/util/helpers";
+import { apiErrorMessage } from "../api";
 import { normalizeRole } from "../helpers";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudInvitationsQuery } from "../queries/invitations";
@@ -53,6 +54,12 @@ export interface ImportRow extends CsvMember {
 	role: string;
 	/** Why this row cannot be invited, when it cannot be. */
 	issue?: string;
+}
+
+/** An address the API refused to invite, and the reason it gave. */
+interface ImportFailure {
+	email: string;
+	message: string;
 }
 
 export interface ResolveOptions {
@@ -148,11 +155,8 @@ export function openMemberImportModal(organization: CloudOrganization) {
 		modalId: MODAL_ID,
 		title: (
 			<Group>
-				<Icon
-					path={iconUpload}
-					size="xl"
-				/>
-				<PrimaryTitle>Import members</PrimaryTitle>
+				<Icon path={iconUpload} />
+				Import members
 			</Group>
 		),
 		size: "lg",
@@ -190,7 +194,7 @@ export function MemberImportPreview({ rows, ...other }: MemberImportPreviewProps
 				<Badge
 					variant="light"
 					size="sm"
-					color={invitable.length ? "surreal" : "orange"}
+					color={invitable.length ? "surreal" : "slate"}
 				>
 					{invitable.length} to invite
 				</Badge>
@@ -205,45 +209,61 @@ export function MemberImportPreview({ rows, ...other }: MemberImportPreviewProps
 				)}
 			</Group>
 
-			<ScrollArea.Autosize mah={260}>
-				<Table verticalSpacing="xs">
-					<Table.Tbody>
-						{rows.map((row) => (
-							<Table.Tr key={row.line}>
-								<Table.Td>
-									<Text
-										c={row.issue ? undefined : "bright"}
-										opacity={row.issue ? 0.6 : 1}
-										className="selectable"
-									>
-										{row.email || <i>No email address</i>}
-									</Text>
-								</Table.Td>
-								<Table.Td
-									w={1}
-									style={{ whiteSpace: "nowrap" }}
-								>
-									{row.issue ? (
+			<Paper
+				withBorder
+				p="md"
+			>
+				<ScrollArea.Autosize mah={260}>
+					<Table
+						verticalSpacing="xs"
+						horizontalSpacing={0}
+					>
+						<Table.Tbody>
+							{rows.map((row) => (
+								<Table.Tr key={row.line}>
+									<Table.Td>
 										<Text
-											fz="sm"
-											c="orange"
+											c={row.issue ? "orange" : "bright"}
+											className="selectable"
 										>
-											{row.issue}
+											{row.email || <i>No email address</i>}
 										</Text>
-									) : (
-										<Badge
-											variant="light"
-											size="sm"
-										>
-											{normalizeRole(row.role)}
-										</Badge>
-									)}
-								</Table.Td>
-							</Table.Tr>
-						))}
-					</Table.Tbody>
-				</Table>
-			</ScrollArea.Autosize>
+									</Table.Td>
+									<Table.Td
+										w={1}
+										style={{ whiteSpace: "nowrap" }}
+									>
+										{row.issue ? (
+											<Badge
+												variant="light"
+												color="orange"
+												size="sm"
+												styles={{
+													root: { float: "right" },
+													label: { overflow: "visible" },
+												}}
+											>
+												{row.issue}
+											</Badge>
+										) : (
+											<Badge
+												variant="light"
+												size="sm"
+												styles={{
+													root: { float: "right" },
+													label: { overflow: "visible" },
+												}}
+											>
+												{normalizeRole(row.role)}
+											</Badge>
+										)}
+									</Table.Td>
+								</Table.Tr>
+							))}
+						</Table.Tbody>
+					</Table>
+				</ScrollArea.Autosize>
+			</Paper>
 		</Box>
 	);
 }
@@ -261,6 +281,7 @@ function ImportModal({ organization }: ImportModalProps) {
 	const [members, setMembers] = useState<CsvMember[]>();
 	const [defaultRole, setDefaultRole] = useState("member");
 	const [error, setError] = useState("");
+	const [failures, setFailures] = useState<ImportFailure[]>([]);
 
 	// Tracked as a pair, because each accepted invitation invalidates the
 	// invitations query and so shrinks the set of rows left to invite
@@ -300,6 +321,7 @@ function ImportModal({ organization }: ImportModalProps) {
 			}
 
 			setError("");
+			setFailures([]);
 			setMembers(parseMemberCsv(await file.text()));
 		} catch {
 			setError("Failed to read the selected CSV file");
@@ -308,9 +330,10 @@ function ImportModal({ organization }: ImportModalProps) {
 
 	const handleSubmit = useStable(async () => {
 		const sending = invitable;
-		const failed: string[] = [];
+		const failed: ImportFailure[] = [];
 
 		setError("");
+		setFailures([]);
 		setProgress({ sent: 0, total: sending.length });
 
 		// Invitations are sent one at a time so a single rejected address does
@@ -321,8 +344,11 @@ function ImportModal({ organization }: ImportModalProps) {
 					email: row.email,
 					role: row.role,
 				});
-			} catch {
-				failed.push(row.email);
+			} catch (err) {
+				failed.push({
+					email: row.email,
+					message: apiErrorMessage(err, "Failed to send an invitation"),
+				});
 			}
 
 			setProgress({ sent: index + 1, total: sending.length });
@@ -332,12 +358,12 @@ function ImportModal({ organization }: ImportModalProps) {
 
 		const invited = sending.length - failed.length;
 
-		// Partial failures keep the modal open so the addresses that were
-		// rejected stay on screen next to the file they came from
+		// Partial failures keep the modal open so each rejected address stays on
+		// screen alongside the reason the API gave for turning it down. Retrying
+		// skips whoever was invited, since they now count as already invited.
 		if (failed.length) {
-			setError(
-				`Invited ${invited} of ${sending.length} members. Failed to invite ${failed.join(", ")}.`,
-			);
+			setError(`Invited ${invited} of ${sending.length} members.`);
+			setFailures(failed);
 			return;
 		}
 
@@ -415,13 +441,33 @@ function ImportModal({ organization }: ImportModalProps) {
 					</Box>
 				)}
 
-				{error && (
-					<Text
-						c="red"
-						fz="sm"
-					>
-						{error}
-					</Text>
+				{(error || !!failures.length) && (
+					<Stack gap={4}>
+						{error && (
+							<Text
+								c="red"
+								fz="sm"
+							>
+								{error}
+							</Text>
+						)}
+						{!!failures.length && (
+							<ScrollArea.Autosize mah={140}>
+								<Stack gap={4}>
+									{failures.map((failure) => (
+										<Text
+											key={failure.email}
+											c="red"
+											fz="sm"
+											className="selectable"
+										>
+											<b>{failure.email}</b>: {failure.message}
+										</Text>
+									))}
+								</Stack>
+							</ScrollArea.Autosize>
+						)}
+					</Stack>
 				)}
 
 				<Group mt="xl">

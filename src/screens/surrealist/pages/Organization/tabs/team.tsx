@@ -16,7 +16,6 @@ import {
 import {
 	Icon,
 	iconAccountPlus,
-	iconChevronDown,
 	iconClose,
 	iconDelete,
 	iconDotsVertical,
@@ -25,6 +24,7 @@ import {
 	iconSearch,
 	iconServerSecure,
 	iconUpload,
+	Spacer,
 } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -211,12 +211,16 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						{ label: "Members", value: "members" },
 						{
 							label: (
-								<Group gap="xs">
+								<Group
+									gap="xs"
+									wrap="nowrap"
+								>
 									Pending
 									{!!invitations.length && (
 										<Badge
 											variant="light"
 											size="sm"
+											style={{ flexShrink: 0 }}
 										>
 											{invitations.length}
 										</Badge>
@@ -227,23 +231,14 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						},
 					]}
 				/>
-				<TextInput
-					placeholder={view === "members" ? "Search members..." : "Search invitations..."}
-					leftSection={<Icon path={iconSearch} />}
-					value={search}
-					onChange={(e) => handleSearch(e.currentTarget.value)}
-					style={{ flex: 1 }}
-				/>
+				<Spacer />
 				{isAdmin && (
 					<>
 						<Menu>
 							<Menu.Target>
-								<Button
-									size="xs"
-									rightSection={<Icon path={iconChevronDown} />}
-								>
-									Team actions
-								</Button>
+								<ActionButton label="Additional actions">
+									<Icon path={iconDotsVertical} />
+								</ActionButton>
 							</Menu.Target>
 							<Menu.Dropdown>
 								<Menu.Item
@@ -262,6 +257,14 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 								</Menu.Item>
 							</Menu.Dropdown>
 						</Menu>
+						<TextInput
+							placeholder={
+								view === "members" ? "Search members..." : "Search invitations..."
+							}
+							leftSection={<Icon path={iconSearch} />}
+							value={search}
+							onChange={(e) => handleSearch(e.currentTarget.value)}
+						/>
 						<Button
 							size="xs"
 							variant="gradient"

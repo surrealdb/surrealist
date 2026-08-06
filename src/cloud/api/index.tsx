@@ -59,6 +59,22 @@ export async function fetchAPI<T = unknown>(
 }
 
 /**
+ * Resolve the message to display for a failed request, preferring the reason
+ * reported by the API since it explains the rejection far better than we can.
+ *
+ * @param err The thrown error
+ * @param fallback Used when the API did not explain itself
+ * @returns The message to display
+ */
+export function apiErrorMessage(err: unknown, fallback: string): string {
+	if (err instanceof ApiError && err.reason?.trim()) {
+		return err.reason;
+	}
+
+	return fallback;
+}
+
+/**
  * Error response from the API
  */
 export class ApiError extends Error {

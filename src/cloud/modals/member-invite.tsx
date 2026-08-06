@@ -5,10 +5,10 @@ import { Icon, iconAccountPlus } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useMemo, useState } from "react";
 import { Form } from "~/components/Form";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { EMAIL_REGEX } from "~/util/helpers";
+import { apiErrorMessage } from "../api";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
 import { openMemberImportModal } from "./member-import";
@@ -18,11 +18,8 @@ export function openMemberInvitationModal(organization: CloudOrganization) {
 		modalId: "invite-member",
 		title: (
 			<Group>
-				<Icon
-					path={iconAccountPlus}
-					size="xl"
-				/>
-				<PrimaryTitle>Invite member</PrimaryTitle>
+				<Icon path={iconAccountPlus} />
+				Invite member
 			</Group>
 		),
 		trapFocus: false,
@@ -62,9 +59,9 @@ function InviteModal({ organization }: InviteModalProps) {
 			});
 
 			handleClose();
-		} catch {
+		} catch (err) {
 			// The modal stays open so the address can be corrected and retried
-			setError("Failed to send an invitation to this member");
+			setError(apiErrorMessage(err, "Failed to send an invitation to this member"));
 		}
 	});
 
@@ -110,7 +107,7 @@ function InviteModal({ organization }: InviteModalProps) {
 					}}
 					onClick={handleSwitchImport}
 				>
-					Click here to invite multiple members
+					Click here to invite members in bulk
 				</Text>
 
 				{error && (
