@@ -1,19 +1,9 @@
-import {
-	Box,
-	Button,
-	Group,
-	Select,
-	SimpleGrid,
-	Skeleton,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Box, Group, Select, SimpleGrid, Skeleton, Stack, Text, TextInput } from "@mantine/core";
 import { Icon, iconSearch } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
-import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { DeployButton, resolveDeployBlock } from "~/components/DeployButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -82,7 +72,8 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	});
 
 	const deployPath = `/o/${organization.id}/instances/deploy`;
-	const deployHref = isAdmin && !isRestricted && instances.length === 0 ? deployPath : undefined;
+	const deployBlock = resolveDeployBlock({ resource: "instance", isAdmin, isRestricted });
+	const deployHref = !deployBlock && instances.length === 0 ? deployPath : undefined;
 
 	return (
 		<>
@@ -93,17 +84,13 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 				align="flex-end"
 			>
 				<PrimaryTitle fz={32}>Instances</PrimaryTitle>
-				{isAdmin && (
-					<Link href={deployPath}>
-						<Button
-							size="xs"
-							disabled={isRestricted}
-							variant="gradient"
-						>
-							Deploy instance
-						</Button>
-					</Link>
-				)}
+				<DeployButton
+					size="xs"
+					href={deployPath}
+					blockedReason={deployBlock}
+				>
+					Deploy instance
+				</DeployButton>
 			</Group>
 
 			<Group mt="lg">
@@ -166,17 +153,13 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 							Deploy your first SurrealDB Cloud instance to start building with a
 							fully managed database.
 						</Text>
-						{isAdmin && (
-							<Link href={deployPath}>
-								<Button
-									mt="xs"
-									disabled={isRestricted}
-									variant="gradient"
-								>
-									Deploy instance
-								</Button>
-							</Link>
-						)}
+						<DeployButton
+							mt="xs"
+							href={deployPath}
+							blockedReason={deployBlock}
+						>
+							Deploy instance
+						</DeployButton>
 					</Stack>
 				</Box>
 			)}

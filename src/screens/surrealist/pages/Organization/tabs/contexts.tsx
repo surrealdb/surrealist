@@ -2,7 +2,6 @@ import {
 	ActionIcon,
 	Anchor,
 	Box,
-	Button,
 	Group,
 	Loader,
 	Paper,
@@ -17,10 +16,10 @@ import {
 } from "@mantine/core";
 import { Icon, iconDotsVertical, iconSearch, iconSpectron, Spacer } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
-import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationContextsQuery } from "~/cloud/queries/contexts";
 import { ContextActions } from "~/components/ContextActions";
+import { DeployButton, resolveDeployBlock } from "~/components/DeployButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
 import { ContextsOnboarding } from "~/modals/onboarding";
@@ -168,7 +167,8 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 	}, [contexts, search, regionFilter]);
 
 	const deployPath = `/o/${organization.id}/contexts/deploy`;
-	const deployHref = isAdmin && !isRestricted && contexts.length === 0 ? deployPath : undefined;
+	const deployBlock = resolveDeployBlock({ resource: "context", isAdmin, isRestricted });
+	const deployHref = !deployBlock && contexts.length === 0 ? deployPath : undefined;
 
 	return (
 		<>
@@ -179,17 +179,13 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 				align="flex-end"
 			>
 				<PrimaryTitle fz={32}>Contexts</PrimaryTitle>
-				{isAdmin && (
-					<Link href={deployPath}>
-						<Button
-							size="xs"
-							disabled={isRestricted}
-							variant="gradient"
-						>
-							Create context
-						</Button>
-					</Link>
-				)}
+				<DeployButton
+					size="xs"
+					href={deployPath}
+					blockedReason={deployBlock}
+				>
+					Create context
+				</DeployButton>
 			</Group>
 
 			<Group mt="lg">
@@ -252,17 +248,13 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 							Create your first Spectron context to add persistent memory and
 							knowledge to your AI applications.
 						</Text>
-						{isAdmin && (
-							<Link href={deployPath}>
-								<Button
-									mt="xs"
-									disabled={isRestricted}
-									variant="gradient"
-								>
-									Create context
-								</Button>
-							</Link>
-						)}
+						<DeployButton
+							mt="xs"
+							href={deployPath}
+							blockedReason={deployBlock}
+						>
+							Create context
+						</DeployButton>
 					</Stack>
 				</Box>
 			)}
