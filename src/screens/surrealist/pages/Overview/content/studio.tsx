@@ -37,8 +37,10 @@ export function StudioCallToAction(props: BoxProps) {
 				>
 					<PrimaryTitle fz={20}>Surrealist is now SurrealDB Studio</PrimaryTitle>
 					<Text
-						maw={560}
+						fz="lg"
+						maw={750}
 						className="selectable"
+						style={{ textWrap: "pretty" }}
 					>
 						Introducing SurrealDB Studio, the successor to Surrealist, and the most
 						powerful way to interact with your data yet. Benefit from improved
