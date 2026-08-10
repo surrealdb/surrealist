@@ -1,5 +1,6 @@
 import { Box, type BoxProps, Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { Icon, iconChevronRight } from "@surrealdb/ui";
+import { adapter } from "~/adapter";
 import glow from "~/assets/images/radial-glow.png";
 import studioAppIcon from "~/assets/images/studio.png";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -48,14 +49,13 @@ export function StudioCallToAction(props: BoxProps) {
 						data.
 					</Text>
 					<Box mt="sm">
-						<a href="https://surrealdb.com/studio">
-							<Button
-								variant="gradient"
-								rightSection={<Icon path={iconChevronRight} />}
-							>
-								Download SurrealDB Studio
-							</Button>
-						</a>
+						<Button
+							variant="gradient"
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={() => adapter.openUrl("https://surrealdb.com/studio")}
+						>
+							Download SurrealDB Studio
+						</Button>
 					</Box>
 				</Stack>
 			</Group>
