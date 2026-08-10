@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Center, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconPause, iconPlay } from "@surrealdb/ui";
-import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useResumeInstance } from "~/hooks/cloud";
@@ -13,7 +13,7 @@ export interface ResumelockProps {
 }
 
 export function ResumeBlock({ instance, organisation, description }: ResumelockProps) {
-	const canResume = hasOrganizationRoles(organisation, ORG_ROLES_OWNER);
+	const canResume = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
 	const resumeInstance = useResumeInstance(instance);
 
 	return (
@@ -35,7 +35,7 @@ export function ResumeBlock({ instance, organisation, description }: ResumelockP
 						{description ?? "Resume your instance to continue where you left off."}
 					</Text>
 					<Tooltip
-						label="Ask your organization owner to resume this instance"
+						label="Ask an organisation admin to resume this instance"
 						disabled={canResume}
 					>
 						<Button

@@ -46,7 +46,7 @@ export function ConnectionComputeTab({
 				<ResumeBlock
 					instance={instance}
 					organisation={organisation}
-					description="You must rusume your instance before you can configure it."
+					description="You must resume your instance before you can configure it."
 				/>
 			</Stack>
 		);
