@@ -52,7 +52,7 @@ export function StudioCallToAction(props: BoxProps) {
 						<Button
 							variant="gradient"
 							rightSection={<Icon path={iconChevronRight} />}
-							onClick={() => adapter.openUrl("https://surrealdb.com/studio")}
+							onClick={() => adapter.openUrl("https://surrealdb.com/studio?download")}
 						>
 							Download SurrealDB Studio
 						</Button>
