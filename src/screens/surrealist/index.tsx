@@ -3,13 +3,14 @@ import { Spinner } from "@surrealdb/ui";
 import { memo } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import globulesImg from "~/assets/images/globules.webp";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { CloudGuard } from "~/components/CloudGuard";
+import { GlobulesBackground } from "~/components/GlobulesBackground";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useIsDesktop } from "~/hooks/responsive";
 import { useConnectionFromRoute } from "~/hooks/routing";
+import { useIsLight } from "~/hooks/theme";
 import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
@@ -89,6 +90,8 @@ export function SurrealistScreen() {
 
 	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
 	const [backgroundGlobulesOpacity] = useSetting("appearance", "backgroundGlobulesOpacity");
+	const [backgroundGlobulesSpeed] = useSetting("appearance", "backgroundGlobulesSpeed");
+	const isLight = useIsLight();
 	const sidebarMode = storedSidebarMode === "compact" ? "compact" : "wide";
 	const isMacos = adapter.platform === "darwin" && isDesktop;
 	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
@@ -98,11 +101,15 @@ export function SurrealistScreen() {
 			<Box
 				className={classes.root}
 				style={{
-					"--bg-image": `url(${globulesImg})`,
-					"--bg-opacity": backgroundGlobulesOpacity,
 					"--titlebar-offset": `${adapter.titlebarOffset}px`,
 				}}
 			>
+				{!isLight && (
+					<GlobulesBackground
+						opacity={backgroundGlobulesOpacity}
+						speed={backgroundGlobulesSpeed}
+					/>
+				)}
 				{isOtherOS && <AppTitleBar />}
 				<Flex
 					direction="column"
