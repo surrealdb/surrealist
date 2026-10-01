@@ -200,7 +200,7 @@ function buildDefineFieldQuery(
 		query += " OVERWRITE";
 	}
 
-	query += ` ${field.name} ON TABLE ${escapeIdent(table)}`;
+	query += ` ${escapeIdent(field.name)} ON TABLE ${escapeIdent(table)}`;
 
 	const kind = getFieldKind(field, context);
 
@@ -291,7 +291,7 @@ function buildAlterFieldQuery(
 		return null;
 	}
 
-	return `ALTER FIELD ${current.name} ON TABLE ${escapeIdent(table)} ${parts.join(" ")}`;
+	return `ALTER FIELD ${escapeIdent(current.name)} ON TABLE ${escapeIdent(table)} ${parts.join(" ")}`;
 }
 
 function buildDefineIndexQuery(index: SchemaIndex, table: string, useOverwrite?: boolean) {
@@ -370,7 +370,7 @@ export function buildDefinitionQueries({
 
 	for (const field of previous.fields) {
 		if (!fieldIndex[field.name]) {
-			queries.push(`REMOVE FIELD ${field.name} ON TABLE ${escapeIdent(name)}`);
+			queries.push(`REMOVE FIELD ${escapeIdent(field.name)} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
