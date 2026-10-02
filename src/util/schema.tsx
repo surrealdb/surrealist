@@ -267,7 +267,7 @@ export function buildParameterDefinition(param: SchemaParameter): string {
  * Build a model definition query
  */
 export function buildModelDefinition(func: SchemaModel): string {
-	let query = `DEFINE MODEL ${func.name} {`;
+	let query = `DEFINE MODEL ${escapeIdent(func.name)} {`;
 
 	if (func.permission) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permission)}`;
