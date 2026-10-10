@@ -80,7 +80,7 @@
 		"@tauri-apps/plugin-updater": "2.10.0",
 		"@theopensource-company/feature-flags": "^0.4.6",
 		"@types/turndown": "^5.0.6",
-		"@xyflow/react": "12.6.3",
+		"@xyflow/react": "12.11.0",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.1",
 		"cm6-graphql": "^0.1.1",
