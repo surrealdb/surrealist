@@ -49,7 +49,7 @@
 		"@lezer/rust": "^1.0.2",
 		"@lezer/yaml": "^1.0.4",
 		"@mantine/charts": "9.0.2",
-		"@mantine/core": "9.0.2",
+		"@mantine/core": "9.3.0",
 		"@mantine/dates": "9.0.2",
 		"@mantine/hooks": "9.0.2",
 		"@mantine/modals": "9.0.2",
