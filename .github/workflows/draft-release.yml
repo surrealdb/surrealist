@@ -105,6 +105,7 @@ jobs:
           egress-policy: audit
 
       - name: Information
+        shell: bash
         env:
           VERSION: ${{ needs.version.outputs.version }}
           TARGET_ID: ${{ matrix.settings.id }}
@@ -145,6 +146,7 @@ jobs:
         run: bun run license-report
 
       - name: Set version
+        shell: bash
         env:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
