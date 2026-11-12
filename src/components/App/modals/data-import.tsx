@@ -34,7 +34,7 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { formatFileSize, showErrorNotification } from "~/util/helpers";
-import { shouldFallbackStreamImport } from "~/util/import";
+import { importSqlFile } from "~/util/import";
 import { syncConnectionSchema } from "~/util/schema";
 
 type DataFileFormat = "csv" | "json" | "ndjson";
@@ -67,20 +67,8 @@ const SqlImportForm = ({
 
 			if (!file) return;
 
-			// Attempt stream based import first, fallback to a blob based approach
-			// if the engine does not support streaming or a transport error occurs.
-			// Import failures must not be retried to avoid partial imports.
-			try {
-				adapter.log("import", "Attempting to import file using stream");
-				await surreal.import(file.stream());
-			} catch (err: unknown) {
-				if (!shouldFallbackStreamImport(err)) {
-					throw err instanceof Error ? err : new Error(String(err));
-				}
-
-				adapter.log("import", "Falling back to blob based import");
-				await surreal.import(file);
-			}
+			adapter.log("import", "Importing SQL file");
+			await importSqlFile(file, (data) => surreal.import(data));
 
 			await syncConnectionSchema();
 		};
