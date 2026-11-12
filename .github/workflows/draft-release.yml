@@ -28,6 +28,9 @@ env:
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
   INTERCOM_APP_ID: xaac4vhr
 
+permissions:
+  contents: read
+
 jobs:
   version:
     name: Extract version
@@ -48,8 +51,10 @@ jobs:
 
       - name: Overwrite version
         if: ${{ inputs.version }}
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          jq --arg version "${{ inputs.version }}" '.version = $version' package.json > package.tmp.json
+          jq --arg version "$VERSION" '.version = $version' package.json > package.tmp.json
           rm package.json
           mv package.tmp.json package.json
 
@@ -100,7 +105,11 @@ jobs:
           egress-policy: audit
 
       - name: Information
-        run: echo "Building Surrealist Desktop v${{ needs.version.outputs.version }} for ${{ matrix.settings.id }}"
+        shell: bash
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          TARGET_ID: ${{ matrix.settings.id }}
+        run: echo "Building Surrealist Desktop v$VERSION for $TARGET_ID"
 
       - name: Code checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -120,8 +129,9 @@ jobs:
           bun-version: 1.2.8
 
       - name: Setup Rust stable
-        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
+          toolchain: stable
           targets: ${{ matrix.settings.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
@@ -136,8 +146,11 @@ jobs:
         run: bun run license-report
 
       - name: Set version
+        shell: bash
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
         run: |
-          jq --arg version "${{ needs.version.outputs.version }}" '.version = $version' package.json > package.tmp.json
+          jq --arg version "$VERSION" '.version = $version' package.json > package.tmp.json
           rm package.json
           mv package.tmp.json package.json
 
