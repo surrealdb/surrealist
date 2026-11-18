@@ -35,7 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      # Checkout, and the online audits' reads of the actions the workflows use.
+      # Checkout only. The online audits read public repositories, which need
+      # no grant on this token.
       contents: read
     steps:
       - name: Checkout repository
