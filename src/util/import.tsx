@@ -107,3 +107,45 @@ export function shouldFallbackStreamImport(err: unknown) {
 
 	return false;
 }
+
+function supportsRequestStreams() {
+	try {
+		let readsDuplex = false;
+		const options = {
+			method: "POST",
+			body: new ReadableStream<Uint8Array>({
+				start(controller) {
+					controller.close();
+				},
+			}),
+			get duplex() {
+				readsDuplex = true;
+				return "half";
+			},
+		};
+
+		const probe = new Request("https://localhost/", options);
+		return readsDuplex && !probe.headers.has("Content-Type");
+	} catch {
+		return false;
+	}
+}
+
+export async function importSqlFile(
+	file: File,
+	importData: (data: File | ReadableStream<Uint8Array>) => Promise<unknown>,
+) {
+	if (!supportsRequestStreams()) {
+		await importData(file);
+		return;
+	}
+
+	try {
+		await importData(file.stream());
+	} catch (err) {
+		if (!shouldFallbackStreamImport(err)) {
+			throw err instanceof Error ? err : new Error(String(err));
+		}
+		await importData(file);
+	}
+}
