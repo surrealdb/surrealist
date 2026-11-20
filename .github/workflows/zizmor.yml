@@ -1,0 +1,58 @@
+# Audits every workflow and composite action under .github/ with zizmor
+# whenever anything there changes, so the whole tree must stay clean, not only
+# the files a change touches.
+#
+# Only High-severity findings are reported; each fails the job and is written
+# as an annotation on the file it is in. Lower severities are filtered out, and
+# are seen only by running zizmor locally. A finding that is accepted is
+# suppressed where it occurs, with a `# zizmor: ignore[<audit>]` comment that
+# gives the reason.
+#
+# zizmor is pinned to an exact release so that a new audit in a later release
+# cannot fail an unrelated change; raising the pin is a change of its own.
+name: zizmor
+
+on:
+  pull_request:
+    paths:
+      - ".github/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/**"
+  workflow_dispatch:
+
+concurrency:
+  group: zizmor-${{ github.ref }}
+  # Superseded pull request runs are cancelled; every push to the default
+  # branch keeps its own result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # Checkout only. The online audits read public repositories, which need
+      # no grant on this token.
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@53290badfa369cb0bf7ad16342cb62c2fa47ac7b # v0.8.0
+        with:
+          # The audited set matches the trigger paths: everything under .github.
+          inputs: .github
+          version: 1.31.1
+          min-severity: high
+          # Annotations need no code scanning; the two modes are exclusive.
+          advanced-security: false
+          annotations: true
