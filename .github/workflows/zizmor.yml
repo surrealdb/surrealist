@@ -47,6 +47,8 @@ jobs:
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@53290badfa369cb0bf7ad16342cb62c2fa47ac7b # v0.8.0
         with:
+          # The audited set matches the trigger paths: everything under .github.
+          inputs: .github
           version: 1.31.1
           min-severity: high
           # Annotations need no code scanning; the two modes are exclusive.
