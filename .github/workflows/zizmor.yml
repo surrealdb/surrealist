@@ -25,7 +25,9 @@ on:
 
 concurrency:
   group: zizmor-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseded pull request runs are cancelled; every push to the default
+  # branch keeps its own result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions: {}
 
