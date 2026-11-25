@@ -12,9 +12,9 @@
 # cannot fail an unrelated change; raising the pin is a change of its own. The
 # pin fixes the audits, not the data the online ones read:
 # known-vulnerable-actions consults the GitHub Advisory Database, so a new
-# advisory against an action already pinned here fails the next run without
-# any change under .github/. The weekly run reports such an advisory on main,
-# before it fails a change that did not introduce it.
+# high or critical advisory against an action pinned under .github/ fails the
+# next run without any change there. The weekly run reports such an advisory
+# on main, before it fails a change that did not introduce it.
 #
 # The paths filter means the check does not report on a pull request that
 # changes nothing under .github/, so it must stay out of the required checks:
