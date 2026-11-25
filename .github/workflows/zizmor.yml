@@ -9,7 +9,16 @@
 # gives the reason.
 #
 # zizmor is pinned to an exact release so that a new audit in a later release
-# cannot fail an unrelated change; raising the pin is a change of its own.
+# cannot fail an unrelated change; raising the pin is a change of its own. The
+# pin fixes the audits, not the data the online ones read:
+# known-vulnerable-actions consults the GitHub Advisory Database, so a new
+# advisory against an action already pinned here fails the next run without
+# any change under .github/. The weekly run reports such an advisory on main,
+# before it fails a change that did not introduce it.
+#
+# The paths filter means the check does not report on a pull request that
+# changes nothing under .github/, so it must stay out of the required checks:
+# a required check that never reports leaves those pull requests waiting.
 name: zizmor
 
 on:
@@ -21,12 +30,15 @@ on:
       - main
     paths:
       - ".github/**"
+  schedule:
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 concurrency:
-  group: zizmor-${{ github.ref }}
-  # Superseded pull request runs are cancelled; every push to the default
-  # branch keeps its own result.
+  # A pull request's runs share its ref, and a superseded one is cancelled.
+  # Every other run is grouped by its commit, so no commit on main has its run
+  # cancelled or replaced by a later commit's.
+  group: zizmor-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions: {}
@@ -42,7 +54,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
 
