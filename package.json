@@ -51,7 +51,7 @@
 		"@mantine/charts": "9.0.2",
 		"@mantine/core": "9.0.2",
 		"@mantine/dates": "9.0.2",
-		"@mantine/hooks": "9.0.2",
+		"@mantine/hooks": "9.3.0",
 		"@mantine/modals": "9.0.2",
 		"@mantine/notifications": "9.0.2",
 		"@mdi/js": "^7.4.47",
