@@ -33,8 +33,8 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-
-const MAX_PREVIEW_LENGTH = 500;
+import { writeClipboardText } from "~/util/helpers";
+import { getHistoryCodeBlockProps } from "./helpers";
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
@@ -71,11 +71,10 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 		});
 	});
 
-	const shortQuery = useMemo(() => {
-		return entry.query.length > MAX_PREVIEW_LENGTH
-			? `${entry.query.slice(0, MAX_PREVIEW_LENGTH)}...`
-			: entry.query;
-	}, [entry.query]);
+	const codeBlockProps = useMemo(
+		() => getHistoryCodeBlockProps(entry.query, writeClipboardText),
+		[entry.query],
+	);
 
 	return (
 		<Box>
@@ -144,7 +143,7 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 
 			<CodeBlock
 				mt="xs"
-				value={shortQuery}
+				{...codeBlockProps}
 				lang="surrealql"
 			/>
 
